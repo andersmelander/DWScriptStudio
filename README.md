@@ -1,45 +1,85 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# DWScriptStudio #
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
-
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
-
----
-
-## Edit a file
-
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
-
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+DWScriptStudio is a debugger and editor for DWScript. It can be used either as a stand alone IDE or it can be 
+integrated into applications that use DWScript.
 
 ---
 
-## Create a file
+In addition to the editor/debugger this library also contains a Delphi framework that can be used to create DWScript 
+class wrappers for Delphi components and visual controls.
 
-Next, you’ll add a new file to this repository.
+## Features
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+* DWScriptStudio:
+    * Syntax highligting editor.
+        * Based on SynEdit.
+    	* Multi page.
+    	* RegEx search.
+    	* Rename refactoring.
+        * Macro recording/playback.
+        * Code completion.
+	    * Parameter proposal.
+    * Script debugger.
+        * Single stepping.
+    	* Break points.
+        * Call stack view.
+    	* Data stack view.
+    	* Local variables view.
+    	* Abstract Syntax Tree view.
+    	* Defined symbols view.
+    	* Watches.
+    	* Evaluate/Modify.
+    * Generate HTML based class library documentation.  
+      Note: Requires Documentation Insight.
+* Script integration framework:
+    * Virtual file system.  
+	  Supported actual file systems are:
+        * Physical file system.
+    	* Editor files.
+    	* Bundles (zip files containing scripts).
+    	* Application provided files (e.g. attachments within documents).
+    	* Combination of the above.
+    * Script compilation and execution from virtual file systems.
+    * Object life time management.  
+      Script side objects are automatically invalidated when Delphi side components are destroyed.
+    * Event handlers and delegates.  
+      The event handlers of Delphi side objects can be implemented in script.
+* Class library:
+    * Mirrors the VCL class hierachy (e.g. TObject->TComponent->TControl->TCustomControl->etc...).
+    * Most common Delphi classes and controls are wrapped and available to script.  
+      More than 20 different controls are currently wrapped.
+    * Visual controls are mostly based on the Developer Express VCL library.
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+## Requirements
+
+DWScriptStudio has been tested with the following versions:
+
+* Delphi 10.2 (community edition is supported)
+* Developer Express VCL version 17.2.4
+
+## Dependencies
+
+The core DWScriptStudio editor/debugger functionality requires the following 3rd party libraries:
+
+* DWScript (*)
+* Developer Express VCL (*)
+* SynEdit (*)
+* Drag and Drop Component Suite (*)
+* Various libs by Anders Melander (included)
+* Synopse
+
+(*) Design time packages must be installed in the Delphi IDE before the debugger forms can be opened in the Delphi IDE.
+
+Be aware that Developer Express VCL is a commercial library.
+
+## History
+
+DWScriptStudio is based on the IDEDialog sample included with DWScript. As far as I know IDEDialog was written by Brian Frost.
+Most of the original code from IDEDialog is still included but much of it has been disabled. Either because it 
+has been superceeded or because it isn't relevant to the DWScriptStudio architecture.
+
+Before DWScriptStudio was made into an independant library and released here, it served as the editor and debugger of the script
+ecosystem of a commercial application. There are still some traces of this integration left in the code - and even the UI. They'll
+disappear as/if I get to it.
 
 ---
-
-## Clone a repository
-
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
-
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
-
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
