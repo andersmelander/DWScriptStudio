@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{93ED8EA6-B493-4CC9-8E7E-32463EE9A5DE}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Demo\Embedded\Embedded.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demo\Minimal embedded\MinimalEmbedded.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demo\Standalone\StandaloneDebugger.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Embedded">
+        <MSBuild Projects="Demo\Embedded\Embedded.dproj"/>
+    </Target>
+    <Target Name="Embedded:Clean">
+        <MSBuild Projects="Demo\Embedded\Embedded.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Embedded:Make">
+        <MSBuild Projects="Demo\Embedded\Embedded.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MinimalEmbedded">
+        <MSBuild Projects="Demo\Minimal embedded\MinimalEmbedded.dproj"/>
+    </Target>
+    <Target Name="MinimalEmbedded:Clean">
+        <MSBuild Projects="Demo\Minimal embedded\MinimalEmbedded.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MinimalEmbedded:Make">
+        <MSBuild Projects="Demo\Minimal embedded\MinimalEmbedded.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="StandaloneDebugger">
+        <MSBuild Projects="Demo\Standalone\StandaloneDebugger.dproj"/>
+    </Target>
+    <Target Name="StandaloneDebugger:Clean">
+        <MSBuild Projects="Demo\Standalone\StandaloneDebugger.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="StandaloneDebugger:Make">
+        <MSBuild Projects="Demo\Standalone\StandaloneDebugger.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Embedded;MinimalEmbedded;StandaloneDebugger"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Embedded:Clean;MinimalEmbedded:Clean;StandaloneDebugger:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Embedded:Make;MinimalEmbedded:Make;StandaloneDebugger:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
