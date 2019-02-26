@@ -73,6 +73,8 @@ uses
 constructor TFormMain.Create(AOwner: TComponent);
 var
   i: integer;
+  FrameDocument: TFrameDocument;
+  ScriptHostDocument: IScriptHostDocument;
 begin
   inherited;
   FSubscribers := TList<IInterface>.Create;
@@ -80,11 +82,30 @@ begin
 
   for i := 0 to PageControlDocuments.PageCount-1 do
     if (PageControlDocuments.Pages[i].ControlCount > 0) and (PageControlDocuments.Pages[i].Controls[0] is TFrameDocument) then
-      TFrameDocument(PageControlDocuments.Pages[i].Controls[0]).Filename := PageControlDocuments.Pages[i].Caption+'.document';
+    begin
+      FrameDocument := TFrameDocument(PageControlDocuments.Pages[i].Controls[0]);
+      FrameDocument.Filename := PageControlDocuments.Pages[i].Caption+'.document';
+
+      if (Supports(FrameDocument, IScriptHostDocument, ScriptHostDocument)) then
+        ScriptHostDocument.Initialize(Self);
+    end;
 end;
 
 destructor TFormMain.Destroy;
+var
+  i: integer;
+  FrameDocument: TFrameDocument;
+  ScriptHostDocument: IScriptHostDocument;
 begin
+  for i := 0 to PageControlDocuments.PageCount-1 do
+    if (PageControlDocuments.Pages[i].ControlCount > 0) and (PageControlDocuments.Pages[i].Controls[0] is TFrameDocument) then
+    begin
+      FrameDocument := TFrameDocument(PageControlDocuments.Pages[i].Controls[0]);
+
+      if (Supports(FrameDocument, IScriptHostDocument, ScriptHostDocument)) then
+        ScriptHostDocument.Finalize;
+    end;
+
   RegisterScriptHostApplication(nil);
   FSubscribers.Free;
   inherited;

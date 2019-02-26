@@ -1,22 +1,19 @@
 object FrameDocument: TFrameDocument
   Left = 0
   Top = 0
-  Width = 470
-  Height = 355
+  Width = 451
+  Height = 304
   Align = alClient
   Padding.Left = 4
   Padding.Top = 4
   Padding.Right = 4
   Padding.Bottom = 4
   TabOrder = 0
-  ExplicitTop = 3
-  ExplicitWidth = 0
-  ExplicitHeight = 0
   object PageControlAttachments: TcxPageControl
     Left = 4
     Top = 4
-    Width = 462
-    Height = 347
+    Width = 443
+    Height = 296
     Align = alClient
     TabOrder = 0
     Properties.ActivePage = TabSheetUnit1
@@ -42,27 +39,57 @@ object FrameDocument: TFrameDocument
     Properties.TabSlants.Kind = skCutCorner
     TabSlants.Kind = skCutCorner
     OnNewTabCreate = PageControlAttachmentsNewTabCreate
-    ExplicitLeft = 7
-    ExplicitTop = 1
-    ClientRectBottom = 322
+    ClientRectBottom = 271
     ClientRectLeft = 1
-    ClientRectRight = 461
+    ClientRectRight = 442
     ClientRectTop = 1
     object TabSheetUnit1: TcxTabSheet
       Caption = 'Unit1.pas'
-      ExplicitLeft = 4
-      ExplicitTop = 24
-      ExplicitWidth = 627
-      ExplicitHeight = 211
       object MemoScript: TMemo
         Left = 0
         Top = 0
-        Width = 460
-        Height = 321
+        Width = 441
+        Height = 270
         Align = alClient
         BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Consolas'
+        Font.Pitch = fpFixed
+        Font.Style = []
         Lines.Strings = (
           'unit Unit1;'
+          ''
+          'uses'
+          '  Unit2;'
+          ''
+          'begin'
+          '  Test('#39'Hello from Unit1'#39');'
+          'end;'
+          '')
+        ParentFont = False
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object TabSheetUnit2: TcxTabSheet
+      Caption = 'Unit2.pas'
+      object Memo1: TMemo
+        Left = 0
+        Top = 0
+        Width = 441
+        Height = 270
+        Align = alClient
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Consolas'
+        Font.Pitch = fpFixed
+        Font.Style = []
+        Lines.Strings = (
+          'unit Unit2;'
           ''
           'uses'
           '  System.UI.Dialogs;'
@@ -73,36 +100,11 @@ object FrameDocument: TFrameDocument
           'end;'
           ''
           'begin'
-          '  Test('#39'Hello world'#39');'
+          '  Test('#39'Hello world from Unit2'#39');'
           'end;')
+        ParentFont = False
         TabOrder = 0
-        ExplicitWidth = 462
-        ExplicitHeight = 322
-      end
-    end
-    object TabSheetUnit2: TcxTabSheet
-      Caption = 'Unit2.pas'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 424
-      ExplicitHeight = 311
-      object Memo1: TMemo
-        Left = 0
-        Top = 0
-        Width = 460
-        Height = 321
-        Align = alClient
-        BorderStyle = bsNone
-        Lines.Strings = (
-          'unit Unit2;'
-          ''
-          'uses'
-          '  Unit1;'
-          ''
-          'begin'
-          '  Test('#39'Hello from Unit2'#39');'
-          'end;')
-        TabOrder = 0
+        WordWrap = False
       end
     end
   end

@@ -43,10 +43,11 @@ type
     procedure Notify(ASubscriber: IUnknown; Notification: TScriptHostDocumentNotification); overload;
     procedure Notify(Notification: TScriptHostDocumentNotification); overload;
   protected
-    procedure Loaded; override;
     function AddAttachment(TabSheet: TcxTabSheet; const Filename: string; Memo: TMemo = nil): TMemo;
   protected
     // IScriptHostDocument
+    procedure Initialize(const ScriptHostApplication: IScriptHostApplication);
+    procedure Finalize;
     procedure Subscribe(const Subscriber: IInterface);
     procedure Unsubscribe(const Subscriber: IInterface);
     function GetFilename: string;
@@ -125,17 +126,11 @@ constructor TFrameDocument.Create(AOwner: TComponent);
     Result := GUIDToString(Guid);
   end;
 
-var
-  i: integer;
 begin
   inherited Create(AOwner);
   FSubscribers := TList<IInterface>.Create;
   FFiles := TList<IScriptHostFile>.Create;
   FFilename := CreateGUID;
-
-  // Wrap the existing pages/memos as files
-  for i := 0 to PageControlAttachments.PageCount-1 do
-    AddAttachment(PageControlAttachments.Pages[i], PageControlAttachments.Pages[i].Caption, PageControlAttachments.Pages[i].Controls[0] as TMemo);
 
   PageControlAttachments.Properties.NewButton.ImageIndex := 2;
 end;
@@ -145,15 +140,6 @@ begin
   FSubscribers.Free;
   FFiles.Free;
   inherited;
-end;
-
-procedure TFrameDocument.Loaded;
-begin
-  inherited;
-
-  // Work around bug in DevExpress: OnClick is lost when page control is placed on a TFrame
-  PageControlAttachments.Properties.CustomButtons.Buttons[0].OnClick := PageControlTcxPageControlPropertiesTcxPCCustomButtonsButtons0Click;
-  PageControlAttachments.Properties.CustomButtons.Buttons[1].OnClick := PageControlTcxPageControlPropertiesTcxPCCustomButtonsButtons1Click;
 end;
 
 // -----------------------------------------------------------------------------
@@ -264,6 +250,26 @@ end;
 // -----------------------------------------------------------------------------
 // TFrameDocument: IScriptHostDocument implementaton
 // -----------------------------------------------------------------------------
+procedure TFrameDocument.Initialize(const ScriptHostApplication: IScriptHostApplication);
+var
+  i: integer;
+begin
+  ScriptHostApplication.Subscribe(Self);
+
+  // Wrap the existing pages/memos as files
+  for i := 0 to PageControlAttachments.PageCount-1 do
+    AddAttachment(PageControlAttachments.Pages[i], PageControlAttachments.Pages[i].Caption, PageControlAttachments.Pages[i].Controls[0] as TMemo);
+
+  // Work around bug in DevExpress: OnClick is lost when page control is placed on a TFrame
+  PageControlAttachments.Properties.CustomButtons.Buttons[0].OnClick := PageControlTcxPageControlPropertiesTcxPCCustomButtonsButtons0Click;
+  PageControlAttachments.Properties.CustomButtons.Buttons[1].OnClick := PageControlTcxPageControlPropertiesTcxPCCustomButtonsButtons1Click;
+end;
+
+procedure TFrameDocument.Finalize;
+begin
+  ScriptHostApplication.Unsubscribe(Self);
+end;
+
 procedure TFrameDocument.Subscribe(const Subscriber: IInterface);
 begin
   if (FSubscribers.Contains(Subscriber)) then
@@ -331,12 +337,11 @@ end;
 function TFrameDocument.ScriptHostFilesAdd(const Name, Filename: string): IScriptHostFile;
 var
   TabSheet: TcxTabSheet;
-  Memo: TMemo;
 begin
   TabSheet := TcxTabSheet.Create(Self);
   TabSheet.PageControl := PageControlAttachments;
 
-  Memo := AddAttachment(TabSheet, Filename);
+  AddAttachment(TabSheet, Filename);
 
   Result := FFiles[TabSheet.PageIndex];
 end;
@@ -385,12 +390,12 @@ end;
 
 procedure TFrameDocumentFile.Subscribe(const Subscriber: IInterface);
 begin
-
+  // Not implemented in this demo
 end;
 
 procedure TFrameDocumentFile.Unsubscribe(const Subscriber: IInterface);
 begin
-
+  // Not implemented in this demo
 end;
 
 end.

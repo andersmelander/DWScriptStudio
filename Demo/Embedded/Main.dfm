@@ -29,7 +29,6 @@ object FormMain: TFormMain
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ExplicitTop = 280
   end
   object PageControlDocuments: TcxPageControl
     Left = 0
@@ -41,8 +40,6 @@ object FormMain: TFormMain
     Properties.ActivePage = TabSheetDocument1
     Properties.AllowDisabledTabAccess = True
     Properties.CustomButtons.Buttons = <>
-    ExplicitTop = 41
-    ExplicitHeight = 239
     ClientRectBottom = 331
     ClientRectLeft = 4
     ClientRectRight = 631
@@ -50,7 +47,6 @@ object FormMain: TFormMain
     object TabSheetDocument1: TcxTabSheet
       Caption = 'Document1'
       ImageIndex = 0
-      ExplicitHeight = 211
       inline FrameDocument1: TFrameDocument
         Left = 0
         Top = 0
@@ -62,10 +58,8 @@ object FormMain: TFormMain
         Padding.Right = 4
         Padding.Bottom = 4
         TabOrder = 0
-        ExplicitLeft = 132
-        ExplicitTop = 48
-        ExplicitWidth = 189
-        ExplicitHeight = 113
+        ExplicitWidth = 627
+        ExplicitHeight = 307
         inherited PageControlAttachments: TcxPageControl
           Width = 619
           Height = 299
@@ -78,29 +72,26 @@ object FormMain: TFormMain
               HeaderImageIndex = 1
               Hint = 'Execute'
             end>
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 424
-          ExplicitHeight = 334
+          ExplicitWidth = 619
+          ExplicitHeight = 299
           ClientRectBottom = 274
           ClientRectRight = 618
           inherited TabSheetUnit1: TcxTabSheet
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 424
-            ExplicitHeight = 311
+            ExplicitWidth = 617
+            ExplicitHeight = 273
             inherited MemoScript: TMemo
               Width = 617
               Height = 273
-              ExplicitHeight = 274
+              ExplicitWidth = 617
+              ExplicitHeight = 273
             end
           end
           inherited TabSheetUnit2: TcxTabSheet
-            ExplicitWidth = 627
-            ExplicitHeight = 243
             inherited Memo1: TMemo
-              Width = 627
-              Height = 282
+              Width = 617
+              Height = 273
+              ExplicitWidth = 617
+              ExplicitHeight = 273
             end
           end
         end
@@ -123,10 +114,8 @@ object FormMain: TFormMain
         Padding.Right = 4
         Padding.Bottom = 4
         TabOrder = 0
-        ExplicitLeft = 132
-        ExplicitTop = 48
-        ExplicitWidth = 189
-        ExplicitHeight = 113
+        ExplicitWidth = 627
+        ExplicitHeight = 307
         inherited PageControlAttachments: TcxPageControl
           Width = 619
           Height = 299
@@ -139,59 +128,62 @@ object FormMain: TFormMain
               HeaderImageIndex = 1
               Hint = 'Execute'
             end>
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 424
-          ExplicitHeight = 334
+          ExplicitWidth = 619
+          ExplicitHeight = 299
           ClientRectBottom = 274
           ClientRectRight = 618
           inherited TabSheetUnit1: TcxTabSheet
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 424
-            ExplicitHeight = 311
+            Caption = 'TestExternals.pas'
+            ExplicitWidth = 617
+            ExplicitHeight = 273
             inherited MemoScript: TMemo
               Width = 617
               Height = 273
               Lines.Strings = (
-                'unit Unit1;'
+                'unit TestExternals;'
                 ''
                 'uses'
-                '  System.UI.Dialogs;'
+                '  ImportExternals;'
                 ''
-                'procedure Test(const Msg: string);'
+                'for var i := 0 to 3 do'
                 'begin'
-                '  ShowMessage(Msg);'
+                '  Whoop(0);'
+                '  Sleep(100);'
                 'end;'
                 ''
-                'begin'
-                '  Test('#39'blah'#39');'
-                'end;')
+                'MyMessageBox(0, '#39'Are You Not Entertained?'#39', '#39'Whoopey!'#39', 3);')
               ExplicitWidth = 617
               ExplicitHeight = 273
             end
           end
           inherited TabSheetUnit2: TcxTabSheet
-            ExplicitHeight = 309
+            Caption = 'ImportExternals.pas'
             inherited Memo1: TMemo
-              Width = 627
-              Height = 282
+              Width = 617
+              Height = 273
               Lines.Strings = (
-                'unit Unit2;'
+                'unit ImportExternals;'
                 ''
-                'uses'
-                '  Unit1;'
+                '// BOOL WINAPI MessageBeep(_In_ UINT uType);'
+                
+                  'function Whoop(a: DWORD): BOOL; external "MessageBeep@user32.dll' +
+                  '"; stdcall;'
                 ''
-                'begin'
-                '  Test('#39'blah blah'#39');'
-                'end;')
-              ExplicitWidth = 627
-              ExplicitHeight = 282
+                
+                  '// int WINAPI MessageBox(_In_opt_ HWND hWnd, _In_opt_ LPCTSTR lp' +
+                  'Text, _In_opt_ LPCTSTR lpCaption, _In_ UINT uType);'
+                
+                  'function MyMessageBox(HWND: DWORD; const Text: string; const Cap' +
+                  'tion: string; Kind: DWORD): DWORD; external '
+                '"MessageBoxW@user32.dll"; stdcall;')
+              ExplicitWidth = 617
+              ExplicitHeight = 273
             end
           end
         end
         inherited ImageListSmall: TcxImageList
           FormatVersion = 1
+          DesignInfo = 1966468
         end
       end
     end
