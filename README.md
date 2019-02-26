@@ -61,12 +61,12 @@ DWScriptStudio has been tested with the following versions:
 
 The core DWScriptStudio editor/debugger functionality requires the following 3rd party libraries:
 
-* DWScript (*)
-* Developer Express VCL (*)
-* SynEdit (*)
-* Drag and Drop Component Suite (*)
+* [DWScript](https://bitbucket.org/egrange/dwscript/src) (*)
+* [Developer Express VCL](https://www.devexpress.com/products/vcl/) (*)
+* [SynEdit](https://github.com/SynEdit/SynEdit) (*) (included)
+* [Drag and Drop Component Suite](https://github.com/DelphiPraxis/The-Drag-and-Drop-Component-Suite-for-Delphi) (*) (included)
+* [Synopse mORMot](https://github.com/DelphiPraxis/The-Drag-and-Drop-Component-Suite-for-Delphi) (partial, included)
 * Various libs by Anders Melander (included)
-* Synopse
 
 (*) Design time packages must be installed in the Delphi IDE before the debugger forms can be opened in the Delphi IDE.
 
