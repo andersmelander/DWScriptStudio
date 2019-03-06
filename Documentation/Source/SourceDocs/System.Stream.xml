@@ -1,0 +1,60 @@
+﻿<?xml version="1.0"?>
+<doc><members><member name="TTextWriter"><remarks>TTextWriter is an abstract base class and can not be instantiated directly.</remarks>
+		</member><member name="TTextReader"><remarks>TTextReader is an abstract base class and can not be instantiated directly.</remarks>
+		</member><member name="TStream"><remarks>TStream is an abstract base class and can not be instantiated directly.</remarks>
+		</member><member name="TFileStream"><summary>
+				<b>TFileStream</b> enables applications to read from and write to a file.</summary>
+		</member><member name="TMemoryStream"><summary>
+				<b>TMemoryStream</b> is a stream that stores its data in memory.</summary>
+		</member><member name="TStringStream"><summary>
+				<b>TStringStream</b> provides file-like access to information stored as a string.</summary>
+		</member><member name="TStreamReader"><summary>
+				<para>Character stream reader.</para>
+				<para>
+					<b>TStreamReader</b> is an implementation of a TTextReader that reads characters from a stream in a given character encoding.</para>
+			</summary>
+			<remarks>This class is functionally identical to the Microsoft .NET class 
+<see href="http://msdn.microsoft.com/en-us/library/system.io.streamreader">StreamReader</see>.
+<br></br>
+			</remarks>
+			<seealso cref="TStreamWriter"></seealso>
+		</member><member name="TStreamWriter"><summary>
+				<para>Writer for characters to stream.</para>
+				<para>
+					<b>TStreamWriter</b> is an implementation of a TTextWriter for writing characters to a stream in a designated encoding.</para>
+			</summary>
+			<remarks>This class is functionally identical to the Microsoft .NET class 
+<b>StreamWriter</b>.</remarks>
+			<seealso cref="TStreamReader"></seealso>
+		</member><member name="TStringReader"><summary>
+				<para>Reader for a string.</para>
+				<para>
+					<b>TStringReader</b> implements a TTextReader that reads from a string.</para>
+			</summary>
+			<remarks>This class is functionally identical to the Microsoft .NET class 
+<b>StringReader</b>.
+<br></br>
+			</remarks>
+			<seealso cref="TStringWriter"></seealso>
+		</member><member name="TStringWriter"><summary>
+				<para>Writer for a string.</para>
+				<para>
+					<b>TStringWriter</b> implements a TTextWriter that writes to a string.</para>
+			</summary>
+			<remarks>This class is functionally identical to the Microsoft .NET class 
+<b>StringWriter</b>.
+<br></br>
+			</remarks>
+			<seealso cref="TStringReader"></seealso>
+		</member><member name="TFileOpenMode.fomCreate"><summary>Create a file with the given name. If a file with the given name exists, open the file in write mode.</summary>
+		</member><member name="TFileOpenMode.fomReadOnly"><summary>Open the file for reading only.</summary>
+		</member><member name="TFileOpenMode.fomReadWrite"><summary>Open the file to modify the current contents rather than replace them.</summary>
+		</member><member name="TFileOpenMode.fomSequentialRead"><summary>Open the file for reading only. Optimize for forward cursor movement.</summary>
+		</member><member name="TSeekOrigin.soBeginning"><summary>Offset is from the beginning of the resource.
+<br></br>Seek moves to the position Offset.
+<br></br>Offset must be &gt;= 0.</summary>
+		</member><member name="TSeekOrigin.soCurrent"><summary>Offset is from the current position in the resource.
+<br></br>Seek moves to Position + Offset.</summary>
+		</member><member name="TSeekOrigin.soEnd"><summary>Offset is from the end of the resource.
+<br></br>Offset must be &lt;= 0 to indicate a number of bytes before the end of the file.</summary>
+		</member></members></doc>

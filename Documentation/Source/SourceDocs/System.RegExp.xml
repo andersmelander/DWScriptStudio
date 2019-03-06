@@ -1,0 +1,37 @@
+﻿<?xml version="1.0"?>
+<doc><members><member name="TRegExpOption.roExplicitCapture"><summary>Specifies that the only valid captures are explicitly named or numbered groups of the form 
+<c>(?&lt;name&gt;…)</c>.
+<br></br>This allows unnamed parentheses to act as noncapturing groups without the syntactic clumsiness of the expression 
+<c>(?:…)</c>.</summary>
+		</member><member name="TRegExpOption.roIgnoreCase"><summary>Specifies case-insensitive matching.</summary>
+		</member><member name="TRegExpOption.roIgnorePatternSpace"><summary>Eliminates unescaped white space from the pattern and enables comments marked with 
+<b>#</b>.
+<br></br>However, the IgnorePatternWhitespace value does not affect or eliminate white space in character classes.</summary>
+		</member><member name="TRegExpOption.roMultiLine"><summary>Multiline mode.
+<br></br>Changes the meaning of 
+<b>^</b> and 
+<b>$</b> so they match at the beginning and end, respectively, of any line, and not just the beginning and end of the entire string.</summary>
+		</member><member name="TRegExpOption.roSingleLine"><summary>Specifies single-line mode.
+<br></br>Changes the meaning of the dot (
+<b>.</b>) so it matches every character (instead of every character except 
+<b>\n</b>).</summary>
+		</member><member name="System.RegExp"><summary>The 
+<b>RegExp</b> unit implements Perl-Compatible Regular Expressions (PCRE).</summary>
+			<remarks>For more information about PCRE, please visit 
+<see href="http://www.regular-expressions.info/pcre.html"/>.
+<br></br>
+				<br></br>For more information about regular expressions in general, please visit 
+<see href="http://www.regular-expressions.info/"/>.</remarks>
+		</member><member name="TRegExpOption"><summary>Options for the rules and capabilities of the regular expression.</summary>
+		</member><member name="TRegularExpression"><summary>Class for handling regular expressions.</summary>
+		</member><member name="TRegExpGroup"><summary>An object containing the results of a match with a portion of the single regular expression.</summary>
+			<remarks>
+				<para>A regular expression pattern can include subpatterns, which are defined by enclosing a portion of the regular expression pattern in parentheses. Every such subpattern captures a subexpression or group.</para>
+				<para>For example, the regular expression pattern (\d{3})-(\d{2})-(\d{4}), which matches social security numbers. The first group consists of the first three digits and is captured by the first portion of the regular expression, (\d{3}). The second group of two digits is captured by the second portion of the regular expression, (\d{2}), and the third by (\d{4}).</para>
+				<para>After a Match of a well-formatted social security number with this regular expression, these three groups can then be retrieved from the TRegExpGroupCollection object that is returned by the TRegExpMatch.Groups property. An individual TRegExpGroup can then be indexed from the Items array. Its contents is kept in the 
+<b>TRegExpGroup</b> Value property.</para>
+			</remarks>
+		</member><member name="TRegExpGroupCollection"><summary>A collection of groups as the result of a match with a single regular expression.</summary>
+		</member><member name="TRegExpMatch"><summary>An object containing the results of a single regular expression match.</summary>
+		</member><member name="TRegExpMatchCollection"><summary>Contains a set of TRegExpMatch instances, each the successful match of a regular expression to the input string.</summary>
+		</member></members></doc>

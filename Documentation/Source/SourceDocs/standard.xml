@@ -1,0 +1,163 @@
+﻿<?xml version="1.0"?>
+<doc>
+	<members>
+		<member name="AnsiCompareText(string,string)"><summary>Compares strings based on the current locale without case sensitivity.
+<br></br>
+				<br></br>AnsiCompareText compares str1 to str2, without case sensitivity. The comparison operation is controlled by the current locale.
+<br></br>
+			</summary>
+			<param name="str1">The first string to be compared.</param>
+			<param name="str2">The second string to be compared.</param>
+			<returns>
+				<list type="table">
+					<listheader>
+						<term>Condition</term>
+						<description>Return value</description>
+					</listheader>
+					<item>
+						<term>str1 = str2</term>
+						<description>Zero.</description>
+					</item>
+					<item>
+						<term>str1 &gt; str2</term>
+						<description>Positive value.</description>
+					</item>
+					<item>
+						<term>str1 &lt; str2</term>
+						<description>Negative value.</description>
+					</item>
+				</list>
+			</returns>
+			<seealso cref="CompareText"></seealso>
+			<seealso cref="AnsiCompareStr"></seealso>
+			<seealso cref="CompareStr"></seealso>
+		</member><member name="AnsiCompareStr(string,string)"><summary>Compares strings based on the current locale with case sensitivity.
+<br></br>
+				<br></br>AnsiCompareStr compares str1 to str2, with case sensitivity. The comparison operation is controlled by the current locale.
+<br></br>
+			</summary>
+			<param name="str1">The first string to be compared.</param>
+			<param name="str2">The second string to be compared.</param>
+			<returns>
+				<list type="table">
+					<listheader>
+						<term>Condition</term>
+						<description>Return value</description>
+					</listheader>
+					<item>
+						<term>str1 = str2</term>
+						<description>Zero.</description>
+					</item>
+					<item>
+						<term>str1 &gt; str2</term>
+						<description>Positive value.</description>
+					</item>
+					<item>
+						<term>str1 &lt; str2</term>
+						<description>Negative value.</description>
+					</item>
+				</list>
+			</returns>
+			<remarks>
+				<note type="note">Most locales consider lowercase characters to be less than the corresponding uppercase characters. This is in contrast to ASCII order, in which lowercase characters are greater than uppercase characters. Thus, setting str1 to 'a' and str2 to 'A' causes AnsiCompareStr to return a value less than zero, while 
+<paramref name=" CompareStr "/>, with the same arguments, returns a value greater than zero.</note>
+			</remarks>
+		</member><member name="AnsiLowerCase(string)">
+			<summary>
+				<para>Returns a string that is a copy of the given string converted to lowercase.</para>
+				<para>The conversion uses the current locale.
+<br/>
+				</para>
+			</summary>
+			<param name="str">The string to convert.</param>
+			<returns>Returns a string that is a copy of the given string converted to lowercase.</returns>
+			<seealso cref="AnsiUpperCase"/>
+			<seealso cref="LowerCase"/>
+			<seealso cref="UpperCase"/>
+		</member>
+		<member name="AnsiUpperCase(string)">
+			<summary>Returns a string that is a copy of the given string converted to uppercase.
+<br/>
+				<br/>The conversion uses the current locale.</summary>
+			<param name="str">The string to convert.</param>
+			<returns>Returns a string that is a copy of the given string converted to uppercase.
+<br/>
+			</returns>
+			<seealso cref="AnsiLowerCase"/>
+			<seealso cref="UpperCase"/>
+			<seealso cref="LowerCase"/>
+		</member>
+		<member name="ArcCos(Float)">
+			<summary>Calculates the inverse cosine of a given number.
+<br/>
+			</summary>
+			<param name="v">Value whose inverse cosine is computed.
+<br/>Value must be between -1 and 1, both inclusive.</param>
+			<returns>
+				<para>Returns the inverse cosine of 
+<b>v</b>.</para>
+				<para>The return value is in the range [0..Pi], in radians.</para>
+			</returns>
+			<seealso cref="Cos"/>
+			<seealso cref="ArcCosh"/>
+			<seealso cref="ArcSin"/>
+		</member>
+		<member name="ArcCosh(Float)">
+			<summary>Calculates the inverse hyperbolic cosine of a given number.</summary>
+			<param name="v">Value whose inverse hyperbolic cosine is computed.
+<br/>Value must be greater than or equal to 1.</param>
+			<returns>Returns the inverse hyperbolic cosine of 
+<b>v</b> .
+<br/>The return value is in the range [0..infinity].</returns>
+			<seealso cref="Cosh"/>
+			<seealso cref="ArcCos"/>
+		</member>
+		<member name="ArcSin(Float)">
+			<summary>Calculates the inverse sine of a given number.</summary>
+			<param name="v">Value whose inverse sine is computed.
+<br/>Value must be between -1 and 1, both inclusive.</param>
+			<returns>Returns the inverse sine of 
+<b>v</b>.
+<br/>The return value will be in the range [-Pi/2..Pi/2], in radians.</returns>
+			<seealso cref="Sin"/>
+			<seealso cref="ArcSinh"/>
+			<seealso cref="ArcCos"/>
+		</member>
+		<member name="ArcSinh(Float)">
+			<summary>Calculates the inverse hyperbolic sine of a given number.</summary>
+			<param name="v">Value whose hyperbolic sine is computed.</param>
+			<returns>Returns the inverse hyperbolic sine of 
+<b>v</b>.</returns>
+		</member>
+		<member name="Ceil(Float)"><summary>Rounds a value up toward positive infinity.</summary>
+			<returns>Call Ceil to obtain the lowest integer greater than or equal to 
+<b>v</b>.</returns>
+			<remarks>The absolute value of 
+<b>v</b> must be less than MaxInt.</remarks>
+			<example>
+				<para>
+					<b>Ceil</b>(-2.8) = -2</para>
+				<para>
+					<b>Ceil</b>(2.8) = 3</para>
+				<para>
+					<b>Ceil</b>(-1.0) = -1</para>
+			</example>
+			<seealso cref="Floor"></seealso>
+		</member><member name="Floor(Float)"><summary>Rounds a value toward negative infinity.</summary>
+			<returns>Call Floor to obtain the highest integer less than or equal to 
+<b>v</b>.</returns>
+			<remarks>The absolute value of 
+<b>v</b> must be less than MaxInt.</remarks>
+			<example>
+				<b>Floor</b>(-2.8) = -3
+<br></br>
+				<br></br>
+				<b>Floor</b>(2.8) = 2
+<br></br>
+				<br></br>
+				<b>Floor</b>(-1.0) = -1
+<br></br>
+			</example>
+			<seealso cref="Ceil"></seealso>
+		</member></members>
+</doc>
