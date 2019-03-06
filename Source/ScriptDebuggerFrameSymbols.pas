@@ -1,4 +1,4 @@
-unit ScriptDebuggerFrameSymbols;
+﻿unit ScriptDebuggerFrameSymbols;
 
 (*
  * Copyright © 2011 Brian Frost
@@ -275,8 +275,9 @@ var
   FuncSymbol: TFuncSymbol;
   ChildVisibilities: TdwsVisibilities;
   SymClass: TClass;
+{$ifdef OLD_DWSCRIPT}
   i: integer;
-{$ifndef OLD_DWSCRIPT}
+{$else OLD_DWSCRIPT}
   UnitSymbol: TUnitSymbol;
 {$endif OLD_DWSCRIPT}
 begin

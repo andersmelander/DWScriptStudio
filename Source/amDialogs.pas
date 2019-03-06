@@ -1,4 +1,4 @@
-unit amDialogs;
+﻿unit amDialogs;
 
 (*
  * Copyright © 2012 Anders Melander
@@ -67,6 +67,7 @@ function MessageTaskDlgEx(const Instruction, Msg: string; DlgType: TMsgDlgType; 
 function MessageTaskDlgEx(const Instruction, Msg: string; DlgType: TMsgDlgType; Buttons: TMsgDlgButtons; var Suppress: boolean; HelpCtx: Longint = -1): Integer; overload;
 function MessageTaskDlgEx(const Instruction, Msg: string; DlgType: TMsgDlgType; Buttons: TMsgDlgButtons; DefaultButton: TMsgDlgBtn; var Suppress: boolean; HelpCtx: Longint = -1): Integer; overload;
 function MessageTaskDlgEx(const Instruction, Msg: string; DlgType: TMsgDlgType; Buttons: TMsgDlgButtons; DefaultButton: TMsgDlgBtn; HelpCtx: Longint = -1): Integer; overload;
+
 function LoadSuppressSetting(const Key, Name: string): boolean;
 procedure SaveSuppressSetting(const Key, Name: string);
 

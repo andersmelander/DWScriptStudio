@@ -1,4 +1,4 @@
-unit ScriptModule;
+﻿unit ScriptModule;
 
 (*
  * Copyright © 2012 Anders Melander
@@ -315,7 +315,7 @@ type
   TScriptClassTypeMap = TDictionary<TClass, string>;
 
 
-  TDataModuleScriptService = class(TDataModule, IScriptService)
+  TDataModuleScriptService = class(TDataModule, IScriptService, IScriptDebuggerHost)
     DelphiWebScript: TDelphiWebScript;
     dwsComConnector1: TdwsComConnector;
     dwsJSONLibModule1: TdwsJSONLibModule;
@@ -368,8 +368,11 @@ type
 {$endif FEATURE_SCRIPT_BUNDLE}
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    procedure OnBeforeExecution(const Execution: IdwsProgramExecution);
-    procedure OnDebuggerClose(Sender: TObject);
+  protected
+    // IScriptDebuggerHost
+    function GetDelphiWebScript: TDelphiWebScript;
+    procedure NotifyExecution(const ScriptDebugger: IScriptDebugger; const Execution: IdwsProgramExecution; Notification: TExecutionNotification);
+    procedure NotifyClose(const ScriptDebugger: IScriptDebugger);
     // IScriptService
     procedure RegisterModule(const Module: IScriptModule);
     procedure UnregisterModule(const Module: IScriptModule);
@@ -457,13 +460,6 @@ const
   ScriptContentProtectionCipher = 0;
 {$endif FEATURE_COPY_PROTECT}
 
-{$ifdef FEATURE_SCRIPT_BUNDLE}
-  sScriptBundleComment = 'Script Bundle';
-  sScriptBundleManifestFilename = 'manifest.xml';
-  sScriptBundleManifestTag = 'script.bundle';
-  cScriptBundleManifestVersion = 0;
-{$endif FEATURE_SCRIPT_BUNDLE}
-
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -516,7 +512,6 @@ uses
   amStreamAdapter,
   amMSXMLUtils,
 
-  ScriptDebuggerMain,
   ScriptFileSystemAPI,
   ScriptFileSystem,
   ScriptHostFileSystem,
@@ -530,7 +525,8 @@ uses
 {$else FEATURE_LICENSING}
   ScriptLicenseServiceAPI,
 {$endif FEATURE_LICENSING}
-  ScriptExternalFunctionManager;
+  ScriptExternalFunctionManager,
+  ScriptDebuggerSettings;
 
 
 // -----------------------------------------------------------------------------
@@ -1743,8 +1739,7 @@ end;
 
 function TDataModuleScriptService.DoDebug(const ADocument: IScriptHostDocument; AItem: TObject; const ScriptProvider: IScriptProvider; const AExecution: IdwsProgramExecution; Messages: TdwsMessageList; MsgIndex: integer): boolean;
 var
-  DebuggerOptions: TDwsIdeOptions;
-  DebuggerForm: TFormScriptDebugger;
+  ScriptDebuggerSetup: IScriptDebuggerSetup;
   Environment: IdwsEnvironment;
   EditPage: IScriptDebugEditPage;
 begin
@@ -1765,55 +1760,46 @@ begin
     // Create debugger via Application.CreateForm if user has specified
     // that debugger will be the main form.
     if (ScriptHostApplication = nil) and (ScriptDebuggerIsApplication) and (Application.MainForm = nil) then
-    begin
-      Application.CreateForm(TFormScriptDebugger, DebuggerForm);
-      FDebugger := IScriptDebugger(DebuggerForm);
-    end else
-    begin
-      FDebugger := TFormScriptDebugger.Create(nil);
-      DebuggerForm := TFormScriptDebugger(FDebugger);
-    end;
+      FDebugger := CreateScriptDebugger(Self, True)
+    else
+      FDebugger := CreateScriptDebugger(Self, False);
 
-    DebuggerOptions := DebuggerForm.Options;
-    DebuggerOptions.ScriptFolder := '\';
-    DebuggerForm.Options := DebuggerOptions;
+    if (not Supports(FDebugger, IScriptDebuggerSetup, ScriptDebuggerSetup)) then
+      raise Exception.Create('Required interface not supported by script debugger: IScriptDebuggerSetup');
 
-    DebuggerForm.Script := DelphiWebScript;
-    DebuggerForm.Environment := Environment;
-    DebuggerForm.OnBeforeExecution := OnBeforeExecution;
-    DebuggerForm.OnDebuggerClose := OnDebuggerClose;
-
+    ScriptDebuggerSetup.SetEnvironment(Environment);
 
     FDebuggerFileSystems := CreateContext(ADocument, AItem, True) as IScriptContextFileSystems;
 
-    DebuggerForm.Script.Config.RuntimeFileSystem := FDebuggerFileSystems.RuntimeFileSystem;
-    DebuggerForm.Script.Config.CompileFileSystem := FDebuggerFileSystems.CompilerFileSystem;
+    DelphiWebScript.Config.RuntimeFileSystem := FDebuggerFileSystems.RuntimeFileSystem;
+    DelphiWebScript.Config.CompileFileSystem := FDebuggerFileSystems.CompilerFileSystem;
 
-    EditPage := DebuggerForm.EditorPageAddNew(ScriptProvider);
+    EditPage := FDebugger.EditorPageAddNew(ScriptProvider);
   end else
   begin
-    DebuggerForm := TFormScriptDebugger(FDebugger);
+    if (not Supports(FDebugger, IScriptDebuggerSetup, ScriptDebuggerSetup)) then
+      raise Exception.Create('Required interface not supported by script debugger: IScriptDebuggerSetup');
 
     if (ScriptProvider <> nil) then
-      EditPage := DebuggerForm.EditorPageAddNew(ScriptProvider);
+      EditPage := FDebugger.EditorPageAddNew(ScriptProvider);
   end;
 
   //EditPage.CanClose := False;
 
   if (AExecution <> nil) then
   begin
-    Result := DebuggerForm.AttachAndExecute(AExecution);
+    Result := ScriptDebuggerSetup.AttachAndExecute(AExecution);
   end else
   begin
     if (Messages <> nil) then
     begin
-      DebuggerForm.AddMessageInfo(Messages, MsgIndex);
+      FDebugger.AddMessageInfo(Messages, MsgIndex);
 
       if (MsgIndex <> -1) and (Messages.Msgs[MsgIndex] is TScriptMessage) then
         FDebugger.ViewScriptPos(TScriptMessage(Messages.Msgs[MsgIndex]).ScriptPos);
     end;
 
-    Result := DebuggerForm.Execute;
+    Result := ScriptDebuggerSetup.Execute;
   end;
 end;
 
@@ -2186,36 +2172,42 @@ end;
 
 // -----------------------------------------------------------------------------
 
-procedure TDataModuleScriptService.OnBeforeExecution(const Execution: IdwsProgramExecution);
+function TDataModuleScriptService.GetDelphiWebScript: TDelphiWebScript;
+begin
+  Result := DelphiWebScript;
+end;
+
+procedure TDataModuleScriptService.NotifyExecution(const ScriptDebugger: IScriptDebugger; const Execution: IdwsProgramExecution; Notification: TExecutionNotification);
 var
   Document: IScriptHostDocument;
   Item: TObject;
 begin
-  // Set up context
-  if (ScriptHostApplication <> nil) and (ScriptHostApplication.ActiveDocument <> nil) then
-    Document := ScriptHostApplication.ActiveDocument
-  else
-    Document := nil;
+  if (Notification = senStarted) then
+  begin
+    // Set up context
+    if (ScriptHostApplication <> nil) and (ScriptHostApplication.ActiveDocument <> nil) then
+      Document := ScriptHostApplication.ActiveDocument
+    else
+      Document := nil;
 
-  if (Document <> nil) then
-    Item := Document.ActiveItem
-  else
-    Item := nil;
+    if (Document <> nil) then
+      Item := Document.ActiveItem
+    else
+      Item := nil;
 
-  Execution.Environment := TScriptEnvironment.Create(ScriptHostApplication, Document, Item);
+    Execution.Environment := TScriptEnvironment.Create(ScriptHostApplication, Document, Item);
+  end;
 end;
 
-// -----------------------------------------------------------------------------
-
-procedure TDataModuleScriptService.OnDebuggerClose(Sender: TObject);
+procedure TDataModuleScriptService.NotifyClose(const ScriptDebugger: IScriptDebugger);
 begin
 //  FDocument := nil;
 //  FItem := nil;
 
   if (FDebugger <> nil) then
   begin
-    TFormScriptDebugger(FDebugger).Script.Config.RuntimeFileSystem := nil;
-    TFormScriptDebugger(FDebugger).Script.Config.CompileFileSystem := nil;
+    DelphiWebScript.Config.RuntimeFileSystem := nil;
+    DelphiWebScript.Config.CompileFileSystem := nil;
     FDebugger := nil;
     FDebuggerFileSystems := nil;
   end;

@@ -1,4 +1,4 @@
-unit amEnvironment;
+﻿unit amEnvironment;
 
 (*
  * Copyright © 2008 Anders Melander
@@ -42,6 +42,7 @@ var
 implementation
 
 uses
+  IOUtils,
   StrUtils,
   Windows,
   SysUtils,
@@ -265,13 +266,30 @@ begin
   // Values that cannot be customized by the user
   if (sevStatic in Include) then
   begin
+    Proc('AppInstall', TPath.GetDirectoryName(ParamStr(0)));
+    Proc('AppName', TPath.GetFileNameWithoutExtension(ParamStr(0)));
+
     Proc('CompilerVersion', FloatToStr(System.CompilerVersion));
+    Proc('Documents', TPath.GetDocumentsPath);
+    Proc('SharedDocuments', TPath.GetSharedDocumentsPath);
+    Proc('Library', TPath.GetLibraryPath);
+    Proc('Downloads', TPath.GetDownloadsPath);
+    Proc('SharedDownloads', TPath.GetSharedDownloadsPath);
+    // Already provided by Windows:
+    // "Public"
+    // "Temp"
+    // "UserProfile"
+    // "AllUsersProfile"
+    // "ProgramData"
+    // "HomePath"
+    // "LocalAppData"
+    // "AppData"
   end;
 
   // Values that can be customized by the user
   if (sevCustomizable in Include) then
   begin
-    Proc('blah', 'blahblah');
+//    Proc('FOLDER_SCRIPT', PathCombinePath(TPath.GetDirectoryName(ParamStr(0)), '.\script'));
   end;
 end;
 

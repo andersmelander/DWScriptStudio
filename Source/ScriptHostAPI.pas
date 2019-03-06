@@ -24,9 +24,6 @@ uses
 const
   sScriptAttachmentFilenamePrefix = '';//'\';
 
-var
-  sScriptHostConditionalDefine: string = '';
-
 // -----------------------------------------------------------------------------
 //
 //              IScriptHostAlertWindow
@@ -214,6 +211,11 @@ var
 
 implementation
 
+// -----------------------------------------------------------------------------
+//
+//              ScriptHostApplication
+//
+// -----------------------------------------------------------------------------
 var
   FScriptHostApplication: IScriptHostApplication = nil;
 
@@ -226,6 +228,10 @@ function ScriptHostApplication: IScriptHostApplication;
 begin
   Result := FScriptHostApplication;
 end;
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 initialization
 finalization

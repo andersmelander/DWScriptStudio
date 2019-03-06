@@ -1,4 +1,4 @@
-unit ScriptDocBuilder;
+﻿unit ScriptDocBuilder;
 
 (*
  * Copyright © 2012 Anders Melander
@@ -41,6 +41,7 @@ type
     constructor Create(const AProgram: IdwsProgram);
 
     procedure Build(const ADirectory: string); virtual;
+    procedure Compile(const ADirectory: string); virtual;
   end;
 
   TScriptDocumentationBuilder = class(TScriptCustomDocBuilder)
@@ -62,6 +63,8 @@ type
     FFirstUnit: boolean;
     FLastSection: TSectionType;
     FReservedWords: TStringList;
+    FProjectName: string;
+    FTitle: string;
   protected
     function EnumerateInterface(const item: TResolvedInterface) : TSimpleHashAction;
     procedure StartSection(Writer: TStreamWriter; Section: TSectionType);
@@ -74,21 +77,30 @@ type
     procedure BuildMethod(Writer: TStreamWriter; ClassSymbol: TCompositeTypeSymbol; MethodSymbol: TFuncSymbol);
     procedure BuildProperty(Writer: TStreamWriter; ClassSymbol: TCompositeTypeSymbol; PropertySymbol: TPropertySymbol);
   public
-    constructor Create(const AProgram: IdwsProgram);
+    constructor Create(const AProgram: IdwsProgram; const AProjectName: string = 'DWScript'; const ATitle: string = 'DWScript RTL');
     destructor Destroy; override;
 
     procedure Build(const ADirectory: string); override;
+    procedure Compile(const ADirectory: string); override;
   end;
 
 implementation
 
 uses
+  Windows,
   Variants,
   SysUtils,
   IOUtils,
+  IniFiles,
+  XMLDoc,
+  XMLIntf,
+  ComObj, // GetRegStringValue
+  Generics.Defaults,
   dwsFunctions,
   dwsJSON,
-  amMSXMLUtils;
+  amPath,
+  amMSXMLUtils,
+  amShell;
 
 procedure TScriptCustomDocBuilder.BuildUnit(UnitSymbol: TUnitSymbol);
 begin
@@ -137,6 +149,11 @@ begin
   // Build unit list
   for Symbol in ATable do
     LoadSymbol(Symbol, nil);
+end;
+
+procedure TScriptCustomDocBuilder.Compile(const ADirectory: string);
+begin
+  // Do nothing by default
 end;
 
 constructor TScriptCustomDocBuilder.Create(const AProgram: IdwsProgram);
@@ -340,7 +357,11 @@ end;
 
 procedure TScriptSourceBuilder.Build(const ADirectory: string);
 begin
-  FProjectWriter := TStreamWriter.Create(ADirectory + 'script_rtl.dpr', False, TEncoding.UTF8);
+  // Make sure folder exist
+  if (not TDirectory.Exists(ADirectory)) then
+    TDirectory.CreateDirectory(ADirectory);
+
+  FProjectWriter := TStreamWriter.Create(ADirectory + FProjectName + '.dpr', False, TEncoding.UTF8);
   try
     FProjectWriter.WriteLine('program Script;');
     FProjectWriter.WriteLine;
@@ -358,6 +379,87 @@ begin
   finally
     FProjectWriter.Free;
   end;
+end;
+
+procedure TScriptSourceBuilder.Compile(const ADirectory: string);
+var
+  Filename: string;
+  Ini: TIniFile;
+  XMLDoc: IXMLDocument;
+  XMLRootNode: IXMLNode;
+  XMLNode: IXMLNode;
+  XMLChildNode: IXMLNode;
+  HelpCompiler: string;
+begin
+  if (not TDirectory.Exists(ADirectory)) then
+    exit;
+
+  Filename := PathCombinePath(ADirectory, 'docinsight.ini');
+  if (not TFile.Exists(Filename)) then
+  begin
+    Ini := TIniFile.Create(Filename);
+    try
+      Ini.WriteString('Documentation', 'Style', 'ExternalDoc');
+      Ini.WriteString('Repository]', 'SourceDocsDir', 'SourceDocs');
+    finally
+      Ini.Free;
+    end;
+  end;
+
+  Filename := PathCombinePath(ADirectory, FProjectName+'.diproj');
+  if (not TFile.Exists(Filename)) then
+  begin
+    XMLDoc := TXMLDocument.Create(nil);
+    XMLDoc.Active := True;
+
+    XMLRootNode := XMLDoc.AddChild('Project');
+    XMLRootNode.Attributes['Version'] := '1.0';
+    XMLRootNode.ChildValues['Title'] := FTitle;
+    XMLRootNode.ChildValues['Author'] := 'Anders Melander';
+    XMLRootNode.ChildValues['Email'] := '';
+    XMLRootNode.ChildValues['Copyright'] := '';
+    XMLRootNode.ChildValues['Comment'] := '';
+    XMLRootNode.ChildValues['Language'] := 1033;
+    XMLRootNode.ChildValues['Charset'] := 1;
+    XMLRootNode.ChildValues['HeaderHtml'] := '<%TopicTitle%>';
+    XMLRootNode.ChildValues['FooterHtml'] := 'Powered by <a href="https://bitbucket.org/egrange/dwscript" target="_blank">DWScript</a>';
+    XMLRootNode.ChildValues['CustomDefines'] := '';
+    XMLRootNode.ChildValues['ShowImplementationSection'] := False;
+    XMLRootNode.ChildValues['ShowPrivateMembers'] := False;
+    XMLRootNode.ChildValues['ShowInheritedMembers'] := True;
+    XMLRootNode.ChildValues['ShowPropertyAccessors'] := False;
+    XMLRootNode.ChildValues['FileNamePolicy'] := 0;
+    XMLRootNode.ChildValues['CompilerVersion'] := 13;
+    XMLRootNode.ChildValues['TargetPlatform'] := 0;
+    XMLRootNode.ChildValues['FileNamePolicy'] := 0;
+
+    XMLNode := XMLRootNode.AddChild('Sources');
+    XMLNode.ChildValues['Source'] := FProjectName+'.dpr';
+
+    XMLNode := XMLRootNode.AddChild('Outputs');
+
+    XMLChildNode := XMLNode.AddChild('Output');
+    XMLChildNode.Attributes['Type'] := 'HTML';
+    XMLChildNode.ChildValues['Active'] := True;
+    XMLChildNode.ChildValues['OutputDirectory'] := '..\Output\Html';
+
+    XMLChildNode := XMLNode.AddChild('Output');
+    XMLChildNode.Attributes['Type'] := 'CHM';
+    XMLChildNode.ChildValues['Active'] := True;
+    XMLChildNode.ChildValues['OutputFileName'] := '..\Output\CHM\'+FProjectName+'.chm';
+
+    XMLDoc.SaveToFile(Filename);
+  end;
+
+  HelpCompiler := GetRegStringValue('\TypeLib\{6824E8A6-99B6-4543-8C26-D7CACBA75B26}\2.0\0\win32', '', HKEY_CLASSES_ROOT);
+  if (HelpCompiler = '') then
+    raise Exception.Create('Documentation Insight not installed');
+
+  HelpCompiler := PathCombinePath(TPath.GetDirectoryName(HelpCompiler), 'DocInsight.exe');
+  if (not TFile.Exists(HelpCompiler)) then
+    raise Exception.Create('Documentation Insight command line tool (DocInsight.exe) not found');
+
+  Shell.Execute(HelpCompiler, Filename + ' -doc', nil, True);
 end;
 
 procedure TScriptSourceBuilder.BuildComposite(Writer: TStreamWriter; UnitSymbol: TSymbol; CompositeSymbol: TCompositeTypeSymbol);
@@ -388,6 +490,7 @@ var
   First: boolean;
   WriteScope: boolean;
   s: string;
+  DefaultVisibility: TdwsVisibility;
 begin
   if (CompositeSymbol is THelperSymbol) then
     Name := SanitizeName(THelperSymbol(CompositeSymbol).ForType.Name)+'Helper'
@@ -407,7 +510,12 @@ begin
 
   Name := SanitizeIdentifier(Name);
 
+  // "record helper for array of *" breaks DocInsight so we introduce an intermediate type
+  if (CompositeSymbol is THelperSymbol) and (THelperSymbol(CompositeSymbol).ForType is TArraySymbol) then
+    Writer.WriteLine(Format('  T%sArray = %s;', [THelperSymbol(CompositeSymbol).ForType.Typ.Name, THelperSymbol(CompositeSymbol).ForType.Description]));
+
   WriteScope := True;
+  DefaultVisibility := cvMagic;
   Writer.Write('  '+Name+' = ');
   if (CompositeSymbol is THelperSymbol) then
   begin
@@ -415,9 +523,11 @@ begin
       Writer.Write('class ')
     else
       Writer.Write('record ');
-    s := THelperSymbol(CompositeSymbol).ForType.Name;
-    if (s = 'array of string') then
-      s := 'TStringArray';
+    // "record helper for array of *" breaks DocInsight so we introduce an intermediate type
+    if (THelperSymbol(CompositeSymbol).ForType is TArraySymbol) then
+      s := Format('T%sArray', [THelperSymbol(CompositeSymbol).ForType.Typ.Name])
+    else
+      s := THelperSymbol(CompositeSymbol).ForType.Name;
     Writer.Write('helper for ' + s);
   end else
   if (CompositeSymbol is TStructuredTypeSymbol) then
@@ -445,8 +555,10 @@ begin
       //  Writer.Write(' abstract;');
     end else
     if (CompositeSymbol is TRecordSymbol) then
-      Writer.Write('record')
-    else
+    begin
+      Writer.Write('record');
+      DefaultVisibility := cvPublic;
+    end else
     if (CompositeSymbol is TInterfaceSymbol) then
     begin
       Writer.Write('interface');
@@ -456,7 +568,7 @@ begin
   end;
   Writer.WriteLine;
 
-  First := True;
+  First := (DefaultVisibility <> cvProtected);
   // Fields
   for Symbol in CompositeSymbol.Members do
     if (Symbol is TFieldSymbol) then
@@ -495,7 +607,7 @@ begin
       end;
     end;
 
-  First := True;
+  First := (DefaultVisibility <> cvPublic);
   for Symbol in CompositeSymbol.Members do
     if (Symbol is TFieldSymbol) then
     begin
@@ -539,6 +651,9 @@ var
   First: boolean;
   i: integer;
   s: string;
+const
+  sMaxInt = '2147483647';
+  sMaxInt64 = '9223372036854775807';
 begin
 {
   Writer.WriteLine('(*');
@@ -563,9 +678,9 @@ begin
 
   if (MethodSymbol.IsDeprecated) then
   begin
-    Writer.Write(Indent+'/// <remarks><note type="warning">This method has been deprecated.');
+    Writer.Write(Indent+Format('/// <remarks><note type="warning">%s has been deprecated.', [MethodSymbol.Name]));
     if (MethodSymbol.DeprecatedMessage <> '') then
-    Writer.Write('<br />'+MethodSymbol.DeprecatedMessage+'.');
+      Writer.Write('<br />'+MethodSymbol.DeprecatedMessage+'.');
     Writer.WriteLine('</note></remarks>');
   end;
 
@@ -618,6 +733,12 @@ begin
       end else
       begin
         s := MethodSymbol.Params[i].Description;
+        // Replace common constant default values with their constant representation
+        if (MethodSymbol.Params[i] is TParamSymbolWithDefaultValue) and (TParamSymbolWithDefaultValue(MethodSymbol.Params[i]).Typ is TBaseIntegerSymbol) then
+        begin
+          s := StringReplace(s, IntToStr(MaxInt), 'MaxInt', []);
+          s := StringReplace(s, sMaxInt64, 'MaxInt', []);
+        end;
         if (FReservedWords.IndexOf(MethodSymbol.Params[i].Name) <> -1) then
           s := 'A'+s;
       end;
@@ -685,6 +806,40 @@ begin
 *)
 end;
 
+type
+  TSymbolOrder = (soEnum, soSet, soArray, soAlias, soComposite, soMeta, soFunction, soValue, soUnknown {must be last});
+
+function GetSymbolOrder(Symbol: TSymbol): TSymbolOrder;
+begin
+  Result := soUnknown;
+  if (Symbol is TValueSymbol) then
+    Result := soValue
+  else
+  if (Symbol is TTypeSymbol) then
+  begin
+    if (Symbol is TCompositeTypeSymbol) then
+      Result := soComposite
+    else
+    if (Symbol is TFuncSymbol) then
+      Result := soFunction
+    else
+    if (Symbol is TEnumerationSymbol) then
+      Result := soEnum
+    else
+    if (Symbol is TAliasSymbol) then
+      Result := soAlias
+    else
+    if (Symbol is TStructuredTypeMetaSymbol) then
+      Result := soMeta
+    else
+    if (Symbol is TArraySymbol) then
+      Result := soArray
+    else
+    if (Symbol is TSetOfSymbol) then
+      Result := soSet;
+  end;
+end;
+
 procedure TScriptSourceBuilder.BuildUnit(UnitSymbol: TSymbol; ATable: TSymbolTable; const UnitName: string);
 var
   IsDeprecated: boolean;
@@ -694,6 +849,20 @@ var
   First: boolean;
   Dependencies: TList<TSymbol>;
   s: string;
+  Symbols: TList<TSymbol>;
+  CompositeSymbols: TList<TCompositeTypeSymbol>;
+  CompositeSymbol: TCompositeTypeSymbol;
+  TypeIndex, DependentIndex: integer;
+  MovedAny: boolean;
+  DependencyLoopCount: integer;
+
+  function IndexOf(List: TList<TSymbol>; Symbol: TSymbol): integer;
+  begin
+    Result := List.Count-1;
+    while (Result >= 0) and (List[Result] <> Symbol) do
+      Dec(Result);
+  end;
+
 begin
   if (ATable.Count = 0) then
     exit;
@@ -726,7 +895,7 @@ begin
   try
     if (IsDeprecated) then
     begin
-      Writer.Write('/// <remarks><note type="warning">This unit has been deprecated.');
+      Writer.Write(Format('/// <remarks><note type="warning">The %s unit has been deprecated.', [UnitName]));
       if (DeprecatedMessage <> '') then
         Writer.Write('<br />'+DeprecatedMessage+'.');
       Writer.WriteLine('</note></remarks>');
@@ -774,99 +943,164 @@ begin
       Dependencies.Free;
     end;
 
-    // forward declarations
-    First := True;
-    for Symbol in ATable do
-      if (Symbol is TClassSymbol) then
+    //  Sort symbols to resolve the most ordinary dependencies
+    Symbols := TList<TSymbol>.Create(TComparer<TSymbol>.Construct(function(const Left, Right: TSymbol): Integer
       begin
-        if (Symbol.Name = 'TObject') or (Symbol.Name = 'Object') then
-          continue;
+        Result := Ord(GetSymbolOrder(Left))-Ord(GetSymbolOrder(Right));
+      end));
+    try
+      for Symbol in ATable do
+        Symbols.Add(Symbol);
 
-        if (First) then
+      Symbols.Sort;
+
+      // Now try to resolve simple dependencies within composite objects
+      CompositeSymbols := TList<TCompositeTypeSymbol>.Create;
+      try
+        for Symbol in Symbols do
+          if (Symbol is TCompositeTypeSymbol) then
+            CompositeSymbols.Add(TCompositeTypeSymbol(Symbol));
+
+        DependencyLoopCount := 0;
+        MovedAny := True;
+        while (DependencyLoopCount < 3) and (MovedAny) do
         begin
-          Writer.WriteLine('// Forward declarations');
-          StartSection(Writer, stType)
-        end;
-        First := False;
-        s := SanitizeIdentifier(Symbol.Name);
-        Writer.WriteLine('  '+s+' = class;');
-      end;
-    if (not First) then
-      Writer.WriteLine;
+          MovedAny := False;
+          for CompositeSymbol in CompositeSymbols do
+          begin
+            for Symbol in CompositeSymbol.Members do
+              if (Symbol.Typ <> CompositeSymbol) and (Symbol.Typ is TCompositeTypeSymbol) and (CompositeSymbols.Contains(TCompositeTypeSymbol(Symbol.Typ))) then
+              begin
+                // We have a dependency
+                // Move dependee so it's declared after the dependency
+                // Note: We cannot use the normal TList<T>.IndexOf because we have supplied a custom comparer which doesn't do
+                // what we need here.
+                TypeIndex := IndexOf(Symbols, CompositeSymbol);
+                DependentIndex := IndexOf(Symbols, Symbol.Typ);
+                if (TypeIndex < DependentIndex) then
+                begin
+                  Symbols.Delete(TypeIndex); // Index of Symbol.Typ is now DependentIndex-1
+                  Symbols.Insert(DependentIndex, CompositeSymbol);
+                  //Symbols.Move(TypeIndex, DependentIndex);
+                  MovedAny := True;
+                end;
+              end;
 
-    for Symbol in ATable do
-    begin
-      if (Symbol is TValueSymbol) then
-        BuildValue(Writer, UnitSymbol, TValueSymbol(Symbol))
-      else
-      if (Symbol is TTypeSymbol) then
-      begin
-        if (Symbol is TCompositeTypeSymbol) then
+          end;
+          Inc(DependencyLoopCount);
+        end;
+      finally
+        CompositeSymbols.Free;
+      end;
+
+      // forward declarations
+      First := True;
+      for Symbol in Symbols do
+        if (Symbol is TClassSymbol) then
         begin
           if (Symbol.Name = 'TObject') or (Symbol.Name = 'Object') then
             continue;
 
-          BuildComposite(Writer, UnitSymbol, TCompositeTypeSymbol(Symbol));
-        end else
-        if (Symbol is TFuncSymbol) then
-        begin
-          BuildMethod(Writer, nil, TFuncSymbol(Symbol));
-          StartSection(Writer, stNone);
-        end else
-        if (Symbol is TEnumerationSymbol) then
-        begin
-          StartSection(Writer, stType);
-          Writer.WriteLine('  '+Symbol.Name + ' = ' + Symbol.Description + ';');
-        end else
-        if (Symbol is TAliasSymbol) then
-        begin
-          StartSection(Writer, stType);
-          Writer.WriteLine('  '+Symbol.Description + ' = ' + Symbol.BaseType.Name + ';');
-        end else
-        if (Symbol is TStructuredTypeMetaSymbol) then
-        begin
-          StartSection(Writer, stType);
-          Writer.WriteLine('  '+Symbol.Name + ' = ' + Symbol.Description + ';');
-        end else
-        if (Symbol is TArraySymbol) then
-        begin
-          StartSection(Writer, stType);
-          s:= SanitizeTypeName(Symbol);
-          Writer.WriteLine('  ' + s + ' = ' + Symbol.Description + ';');
-        end else
-        if (Symbol is TSetOfSymbol) then
-        begin
-          StartSection(Writer, stType);
-          Writer.WriteLine('  '+Symbol.Name + ' = set of ' + Symbol.Typ.Name + ';')
-        end else
-        if (Symbol is TUnitSymbol) then
-        begin
-          //  Ignore
-        end else
-        begin
-          if (Symbol is TAnyTypeSymbol) then
-          begin
-            Writer.WriteLine('  // Ignored type: '+Symbol.ClassName + ' = ' + Symbol.Description)
-          end else
-          if (Symbol is TBaseSymbol) then
-          begin
-            Writer.WriteLine('  // Base type: '+Symbol.ClassName + ' = ' + Symbol.Description);
-            if (Symbol is TBaseVariantSymbol) and (Symbol.ClassType <> TBaseVariantSymbol) then
-            begin
-              StartSection(Writer, stType);
-              Writer.WriteLine('  '+Symbol.Name + ' = Variant;');
-            end;
-          end else
+          if (First) then
           begin
             StartSection(Writer, stType);
-            Writer.WriteLine('  // Unknown type: '+Symbol.ClassName + ' = ' + Symbol.Description);
-            // Writer.WriteLine('  '+Symbol.Name + ' = type Variant;');
-            // Work around for Documentation Insight incorrect handling of distinct type declaration:
-            Writer.WriteLine('  '+Symbol.Name + ' = Variant;');
+            Writer.WriteLine('  // Forward declarations');
           end;
+          First := False;
+          s := SanitizeIdentifier(Symbol.Name);
+          Writer.WriteLine('  '+s+' = class;');
         end;
-      end else
-        Writer.WriteLine('// Not handled: '+Symbol.ClassName + ' = ' + Symbol.Description)
+      if (not First) then
+        Writer.WriteLine;
+
+      for Symbol in Symbols do
+      begin
+        if (Symbol is TValueSymbol) then
+          BuildValue(Writer, UnitSymbol, TValueSymbol(Symbol))
+        else
+        if (Symbol is TTypeSymbol) then
+        begin
+          if (Symbol is TCompositeTypeSymbol) then
+          begin
+            if (Symbol.Name = 'TObject') or (Symbol.Name = 'Object') then
+              continue;
+
+            BuildComposite(Writer, UnitSymbol, TCompositeTypeSymbol(Symbol));
+          end else
+          if (Symbol is TFuncSymbol) then
+          begin
+            BuildMethod(Writer, nil, TFuncSymbol(Symbol));
+            StartSection(Writer, stNone);
+          end else
+          if (Symbol is TEnumerationSymbol) then
+          begin
+            StartSection(Writer, stType);
+            Writer.WriteLine('  '+Symbol.Name + ' = ' + Symbol.Description + ';');
+          end else
+          if (Symbol is TAliasSymbol) then
+          begin
+            StartSection(Writer, stType);
+            Writer.WriteLine('  '+Symbol.Name + ' = ' + Symbol.BaseType.Name + ';');
+          end else
+          if (Symbol is TStructuredTypeMetaSymbol) then
+          begin
+            StartSection(Writer, stType);
+            Writer.WriteLine('  '+Symbol.Name + ' = ' + Symbol.Description + ';');
+          end else
+          if (Symbol is TArraySymbol) then
+          begin
+            StartSection(Writer, stType);
+            s:= SanitizeTypeName(Symbol);
+            if (Symbol is TDynamicArraySymbol) then
+              Writer.WriteLine(Format('  %s = array of %s;', [s, Symbol.Typ.Name]))
+            else
+            if (Symbol is TStaticArraySymbol) then
+              Writer.WriteLine(Format('  %s = array[%d..%d] of %s;', [s, TStaticArraySymbol(Symbol).LowBound, TStaticArraySymbol(Symbol).HighBound, Symbol.Typ.Name]))
+            else
+            if (Symbol is TOpenArraySymbol) then
+              Writer.WriteLine(Format('  %s = array of const;', [s]))
+            else
+            if (Symbol is TAssociativeArraySymbol) then
+              Writer.WriteLine(Format('  %s = array[%s] of %s;', [s, TAssociativeArraySymbol(Symbol).KeyType.Name, Symbol.Typ.Name]))
+            else
+              Writer.WriteLine(Format('  %s = %s;', [s, Symbol.Description]));
+          end else
+          if (Symbol is TSetOfSymbol) then
+          begin
+            StartSection(Writer, stType);
+            Writer.WriteLine('  '+Symbol.Name + ' = set of ' + Symbol.Typ.Name + ';')
+          end else
+          if (Symbol is TUnitSymbol) then
+          begin
+            //  Ignore
+          end else
+          begin
+            if (Symbol is TAnyTypeSymbol) then
+            begin
+              Writer.WriteLine('  // Ignored type: '+Symbol.ClassName + ' = ' + Symbol.Description)
+            end else
+            if (Symbol is TBaseSymbol) then
+            begin
+              Writer.WriteLine('  // Base type: '+Symbol.ClassName + ' = ' + Symbol.Description);
+              if (Symbol is TBaseVariantSymbol) and (Symbol.ClassType <> TBaseVariantSymbol) then
+              begin
+                StartSection(Writer, stType);
+                Writer.WriteLine('  '+Symbol.Name + ' = Variant;');
+              end;
+            end else
+            begin
+              StartSection(Writer, stType);
+              Writer.WriteLine('  // Unknown type: '+Symbol.ClassName + ' = ' + Symbol.Description);
+              // Writer.WriteLine('  '+Symbol.Name + ' = type Variant;');
+              // Work around for Documentation Insight incorrect handling of distinct type declaration:
+              Writer.WriteLine('  '+Symbol.Name + ' = Variant;');
+            end;
+          end;
+        end else
+          Writer.WriteLine('// Not handled: '+Symbol.ClassName + ' = ' + Symbol.Description)
+      end;
+    finally
+      Symbols.Free;
     end;
 
     Writer.WriteLine;
@@ -958,16 +1192,20 @@ const
     'property', 'until', 'else', 'inline', 'raise',
     'uses');
 
-constructor TScriptSourceBuilder.Create(const AProgram: IdwsProgram);
+constructor TScriptSourceBuilder.Create(const AProgram: IdwsProgram; const AProjectName, ATitle: string);
 var
   s: string;
 begin
-  inherited;
+  inherited Create(AProgram);
+
   FReservedWords := TStringList.Create;
   FReservedWords.CaseSensitive := False;
   for s in sReservedWords do
     FReservedWords.Add(s);
   FReservedWords.Sorted := True;
+
+  FProjectName := AProjectName;
+  FTitle := ATitle;
 end;
 
 destructor TScriptSourceBuilder.Destroy;

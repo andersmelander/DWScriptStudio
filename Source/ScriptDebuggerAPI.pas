@@ -14,12 +14,12 @@ interface
 uses
   SysUtils,
   Windows,
-  Themes,
   Classes,
   Graphics,
   ImgList,
   Forms,
 
+  dwsComp,
   dwsDebugger,
   dwsSuggestions,
   dwsErrors,
@@ -30,7 +30,9 @@ uses
 {$endif OLD_DWSCRIPT}
 
   SynEditHighlighter,
-  SynHighlighterDWS;
+  SynHighlighterDWS,
+
+  ScriptProviderAPI;
 
 // -----------------------------------------------------------------------------
 //
@@ -63,30 +65,117 @@ type
 
 // -----------------------------------------------------------------------------
 //
-// TScriptDebugger
+// IScriptDebugEditPage
+//
+// -----------------------------------------------------------------------------
+type
+  IScriptDebugEditPage = interface
+    procedure LoadFromFile(const AFilename: string);
+    procedure LoadFromStream(Stream: TStream);
+    procedure LoadFromString(const AScript: string);
+
+    function GetHasProvider: boolean;
+    property HasProvider: boolean read GetHasProvider;
+
+    function GetScript: string;
+    procedure SetScript(const Value: string);
+    property Script: string read GetScript write SetScript;
+
+    function GetModified: boolean;
+    property Modified: boolean read GetModified;
+    procedure ClearModified;
+
+    function GetCanClose: boolean;
+    procedure SetCanClose(const Value: boolean);
+    property CanClose: boolean read GetCanClose write SetCanClose;
+
+    function GetCaption: string;
+    procedure SetCaption(const Value: string);
+    property Caption: string read GetCaption write SetCaption;
+
+    function  GetFilename: TFileName;
+    procedure SetFileName(const Value: TFileName);
+    property FileName: TFileName read GetFilename write SetFileName;
+
+    function GetIsReadOnly: Boolean;
+    procedure SetIsReadOnly(const Value: Boolean);
+    property IsReadOnly: Boolean read GetIsReadOnly write SetIsReadOnly;
+
+    function GetIndex: integer;
+    property Index: integer read GetIndex;
+  end;
+
+
+// -----------------------------------------------------------------------------
+//
+// IScriptDebugger
 //
 // -----------------------------------------------------------------------------
 type
   IScriptDebugger = interface
     ['{A8C3BEBB-C732-46BF-9936-5E53519AF2A2}']
-    function  GetDebugger : TdwsDebugger;
-    function  GetProgram: IdwsProgram;
+    function GetDebugger: TdwsDebugger;
+    function GetProgram: IdwsProgram;
+    function GetCompiledScript: IdwsProgram;
+
     procedure ViewScriptPos(const AScriptPos: TScriptPos; AMoveCurrent: boolean = False; AHiddenMainModule: Boolean = False);
+    function UnitNameFromScriptPos(const ScriptPos: TScriptPos): string;
+    function UnitNameFromInternalName(const Name: string): string;
+
+    function EditorPageAddNew(const ScriptProvider: IScriptProvider = nil): IScriptDebugEditPage;
 
     function FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
     procedure AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean = True);
     procedure ClearBreakpoint(const ScriptPos: TScriptPos);
     procedure UpdateBreakpoints(Update: TBreakpointUpdate);
+
     function SymbolToImageIndex(Symbol: TSymbol): integer;
+
     procedure AddWatch(const Expression: string);
-    function GetCompiledScript: IdwsProgram;
     procedure Evaluate(const Expression: string; ScriptPos: PScriptPos = nil);
-    function UnitNameFromScriptPos(const ScriptPos: TScriptPos): string;
-    function UnitNameFromInternalName(const Name: string): string;
+
+    procedure AddMessageInfo(Messages: TdwsMessageList; Index: integer = -1);
   end;
 
   TScriptDebuggerNotification = (dnCompiling, dnCompiled, dnIdle, dnDebugRun, dnDebugSuspending, dnDebugSuspended, dnDebugResuming, dnDebugDone, dnUpdateWatches);
 
+
+// -----------------------------------------------------------------------------
+//
+// IScriptDebuggerHost
+//
+// -----------------------------------------------------------------------------
+type
+  TExecutionNotification = (senStarted, senEnded);
+
+  IScriptDebuggerHost = interface
+    ['{C19B16FE-404D-4397-90DD-78531A74E498}']
+    function GetDelphiWebScript: TDelphiWebScript;
+    procedure NotifyExecution(const ScriptDebugger: IScriptDebugger; const Execution: IdwsProgramExecution; Notification: TExecutionNotification);
+    procedure NotifyClose(const ScriptDebugger: IScriptDebugger);
+  end;
+
+
+// -----------------------------------------------------------------------------
+//
+// IScriptDebuggerSetup
+//
+// -----------------------------------------------------------------------------
+type
+  IScriptDebuggerSetup = interface
+    ['{8B7353B9-2D44-4672-B5C2-F2572B82BDB1}']
+    procedure SetEnvironment(const Environment: IdwsEnvironment);
+
+    function AttachAndExecute(const Execution: IdwsProgramExecution): boolean;
+    function Execute(Modal: boolean = False): boolean;
+  end;
+
+// -----------------------------------------------------------------------------
+//
+// IScriptDebuggerWindow
+//
+// -----------------------------------------------------------------------------
+type
   IScriptDebuggerWindow = interface
     ['{C5E175C4-B6CE-4BCC-94D1-52986C8047FF}']
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
@@ -95,17 +184,17 @@ type
     procedure DebuggerStateChanged(State: TScriptDebuggerNotification);
   end;
 
-  TEditorHighlighterClass = class of TSynCustomHighlighter;
+// -----------------------------------------------------------------------------
+//
+// ScriptDebuggerFactory
+//
+// -----------------------------------------------------------------------------
+type
+  TScriptDebuggerFactory = function(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
 
-  TDwsIdeOptions = record
-    EditorHighlighterClass     : TEditorHighlighterClass;
-    EditorFontName             : string;
-    EditorFontSize             : integer;
-    ScriptFolder               : string;
-    ProjectName                : string;
-    HomePositionFileName       : string;
-    HomePositionFileIdentifier : string;
-  end;
+procedure RegisterScriptDebuggerFactory(Factory: TScriptDebuggerFactory);
+
+function CreateScriptDebugger(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean = False): IScriptDebugger;
 
 
 // -----------------------------------------------------------------------------
@@ -114,23 +203,14 @@ type
 //
 // -----------------------------------------------------------------------------
 type
+  TEditorHighlighterClass = class of TSynCustomHighlighter;
+
+type
+  // TODO : Move this out of the API unit
   TSynDWSSyn_DelphiLookalike = class(TSynDWSSyn)
     constructor Create(AOwner: TComponent); override;
   end;
 
-
-const
-  IdeOptions_Legacy   : TDwsIdeOptions = (
-    EditorHighlighterClass : TSynDWSSyn_DelphiLookalike;
-    EditorFontName         : 'Courier New';
-    EditorFontSize         : 10
-    );
-
-  IdeOptions_VistaOrLater : TDwsIdeOptions = (
-    EditorHighlighterClass : TSynDWSSyn_DelphiLookalike;
-    EditorFontName         : 'Consolas';
-    EditorFontSize         : 10
-    );
 
 const
   SuggestionCategoryNames : array[TdwsSuggestionCategory] of string = (
@@ -158,6 +238,8 @@ const
     'ReservedWord',
     'SpecialFunction' );
 
+
+  sScriptDebuggerBrandName = 'DWScriptStudio';
 
   sDwsIdeProjectSourceFileExt   = '.dws';     // ext of the main file (like Delphi's dpr)
   sDwsIdeProjectSourceFileExt2  = '.pas';     // ext of units
@@ -352,4 +434,28 @@ begin
   FDebugger := ADebugger;
 end;
 
+// -----------------------------------------------------------------------------
+//
+// ScriptDebuggerFactory
+//
+// -----------------------------------------------------------------------------
+var
+  FScriptDebuggerFactory: TScriptDebuggerFactory = nil;
+
+procedure RegisterScriptDebuggerFactory(Factory: TScriptDebuggerFactory);
+begin
+  FScriptDebuggerFactory := Factory;
+end;
+
+function CreateScriptDebugger(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
+begin
+  if (not Assigned(FScriptDebuggerFactory)) then
+    raise Exception.Create('No Script Debugger Factory has been registered');
+
+  Result := FScriptDebuggerFactory(ScriptDebuggerHost, CreateAsMainForm);
+end;
+
+initialization
+finalization
+  RegisterScriptDebuggerFactory(nil);
 end.

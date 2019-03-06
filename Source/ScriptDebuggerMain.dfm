@@ -1,7 +1,7 @@
 object FormScriptDebugger: TFormScriptDebugger
   Left = 0
   Top = 0
-  Caption = 'DWScript Debugger'
+  Caption = 'DWScript debugger'
   ClientHeight = 738
   ClientWidth = 1117
   Color = clBtnFace
@@ -26,7 +26,6 @@ object FormScriptDebugger: TFormScriptDebugger
     Top = 157
     Width = 1117
     Height = 581
-    Visible = False
     AllowDockClients = [dtClient, dtLeft, dtRight, dtBottom]
     Align = alClient
     DockingType = 5
@@ -111,8 +110,8 @@ object FormScriptDebugger: TFormScriptDebugger
                 object PageControlEditor: TcxPageControl
                   Left = 0
                   Top = 0
-                  Width = 224
-                  Height = 417
+                  Width = 222
+                  Height = 415
                   Align = alClient
                   PopupMenu = PopupMenuEditorTabs
                   TabOrder = 0
@@ -129,14 +128,14 @@ object FormScriptDebugger: TFormScriptDebugger
                   OnGetImageIndex = PageControlEditorGetImageIndex
                   OnMouseDown = PageControlEditorMouseDown
                   OnNewTabButtonClick = PageControlEditorNewTabButtonClick
-                  ClientRectBottom = 417
-                  ClientRectRight = 224
+                  ClientRectBottom = 415
+                  ClientRectRight = 222
                   ClientRectTop = 0
                 end
                 object StatusBar: TdxStatusBar
                   Left = 0
-                  Top = 417
-                  Width = 224
+                  Top = 415
+                  Width = 222
                   Height = 20
                   Panels = <
                     item
@@ -277,8 +276,8 @@ object FormScriptDebugger: TFormScriptDebugger
           object DockPanelMessages: TdxDockPanel
             Left = 0
             Top = 0
-            Width = 663
-            Height = 87
+            Width = 661
+            Height = 81
             OnVisibleChanged = DockPanelDebugOtherVisibleChanged
             AllowFloating = True
             AutoHide = False
@@ -293,8 +292,8 @@ object FormScriptDebugger: TFormScriptDebugger
             object ListViewMessages: TListView
               Left = 0
               Top = 0
-              Width = 663
-              Height = 87
+              Width = 661
+              Height = 81
               Align = alClient
               BorderStyle = bsNone
               Columns = <
@@ -317,8 +316,8 @@ object FormScriptDebugger: TFormScriptDebugger
           object DockPanelOutput: TdxDockPanel
             Left = 0
             Top = 0
-            Width = 663
-            Height = 87
+            Width = 661
+            Height = 81
             OnVisibleChanged = DockPanelDebugOtherVisibleChanged
             AllowFloating = True
             AutoHide = False
@@ -333,8 +332,8 @@ object FormScriptDebugger: TFormScriptDebugger
             object MemoOutputWindow: TMemo
               Left = 0
               Top = 0
-              Width = 663
-              Height = 87
+              Width = 661
+              Height = 81
               Align = alClient
               BorderStyle = bsNone
               Ctl3D = False
@@ -348,8 +347,8 @@ object FormScriptDebugger: TFormScriptDebugger
           object DockPanelBreakProints: TdxDockPanel
             Left = 0
             Top = 0
-            Width = 663
-            Height = 87
+            Width = 661
+            Height = 81
             OnVisibleChanged = DockPanelDebugOtherVisibleChanged
             AllowFloating = True
             AutoHide = False
@@ -364,17 +363,17 @@ object FormScriptDebugger: TFormScriptDebugger
             inline ScriptDebuggerBreakPointsFrame: TScriptDebuggerBreakPointsFrame
               Left = 0
               Top = 0
-              Width = 663
-              Height = 87
+              Width = 661
+              Height = 81
               Align = alClient
               TabOrder = 0
-              ExplicitWidth = 663
-              ExplicitHeight = 87
+              ExplicitWidth = 661
+              ExplicitHeight = 81
               inherited ListViewBreakPoints: TcxListView
-                Width = 663
-                Height = 87
-                ExplicitWidth = 663
-                ExplicitHeight = 87
+                Width = 661
+                Height = 81
+                ExplicitWidth = 661
+                ExplicitHeight = 81
               end
             end
           end
@@ -398,8 +397,8 @@ object FormScriptDebugger: TFormScriptDebugger
         object DockPanelStack: TdxDockPanel
           Left = 0
           Top = 0
-          Width = 221
-          Height = 528
+          Width = 219
+          Height = 522
           HelpKeyword = 'TScriptDebuggerStackFrame'
           OnVisibleChanged = DockPanelDebugFrameVisibleChanged
           AllowFloating = True
@@ -417,8 +416,8 @@ object FormScriptDebugger: TFormScriptDebugger
         object DockPanelAST: TdxDockPanel
           Left = 0
           Top = 0
-          Width = 221
-          Height = 528
+          Width = 219
+          Height = 522
           HelpKeyword = 'TScriptDebuggerASTFrame'
           OnVisibleChanged = DockPanelDebugFrameVisibleChanged
           AllowFloating = True
@@ -454,8 +453,8 @@ object FormScriptDebugger: TFormScriptDebugger
       object ShellListViewFileExplorer: TcxShellListView
         Left = 0
         Top = 21
-        Width = 221
-        Height = 532
+        Width = 219
+        Height = 530
         Align = alClient
         ReadOnly = True
         TabOrder = 0
@@ -468,7 +467,7 @@ object FormScriptDebugger: TFormScriptDebugger
         Align = alTop
         ShellListView = ShellListViewFileExplorer
         TabOrder = 1
-        Width = 221
+        Width = 219
       end
     end
   end
@@ -542,7 +541,6 @@ object FormScriptDebugger: TFormScriptDebugger
       Index = 1
     end
     object RibbonTabDebug: TdxRibbonTab
-      Active = True
       Caption = 'Debug'
       Groups = <
         item
@@ -561,6 +559,7 @@ object FormScriptDebugger: TFormScriptDebugger
       ContextIndex = 0
     end
     object RibbonDebugTabTools: TdxRibbonTab
+      Active = True
       Caption = 'Tools'
       Groups = <
         item
@@ -4968,17 +4967,22 @@ object FormScriptDebugger: TFormScriptDebugger
         item
           Visible = True
           ItemName = 'ButtonToolDocumentSource'
+        end
+        item
+          Visible = True
+          ItemName = 'ButtonToolDocumentBuild'
         end>
     end
     object ButtonToolDocumentXML: TdxBarButton
       Caption = 'XML format'
       Category = 0
+      Enabled = False
       Hint = 'Generate documentation in XML format'
       Visible = ivAlways
       OnClick = ButtonToolDocumentXMLClick
     end
     object ButtonToolDocumentSource: TdxBarButton
-      Caption = 'Source code format'
+      Caption = 'Generate source code'
       Category = 0
       Hint = 'Generate documentation in pascal format'
       Visible = ivAlways
@@ -5029,6 +5033,13 @@ object FormScriptDebugger: TFormScriptDebugger
       Action = ActionViewFileExplorer
       Category = 0
       ButtonStyle = bsChecked
+    end
+    object ButtonToolDocumentBuild: TdxBarButton
+      Caption = 'Build help file'
+      Category = 0
+      Hint = 'Build help file from generated source files'
+      Visible = ivAlways
+      OnClick = ButtonToolDocumentBuildClick
     end
     object MenuItemFileNew: TdxBarSubItem
       Caption = 'New ...'

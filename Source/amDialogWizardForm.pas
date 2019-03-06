@@ -1,4 +1,4 @@
-unit amDialogWizardForm;
+﻿unit amDialogWizardForm;
 
 (*
  * Copyright © 2008 Anders Melander
@@ -13,13 +13,13 @@ interface
 uses
   Types,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, StdCtrls, ActnList,
+  Dialogs, Menus, StdCtrls, ActnList, System.Actions,
 
   dxWizardControlForm,
   dxCustomWizardControl,
   dxWizardControl,
 
-  amDialogWizardFrame, System.Actions;
+  amDialogWizardFrame;
 
 const
   MSG_AFTER_SHOW = WM_USER;

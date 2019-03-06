@@ -110,49 +110,7 @@ type
 
 const
   MSG_EXEC_RESET = WM_USER;
-
-// -----------------------------------------------------------------------------
-//
-// IScriptDebugEditPage
-//
-// -----------------------------------------------------------------------------
-type
-  IScriptDebugEditPage = interface
-    procedure LoadFromFile(const AFilename: string);
-    procedure LoadFromStream(Stream: TStream);
-    procedure LoadFromString(const AScript: string);
-
-    function GetHasProvider: boolean;
-    property HasProvider: boolean read GetHasProvider;
-
-    function GetScript: string;
-    procedure SetScript(const Value: string);
-    property Script: string read GetScript write SetScript;
-
-    function GetModified: boolean;
-    property Modified: boolean read GetModified;
-    procedure ClearModified;
-
-    function GetCanClose: boolean;
-    procedure SetCanClose(const Value: boolean);
-    property CanClose: boolean read GetCanClose write SetCanClose;
-
-    function GetCaption: string;
-    procedure SetCaption(const Value: string);
-    property Caption: string read GetCaption write SetCaption;
-
-    function  GetFilename: TFileName;
-    procedure SetFileName(const Value: TFileName);
-    property FileName: TFileName read GetFilename write SetFileName;
-
-    function GetIsReadOnly: Boolean;
-    procedure SetIsReadOnly(const Value: Boolean);
-    property IsReadOnly: Boolean read GetIsReadOnly write SetIsReadOnly;
-
-    function GetIndex: integer;
-    property Index: integer read GetIndex;
-  end;
-
+  MSG_FORM_MAXIMIZE = WM_USER+1;
 
 type
   TFormScriptDebugger  = class;
@@ -288,7 +246,8 @@ type
 //              TFormScriptDebugger
 //
 // -----------------------------------------------------------------------------
-  TFormScriptDebugger = class(TdxRibbonForm, IScriptDebugger, IScriptHostApplicationNotification, IScriptHostApplicationCloseNotification)
+  TFormScriptDebugger = class(TdxRibbonForm, IScriptDebugger, IScriptDebuggerSetup,
+    IScriptHostApplicationNotification, IScriptHostApplicationCloseNotification)
     ActionBuild: TAction;
     ActionClearAllBreakpoints: TAction;
     ActionCloseAllOtherPages: TAction;
@@ -532,6 +491,7 @@ type
     ActionViewFileExplorer: TAction;
     dxLayoutDockSite4: TdxLayoutDockSite;
     dxLayoutDockSite5: TdxLayoutDockSite;
+    ButtonToolDocumentBuild: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -686,6 +646,7 @@ type
     procedure ActionViewFileExplorerExecute(Sender: TObject);
     procedure ActionViewFileExplorerUpdate(Sender: TObject);
     procedure ShellListViewFileExplorerExecuteItem(Sender: TObject; APIDL: PItemIDList; var AHandled: Boolean);
+    procedure ButtonToolDocumentBuildClick(Sender: TObject);
   private
     FScript: TDelphiWebScript;
     FCompileContext: IScriptContext;
@@ -695,7 +656,6 @@ type
     FSaveOnNeedUnit: TdwsOnNeedUnitEvent;
 
 
-    FOptions: TDwsIdeOptions;
     FGotoForm: TDwsIdeGotoLineNumber;
 
     FHomePositionCaptionSuffix: string;
@@ -707,6 +667,8 @@ type
 
   protected
     procedure MsgExecReset(var Msg: TMessage); message MSG_EXEC_RESET;
+    procedure MsgFormMaximize(var Msg: TMessage); message MSG_FORM_MAXIMIZE;
+    procedure DoCreate; override;
   private
     // Recent files
     procedure LoadRecentFiles;
@@ -714,12 +676,9 @@ type
     procedure AddRecentFile(const Filename: string);
   private
     // Layout
-    FLayoutName: string;
-    FLayoutNameEdit: string;
-    FLayoutNameDebug: string;
+    FLayoutName: string; // Currently selected layout
     FLauoutLoading: boolean;
     procedure LoadLayouts;
-    procedure SaveLayouts;
     procedure SaveLayout;
   private
     // Frames
@@ -799,14 +758,7 @@ type
     procedure ListSymbols;
 
 {$ifdef DISABLED_STUFF}
-  private type
-    TIDESettingsRec = record
-      FormRect: TRect;
-      RightPanelWidth,
-      BottomPanelHeight: Integer;
-    end;
   private
-    FIDESettingsRec: TIDESettingsRec;
     FProjectFileName: TFileName;
     procedure MakeSettingsRec;
     function  ProjectSourceScript: string;
@@ -830,7 +782,6 @@ type
          const AProjectFileName: TFileName;
          const AIDESettingsRec: TIDESettingsRec);
 {$endif DISABLED_STUFF}
-    procedure SetOptions(const Value: TDwsIdeOptions);
 
     procedure RunFunctionMethodByName(const AUnit, AName: string; AWithDebugging, APrompt: Boolean);
 
@@ -863,15 +814,19 @@ type
   private
     FCaseNormalizeScriptProgram: IdwsProgram;
     procedure OnCaseNormalize(Line, Col : Integer; const Name : string);
-  public
-    constructor Create(AOwner: TComponent); override;
-
-    function Execute(Modal: boolean = False): boolean;
+  private
+    FScriptDebuggerHost: IScriptDebuggerHost;
+  protected
+    procedure SetDebuggerHost(const AScriptDebuggerHost: IScriptDebuggerHost);
+  protected
+    // IScriptDebuggerSetup
+    procedure SetEnvironment(const AEnvironment: IdwsEnvironment);
     function AttachAndExecute(const AExecution: IdwsProgramExecution): boolean;
+    function Execute(Modal: boolean = False): boolean;
+  protected
     // IScriptDebugger
-    // -------------------------------------------------------------------------
-    function  GetDebugger: TdwsDebugger;
-    function  GetProgram: IdwsProgram;
+    function GetDebugger: TdwsDebugger;
+    function GetProgram: IdwsProgram;
     procedure ViewScriptPos(const AScriptPos: TScriptPos; AMoveCurrent: boolean = False; AHiddenMainModule: Boolean = False);
     function FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
     procedure AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean = True);
@@ -879,11 +834,12 @@ type
     procedure UpdateBreakpoints(Update: TBreakpointUpdate);
     function SymbolToImageIndex(Symbol: TSymbol): integer;
     procedure AddWatch(const Expression: string);
-    procedure Evaluate(const Expression: string; ScriptPos: PScriptPos = nil);
     function GetCompiledScript: IdwsProgram;
+    procedure Evaluate(const Expression: string; ScriptPos: PScriptPos = nil);
     function UnitNameFromScriptPos(const ScriptPos: TScriptPos): string;
     function UnitNameFromInternalName(const Name: string): string;
-    // -------------------------------------------------------------------------
+  public
+    constructor Create(AOwner: TComponent); override;
 
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
@@ -891,8 +847,6 @@ type
 {$ifdef DISABLED_STUFF}
     property ProjectFileName: TFileName read FProjectFileName write SetProjectFileName;
 {$endif DISABLED_STUFF}
-    property Options: TDwsIdeOptions read FOptions write SetOptions;
-
 
     property Script: TDelphiWebScript read FScript write SetScript;
 
@@ -910,12 +864,7 @@ type
   end;
 
 
-procedure DwsIDE_ShowModal(AScript: TDelphiWebScript; const Environment: IdwsEnvironment); overload;
-procedure DwsIDE_ShowModal(AScript: TDelphiWebScript; const Environment: IdwsEnvironment; const AOptions: TDwsIdeOptions); overload;
-
-const
-  sRegistryRootApplication = 'SOFTWARE\Melander\ScriptStudio'; // TODO
-  sScriptAPIKeyPublic = 'blah';
+procedure DwsIDE_ShowModal(AScript: TDelphiWebScript; const Environment: IdwsEnvironment);
 
 const
   sScriptHeaderTemplate =
@@ -924,7 +873,7 @@ const
     'Plugin URI:'#9'<URL of your scripts home page>'+#13+
     'Description:'#9'<a description of what your script does>'+#13+
     'Version:'#9'<the version of your script>'+#13+
-    'Author:'#9'<your name>'+#13+
+    'Author: '#9'<your name>'+#13+
     'Author URI:'#9'<the URL of your home page>'+#13+
     'Product ID:'#9'%s'+#13+
     'Author ID:'#9'%s'+#13+
@@ -932,17 +881,18 @@ const
   sScriptHeaderTemplateProductID = '<the license product ID>';
   sScriptHeaderTemplateAuthorID = '<your public API key>';
 
-  sScriptHelpRtlSourceFolder = '%APP_INSTALL%\Documentation';
+  // The folder where we will output files when generating documentation
+  sScriptHelpRtlSourceFolder = '%AppInstall%\Documentation\Source';
+  // The name of the generated help file
   sScriptHelpRtlFilename = 'ScriptRTL.chm';
-  sScriptHelpRtlFilenameDefault = '%APP_INSTALL%\Help\'+sScriptHelpRtlFilename;
-  sScriptHelpRtlFilenameDebug = '%APP_INSTALL%\Documentation\Doc\CHM\'+sScriptHelpRtlFilename;
-  sScriptHelpRtlFilenameDownload = '%DocumentsPath%\Help\'+sScriptHelpRtlFilename;
 
-  sScriptDebuggerLayoutNameDefault = 'Default layout';
-  nScriptDebuggerLayoutVersion = 4; // Bump this if dock panels are added or removed
-  sRegistryRootScriptDebugger = sRegistryRootApplication+'\Development\Debugger';
-  sRegistryRootScriptDebuggerRecent = sRegistryRootScriptDebugger+'\Recent';
-  sRegistryRootScriptDebuggerLayout = sRegistryRootScriptDebugger+'\Layout';
+  // Locations of RTL help file at run time
+  // Location of preinstalled help file
+  sScriptHelpRtlFilenameDefault = '%AppInstall%\Help\'+sScriptHelpRtlFilename;
+  // Fallback location used during debug/development (grab file directly from the place where it's generated)
+  sScriptHelpRtlFilenameDebug = '%AppInstall%\Documentation\Output\CHM\'+sScriptHelpRtlFilename;
+  // Location of downloaded help file
+  sScriptHelpRtlFilenameDownload = '%Documents%\%AppName%\Help\'+sScriptHelpRtlFilename;
 
 
 implementation
@@ -973,10 +923,9 @@ uses
   dwsInfo,
 {$endif OLD_DWSCRIPT}
 
-  IOUtils, amIOUtils, // Bug fix
-
   SynTaskDialog,
 
+  IOUtils, amIOUtils, // Bug fix
   amDialogs,
   amCursorService,
   amInputQueryDialog,
@@ -992,7 +941,8 @@ uses
   ScriptFileSystem,
   ScriptProvider,
   ScriptHostProvider,
-  ScriptPackageAPI;
+  ScriptPackageAPI,
+  ScriptDebuggerSettings;
 
 const //resourcestring
   RStrScriptFolderNotFound = 'Script folder "%s" does not exist';
@@ -1032,9 +982,9 @@ const
 // Utility routines
 // -----------------------------------------------------------------------------
 
-function BrandString(const s: string): string; deprecated 'BrandString not implemented';
+function BrandString(const s: string): string; deprecated 'BrandString not really implemented';
 begin
-  Result := s;
+  Result := StringReplace(s, '%brandname%', sScriptDebuggerBrandName, [rfReplaceAll, rfIgnoreCase]);
 end;
 
 function GetDesktopPath: string;
@@ -1078,19 +1028,6 @@ end;
 
 procedure DwsIDE_ShowModal(AScript: TDelphiWebScript; const Environment: IdwsEnvironment);
 var
-  DwsIdeOptions: TDwsIdeOptions;
-begin
-  if SysUtils.Win32MajorVersion >= 6 then // Vista or later...
-    DwsIdeOptions := IdeOptions_VistaOrLater
-  else
-    DwsIdeOptions := IdeOptions_Legacy;
-
-  DwsIDE_ShowModal(AScript, Environment, DwsIdeOptions);
-end;
-
-
-procedure DwsIDE_ShowModal(AScript: TDelphiWebScript; const Environment: IdwsEnvironment; const AOptions: TDwsIdeOptions);
-var
   Frm: TFormScriptDebugger;
   SaveResultType: TdwsResultType;
 begin
@@ -1101,7 +1038,6 @@ begin
   try
     Frm := TFormScriptDebugger.Create(Application);
     try
-      Frm.Options := AOptions;
       Frm.Script := AScript;
       Frm.Environment := Environment;
       Frm.ShowModal;
@@ -1427,6 +1363,8 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
         FEditor.Keystrokes.AddKey(Command, Key, Shift);
     end;
 
+  var
+    HighlighterClass: TEditorHighlighterClass;
   begin
     FEditor := TSynEdit.Create(nil);
     FEditor.OnChange := DoOnEditorChange;
@@ -1441,13 +1379,17 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
     // SynEdit.IndentWidth requires patched source
     FEditor.IndentWidth := 2;
 
-    if Assigned(AOwner.FOptions.EditorHighlighterClass) then
-      FEditor.Highlighter := AOwner.FOptions.EditorHighlighterClass.Create(FEditor);
-
-    if AOwner.FOptions.EditorFontName <> '' then
+    if (ScriptSettings.Editor.HighlighterClass <> '') then
     begin
-      FEditor.Font.Name := AOwner.FOptions.EditorFontName;
-      FEditor.Font.Size := AOwner.FOptions.EditorFontSize;
+      HighlighterClass := TEditorHighlighterClass(GetClass(ScriptSettings.Editor.HighlighterClass));
+      if (HighlighterClass <> nil) and (HighlighterClass.InheritsFrom(TSynCustomHighlighter)) then
+        FEditor.Highlighter := HighlighterClass.Create(FEditor);
+    end;
+
+    if (ScriptSettings.Editor.FontName <> '') then
+    begin
+      FEditor.Font.Name := ScriptSettings.Editor.FontName;
+      FEditor.Font.Size := ScriptSettings.Editor.FontSize;
     end else
     begin
       FEditor.Font.Name := 'Courier New';
@@ -2441,14 +2383,25 @@ end;
 function TEditorPage._SaveAs: boolean;
 var
   s: string;
+  Folder: string;
 begin
   Result := False;
 
-  if (AnsiSameText(FileName, MSG_MainModule)) then
-    s := Caption
-  else
-    s := ExtractFileName(FileName);
+  Folder := '';
 
+  if (AnsiSameText(FileName, MSG_MainModule)) then
+  begin
+    s := Caption;
+  end else
+  begin
+    s := TPath.GetFileName(FileName);
+    Folder := TPath.GetDirectoryName(FileName);
+  end;
+
+  if (Folder <> '') then
+    Folder := ScriptSettings.Folders.FolderScript;
+
+  FForm.SaveSourceDialog.DefaultFolder := Folder;
   FForm.SaveSourceDialog.FileName := s;
 
   if (not FForm.SaveSourceDialog.Execute) then
@@ -2458,11 +2411,12 @@ begin
 
   Result := _SavetoFile(s, False);
 
-  if (Result) then
-  begin
-    Caption := '';
-    ScriptProvider := TFileScriptProvider.Create(s);
-  end;
+  if (not Result) then
+    exit;
+
+  Caption := '';
+  ScriptProvider := TFileScriptProvider.Create(s);
+  ScriptSettings.Folders.FolderScript := TPath.GetDirectoryName(s);
 end;
 
 // ToggleDeclImpl
@@ -2702,8 +2656,7 @@ begin
 {$ifdef FEATURE_PACKAGE_INSTALLER}
       NeedDownload := PackageInstallerService.AutoUpdateCheck(sPackageIDAppScriptHelpRtl, DownloadURL, [], 'script RTL help file');
 {$else FEATURE_PACKAGE_INSTALLER}
-      ShowMessage('Feature unavailable');
-      Abort;
+      NeedDownload := HelpFileNotFound;
 {$endif FEATURE_PACKAGE_INSTALLER}
     end;
 
@@ -2727,7 +2680,7 @@ begin
 {$ifdef FEATURE_PACKAGE_INSTALLER}
       PackageInstallerService.AutoUpdateExecute(DownloadURL, HelpDownloadPackage, DownloadIsPackage);
 {$else FEATURE_PACKAGE_INSTALLER}
-      ShowMessage('Feature unavailable');
+      ShowMessage('Auto update feature not enabled - Help will not be available');
       Abort;
 {$endif FEATURE_PACKAGE_INSTALLER}
 
@@ -2746,13 +2699,14 @@ begin
     *)
     if (not HelpFileNotFound) then
     begin
-      HelpSystem.ShowHelp(Keyword, HelpFilename);
       if (Keyword <> '') then
       begin
+        HelpSystem.ShowHelp(Keyword, HelpFilename);
         HtmlHelp(Application.Handle, HelpFilename, HH_SYNC, 0);
         HtmlHelp(Application.Handle, HelpFilename, HH_DISPLAY_TOC, 0);
         HtmlHelp(Application.Handle, HelpFilename, HH_SYNC, 0);
-      end;
+      end else
+        HelpSystem.ShowTopicHelp(TPath.GetFileNameWithoutExtension(sScriptHelpRtlFilename), HelpFilename);
     end;
   end;
 end;
@@ -2776,11 +2730,6 @@ begin
 //  SynCodeCompletion.ClSelectedText := RootLookAndFeel.Painter.DefaultSelectionTextColor;
   SynCodeCompletion.ShortCut := 0;
   FDebuggerFrames := TList<IScriptDebuggerWindow>.Create;
-
-  if (CheckWin32Version(6, 0)) then // Vista or later...
-    FOptions := IdeOptions_VistaOrLater
-  else
-    FOptions := IdeOptions_Legacy;
 end;
 
 procedure TFormScriptDebugger.AfterConstruction;
@@ -2847,34 +2796,34 @@ begin
 *)
 end;
 
-procedure TFormScriptDebugger.ApplicationCloseQuery(const ScriptHostApplication: IScriptHostApplication; var CanClose: boolean);
+procedure TFormScriptDebugger.DoCreate;
 begin
-  CanClose := CloseQuery;
-end;
+  inherited;
 
-procedure TFormScriptDebugger.ApplicationNotify(const ScriptHostApplication: IScriptHostApplication; Notification: TScriptHostApplicationNotification);
-begin
-  // Close when application is terminating to avoid ASSERT error in SynTextDrawer finalization
-  if (Notification = TScriptHostApplicationNotification.notifyClosing) then
-    // Do not use Close. Close will perform a CloseQuery and that has already been done by the ApplicationCloseQuery notification.
-    Release;
-end;
-
-function TFormScriptDebugger.AttachAndExecute(const AExecution: IdwsProgramExecution): boolean;
-begin
-  FProgram := AExecution.Prog;
-  Debugger.AttachDebug(AExecution);
-
-  Result := Execute;
+  (*
+  ** Restore main window state
+  **
+  ** We must do this after TdxCustomRibbonForm.DoCreate has been executed
+  ** in order to avoid the "growing form syndrome". The growing form is caused
+  ** by TdxCustomRibbonForm.AdjustLayout (called from DoCreate).
+  *)
+  ScriptSettings.Forms.Main.ApplySettings(Self);
+  if (ScriptSettings.Forms.Main.Maximized) then
+    PostMessage(Handle, MSG_FORM_MAXIMIZE, 0, 0);
 end;
 
 procedure TFormScriptDebugger.BeforeDestruction;
 begin
-//  MakeSettingsRec;
-//  SaveSettings(ProjectFileName, FIDESettingsRec);
 
   inherited;
 end;
+
+procedure TFormScriptDebugger.MsgFormMaximize(var Msg: TMessage);
+begin
+  WindowState := wsMaximized;
+end;
+
+// -----------------------------------------------------------------------------
 
 procedure TFormScriptDebugger.FormCreate(Sender: TObject);
 var
@@ -2890,16 +2839,17 @@ begin
     if (Components[i] is TdxDockPanel) and (TdxDockPanel(Components[i]).ControlCount = 0) then
       TdxDockPanel(Components[i]).Visible := False;
 
+  ScriptSettings.ReadConfig;
   LoadLayouts;
   LoadRecentFiles;
 
-  if (FOptions.ScriptFolder = '') then
-    FOptions.ScriptFolder := TPath.GetDirectoryName(Application.ExeName);
+  if (ScriptSettings.Folders.FolderScript = '') then
+    ScriptSettings.Folders.FolderScript := TPath.GetDirectoryName(Application.ExeName);
 
-  OpenFileDialog.DefaultFolder := FOptions.ScriptFolder;
-  SaveSourceDialog.DefaultFolder := FOptions.ScriptFolder;
-  SaveProjectDialog.DefaultFolder := FOptions.ScriptFolder;
-  ShellComboBoxFileExplorer.Path := FOptions.ScriptFolder;
+  OpenFileDialog.DefaultFolder := ScriptSettings.Folders.FolderScript;
+  SaveSourceDialog.DefaultFolder := ScriptSettings.Folders.FolderScript;
+  SaveProjectDialog.DefaultFolder := ScriptSettings.Folders.FolderScript;
+  ShellComboBoxFileExplorer.Path := ScriptSettings.Folders.FolderScript;
 
   if (ScriptHostApplication <> nil) then
     ScriptHostApplication.Subscribe(Self);
@@ -2914,14 +2864,24 @@ begin
     for DebuggerFrame in FDebuggerFrames do
       DebuggerFrame.Finalize;
 
+  if (FScriptDebuggerHost <> nil) then
+  begin
+    FScriptDebuggerHost.NotifyClose(Self);
+    FScriptDebuggerHost := nil;
+    if (FScript <> nil) and (Assigned(FSaveOnNeedUnit)) then
+      FScript.OnNeedUnit := FSaveOnNeedUnit;
+    FScript := nil;
+  end;
+
   if (Assigned(FOnDebuggerClose)) then
     FOnDebuggerClose(Self);
 
   if (ScriptHostApplication <> nil) then
     ScriptHostApplication.Unsubscribe(Self);
 
-  SaveLayouts;
   SaveRecentFiles;
+  ScriptSettings.Forms.Main.PrepareSettings(Self);
+  ScriptSettings.WriteConfig;
 
   for i := FPages.Count-1 downto 0 do
     FPages[i].Free;
@@ -2934,69 +2894,442 @@ begin
   FPages.Free;
   FDebuggerFrames.Free;
 
-  if (Assigned(FSaveOnNeedUnit)) then
-    FScript.OnNeedUnit := FSaveOnNeedUnit;
-
   FGotoForm.Free;
 end;
 
 // -----------------------------------------------------------------------------
 
-procedure TFormScriptDebugger.LoadRecentFiles;
+procedure TFormScriptDebugger.ApplicationCloseQuery(const ScriptHostApplication: IScriptHostApplication; var CanClose: boolean);
+begin
+  CanClose := CloseQuery;
+end;
+
+// -----------------------------------------------------------------------------
+
+procedure TFormScriptDebugger.ApplicationNotify(const ScriptHostApplication: IScriptHostApplication; Notification: TScriptHostApplicationNotification);
+begin
+  // Close when application is terminating to avoid ASSERT error in SynTextDrawer finalization
+  if (Notification = TScriptHostApplicationNotification.notifyClosing) then
+    // Do not use Close. Close will perform a CloseQuery and that has already been done by the ApplicationCloseQuery notification.
+    Release;
+end;
+
+// -----------------------------------------------------------------------------
+// IScriptDebugger implementation
+// -----------------------------------------------------------------------------
+
+function TFormScriptDebugger.GetDebugger: TdwsDebugger;
+begin
+  Result := Debugger;
+end;
+
+function TFormScriptDebugger.GetProgram: IdwsProgram;
+begin
+  Result := FProgram;
+end;
+
+procedure TFormScriptDebugger.ViewScriptPos(const AScriptPos: TScriptPos; AMoveCurrent: boolean; AHiddenMainModule: Boolean);
 var
-  Reg: TRegistryIniFile;
-  Count: integer;
+  ScriptName: string;
   i: integer;
+  EditPage: IScriptDebugEditPage;
+  ScriptProvider: IScriptProvider;
+begin
+  if (not AScriptPos.Defined) then
+    exit;
+
+  ScriptName := UnitNameFromScriptPos(AScriptPos);
+{$ifdef DISABLED_STUFF}
+  if ScriptName = SYS_MainModule then
+  begin
+    if AHiddenMainModule then
+      i := -1
+    else
+      i := ProjectSourceFileIndex
+  end
+  else
+{$endif DISABLED_STUFF}
+    i := NameToEditorPageIndex(ScriptName);
+
+  if (i = -1) then
+  begin
+    if (not AnsiSameText(ExtractFileExt(ScriptName), sScriptFileType)) then
+      ScriptName := ScriptName + sScriptFileType;
+
+    if (MainUnit <> nil) then
+      ScriptProvider := MainUnit.ScriptProvider
+    else
+      ScriptProvider := nil;
+
+    ScriptProvider := OpenScriptStream(ScriptName, ScriptProvider);
+    if (ScriptProvider <> nil) then
+    begin
+      EditPage := EditorPageAddNew(ScriptProvider);
+    end else
+    begin
+      EditPage := EditorPageAddNew(ScriptName, AScriptPos.SourceCode);
+      // Read-only because we have no file to associate the source with
+      EditPage.IsReadOnly := True;
+    end;
+    i := EditPage.Index;
+  end;
+
+  if (i <> -1) then
+  begin
+    EditorCurrentPageIndex := i;
+    CurrentEditorPage.SetCurrentLine(AScriptPos.Line, AScriptPos.Col, AMoveCurrent);
+    if (Visible) and (CurrentEditor.CanFocus) then
+      CurrentEditor.SetFocus;
+    CurrentEditor.InvalidateGutterLine(AScriptPos.Line);
+    CurrentEditor.InvalidateLine(AScriptPos.Line);
+  end;
+end;
+
+function TFormScriptDebugger.FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
+var
+  Test: TdwsDebuggerBreakpoint;
+begin
+  Result := bpsNone;
+  if (not ScriptPos.Defined) or (Debugger.Breakpoints.Count = 0) then
+    Exit;
+
+  Test := Debugger.Breakpoints.BreakpointAt(ScriptPos);
+  if (Test <> nil) then
+  begin
+    if (Test.Enabled) then
+      Result := bpsBreakpoint
+    else
+      Result := bpsBreakpointDisabled;
+  end;
+end;
+
+procedure TFormScriptDebugger.AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean);
+var
+  BP: TdwsDebuggerBreakpoint;
+  bAdded: Boolean;
+  I: Integer;
+begin
+  BP := TdwsDebuggerBreakpoint.Create;
+  BP.Line := ScriptPos.Line;
+
+  BP.SourceName := ScriptPos.SourceName;
+
+  I := Debugger.Breakpoints.AddOrFind(BP, bAdded);
+  if (not bAdded) then
+    BP.Free;
+  Debugger.Breakpoints[I].Enabled := AEnabled;
+
+  if (CurrentEditorPage <> nil) then
+  begin
+    CurrentEditorPage.Editor.InvalidateGutterLine(ScriptPos.Line);
+    CurrentEditorPage.Editor.InvalidateLine(ScriptPos.Line);
+  end;
+  ScriptDebuggerBreakPointsFrame.UpdateInfo;
+
+  Debugger.Breakpoints.BreakPointsChanged;
+end;
+
+procedure TFormScriptDebugger.ClearBreakpoint(const ScriptPos: TScriptPos);
+var
+  Test, Found: TdwsDebuggerBreakpoint;
+  I: Integer;
+begin
+  if (Debugger.Breakpoints.Count = 0) then
+    Exit;
+
+  Test := TdwsDebuggerBreakpoint.Create;
+  try
+    Test.Line := ScriptPos.Line;
+    Test.SourceName := ScriptPos.SourceName;
+
+    I := Debugger.Breakpoints.IndexOf(Test);
+    if (I <> -1) then
+    begin
+      Found := Debugger.Breakpoints[I];
+      Debugger.Breakpoints.Extract(Found);
+      FreeAndNil(Found);
+    end;
+  finally
+    FreeAndNil(Test);
+  end;
+
+  if (CurrentEditorPage <> nil) then
+  begin
+    CurrentEditorPage.Editor.InvalidateGutterLine(ScriptPos.Line);
+    CurrentEditorPage.Editor.InvalidateLine(ScriptPos.Line);
+  end;
+  ScriptDebuggerBreakPointsFrame.UpdateInfo;
+
+  Debugger.Breakpoints.BreakPointsChanged;
+end;
+
+procedure TFormScriptDebugger.UpdateBreakpoints(Update: TBreakpointUpdate);
+begin
+  if (CurrentEditorPage <> nil) then
+    CurrentEditorPage.Editor.Invalidate;
+
+  if (Update = bpuReload) then
+    ScriptDebuggerBreakPointsFrame.UpdateInfo
+  else
+    ScriptDebuggerBreakPointsFrame.RefreshInfo(Update);
+
+  Debugger.Breakpoints.BreakPointsChanged;
+end;
+
+function TFormScriptDebugger.SymbolToImageIndex(Symbol: TSymbol): integer;
+begin
+  Result := DebuggerSymbolImageIndexUnknown;
+
+  if (Symbol is TValueSymbol) then
+  begin
+    if (Symbol is TParamSymbol) then
+      Result := DebuggerSymbolImageIndexParameter
+    else
+    if (Symbol is TPropertySymbol) then
+      Result := DebuggerSymbolImageIndexProperty
+    else
+    if (Symbol is TConstSymbol) then
+    begin
+      if (Symbol is TElementSymbol) then
+        Result := DebuggerSymbolImageIndexElement
+      else
+        Result := DebuggerSymbolImageIndexConst;
+    end else
+      Result := DebuggerSymbolImageIndexVariable;
+  end else
+  if (Symbol is TTypeSymbol) then
+  begin
+    Result := DebuggerSymbolImageIndexType;
+
+    if (Symbol is TStructuredTypeSymbol) then
+    begin
+      if (Symbol is TClassSymbol) then
+        Result := DebuggerSymbolImageIndexClass
+      else
+      if (Symbol is TRecordSymbol) then
+        Result := DebuggerSymbolImageIndexRecord
+      else
+      if (Symbol is TInterfaceSymbol) then
+        Result := DebuggerSymbolImageIndexInterface;
+    end else
+    if (Symbol is TUnitSymbol) then
+      Result := DebuggerSymbolImageIndexUnit
+    else
+    if (Symbol is TEnumerationSymbol) then
+      Result := DebuggerSymbolImageIndexEnum
+    else
+    if (Symbol is TAliasSymbol) then
+      Result := DebuggerSymbolImageIndexType
+    else
+    if (Symbol is TStructuredTypeMetaSymbol) then
+      Result := Ord(High(TdwsSuggestionCategory))+1
+    else
+    if (Symbol is TArraySymbol) then
+      Result := DebuggerSymbolImageIndexArray
+    else
+    if (Symbol is TSetOfSymbol) then
+      Result := DebuggerSymbolImageIndexSet
+    else
+    if (Symbol is TFuncSymbol) then
+    begin
+      if (Symbol is TMethodSymbol) then
+      begin
+        case TMethodSymbol(Symbol).Kind of
+          fkConstructor: Result := DebuggerSymbolImageIndexConstructor;
+          fkDestructor: Result := DebuggerSymbolImageIndexDestructor;
+          fkMethod: Result := DebuggerSymbolImageIndexMethod;
+          fkProcedure: Result := DebuggerSymbolImageIndexProcedure;
+          fkFunction: Result := DebuggerSymbolImageIndexFunction;
+        end;
+      end else
+      if TFuncSymbol(Symbol).IsType then
+        Result := DebuggerSymbolImageIndexDelegate
+      else
+      if (Symbol.Typ = nil) then
+        Result := DebuggerSymbolImageIndexProcedure
+      else
+        Result := DebuggerSymbolImageIndexFunction;
+    end else
+      Result := DebuggerSymbolImageIndexType;
+  end else
+  if (Symbol is TReservedWordSymbol) then
+    Result := DebuggerSymbolImageIndexReservedWord
+  else
+  if (Symbol is TSpecialFunctionSymbol) then
+    Result := DebuggerSymbolImageIndexSpecialFunction
+  else
+  if (Symbol is TClassOperatorSymbol) then
+    Result := DebuggerSymbolImageIndexOperator;
+end;
+
+procedure TFormScriptDebugger.AddWatch(const Expression: string);
+var
+  Watch: TdwsDebuggerWatch;
+  Added: boolean;
+begin
+  Watch := TdwsDebuggerWatch.Create;
+  try
+    Watch.ExpressionText := Expression;
+
+    Debugger.Watches.AddOrFind(Watch, Added);
+
+    if (Added) then
+    begin
+      Watch := nil;
+      NotifyDebuggerFrames(dnUpdateWatches);
+    end;
+  finally
+    Watch.Free;
+  end;
+end;
+
+function TFormScriptDebugger.GetCompiledScript: IdwsProgram;
+var
+  Context: IScriptContext;
+  ScriptProvider: IScriptProvider;
+  DocumentProvider: IScriptDocumentProvider;
+  Document: IScriptHostDocument;
+begin
+  Result := FProgram;
+  if (Result <> nil) then
+    exit;
+
+  if not HasEditorPage then
+    Exit;
+
+  try
+
+    ScriptProvider := MainUnit.ScriptProvider;
+    if (ScriptProvider <> nil) then
+    begin
+      // If the current script hasn't been modified use the page's provider...
+      if (MainUnit.Modified) then
+        // ...otherwise create a temporary provider with the modified script.
+        ScriptProvider := TStaticScriptProvider.Create(ScriptProvider.ScriptName, MainUnit.Script, ScriptProvider.Folder)
+    end else
+      ScriptProvider := TStaticScriptProvider.Create(MainUnit.UnitName, MainUnit.Script);
+
+    if (Supports(ScriptProvider, IScriptDocumentProvider, DocumentProvider)) then
+      Document := DocumentProvider.Document
+    else
+      Document := nil;
+
+    Context := ScriptService.CreateContext(Document, nil, True);
+
+    Context.Compile(ScriptProvider, False, True); // Compile for debug
+    Result := Context.ScriptProgram;
+
+  except
+    Result := nil;
+  end;
+end;
+
+procedure TFormScriptDebugger.Evaluate(const Expression: string; ScriptPos: PScriptPos);
+begin
+  if (FFormEvaluate = nil) then
+  begin
+    FFormEvaluate := TFormDebugEvaluate.Create(Self);
+    FFormEvaluate.Initialize(Self);
+  end;
+
+  FFormEvaluate.Evaluate(Expression, ScriptPos);
+end;
+
+function TFormScriptDebugger.UnitNameFromScriptPos(const ScriptPos: TScriptPos): string;
+begin
+  Result := ScriptPos.SourceFile.Name;
+  if (ScriptPos.IsMainModule) or (Result = MSG_MainModule) then
+    Result := MainUnitName;
+end;
+
+function TFormScriptDebugger.UnitNameFromInternalName(const Name: string): string;
+begin
+  Result := Name;
+  if (Result = MSG_MainModule) then
+    Result := MainUnitName;
+end;
+
+// -----------------------------------------------------------------------------
+// IScriptDebuggerSetup implementation
+// -----------------------------------------------------------------------------
+procedure TFormScriptDebugger.SetEnvironment(const AEnvironment: IdwsEnvironment);
+begin
+  FEnvironment := AEnvironment;
+end;
+
+function TFormScriptDebugger.AttachAndExecute(const AExecution: IdwsProgramExecution): boolean;
+begin
+  FProgram := AExecution.Prog;
+  Debugger.AttachDebug(AExecution);
+
+  Result := Execute;
+end;
+
+function TFormScriptDebugger.Execute(Modal: boolean): boolean;
+begin
+  if (Modal) then
+    ShowModal
+  else
+    Show;
+
+  Result := True;
+end;
+
+// -----------------------------------------------------------------------------
+
+procedure TFormScriptDebugger.SetDebuggerHost(const AScriptDebuggerHost: IScriptDebuggerHost);
+begin
+  FScriptDebuggerHost := AScriptDebuggerHost;
+  if (FScriptDebuggerHost <> nil) then
+    SetScript(FScriptDebuggerHost.GetDelphiWebScript)
+  else
+    FScript := nil;
+end;
+
+// -----------------------------------------------------------------------------
+
+procedure TFormScriptDebugger.LoadRecentFiles;
+
+  procedure AddRecentFile(const Filename: string; Pinned: boolean);
+  var
+    Item: TdxBarExtraPaneItem;
+  begin
+    Item := BarApplicationMenu.ExtraPaneItems.Add;
+    Item.Pin := Pinned;
+    Item.Text := Filename;
+    Item.DisplayText := ExtractFileName(Filename);
+  end;
+
+var
   s: string;
-  Item: TdxBarExtraPaneItem;
 begin
   BarApplicationMenu.ExtraPaneItems.Clear;
 
-  Reg := TRegistryIniFile.Create(sRegistryRootScriptDebuggerRecent, KEY_READ);
-  try
-    if (Reg.ReadInteger('', 'Version', -1) <> 1) then
-      exit;
-    Count := Reg.ReadInteger('', 'Count', 0);
-    for i := 0 to Count-1 do
-    begin
-      s := Reg.ReadString('', 'Item'+IntToStr(i), '');
-      if (s <> '') then
-      begin
-        Item := BarApplicationMenu.ExtraPaneItems.Add;
-        if (s[1] = '*') then
-        begin
-          Item.Pin := True;
-          Delete(s, 1, 1);
-        end;
-        Item.Text := s;
-        Item.DisplayText := ExtractFileName(s);
-      end;
-    end;
-  finally
-    Reg.Free;
-  end;
+  for s in ScriptSettings.Folders.RecentPinnedFiles do
+    if (s <> '') then
+      AddRecentFile(s, True);
+
+  for s in ScriptSettings.Folders.RecentFiles do
+    if (s <> '') then
+      AddRecentFile(s, False);
 end;
 
 procedure TFormScriptDebugger.SaveRecentFiles;
 var
-  Reg: TRegistryIniFile;
   i: integer;
   s: string;
 begin
-  Reg := TRegistryIniFile.Create(sRegistryRootScriptDebuggerRecent, KEY_WRITE);
-  try
-    //Reg.EraseSection('');
-    Reg.WriteInteger('', 'Version', 1);
-    Reg.WriteInteger('', 'Count', BarApplicationMenu.ExtraPaneItems.Count);
-    for i := 0 to BarApplicationMenu.ExtraPaneItems.Count-1 do
-    begin
-      s := BarApplicationMenu.ExtraPaneItems[i].Text;
-      if (BarApplicationMenu.ExtraPaneItems[i].Pin) then
-        s := '*'+s;
-      Reg.WriteString('', 'Item'+IntToStr(i), s);
-    end;
-  finally
-    Reg.Free;
+  ScriptSettings.Folders.RecentFiles.Clear;
+  ScriptSettings.Folders.RecentPinnedFiles.Clear;
+
+  for i := 0 to BarApplicationMenu.ExtraPaneItems.Count-1 do
+  begin
+    s := BarApplicationMenu.ExtraPaneItems[i].Text;
+
+    if (BarApplicationMenu.ExtraPaneItems[i].Pin) then
+      ScriptSettings.Folders.RecentPinnedFiles.Add(s)
+    else
+      ScriptSettings.Folders.RecentFiles.Add(s)
   end;
 end;
 
@@ -3082,83 +3415,31 @@ end;
 
 procedure TFormScriptDebugger.LoadLayouts;
 var
-  Reg: TRegistryIniFile;
   LayoutNames: TStringList;
+  i: integer;
 begin
   LayoutNames := TStringList.Create;
   try
     LayoutNames.CaseSensitive := False;
     LayoutNames.Duplicates := dupIgnore;
 
-    Reg := TRegistryIniFile.Create(sRegistryRootScriptDebuggerLayout, KEY_READ);
-    try
-      if (Reg.ValueExists('', 'Version')) and (Reg.ReadInteger('', 'Version', -1) = nScriptDebuggerLayoutVersion) then
-      begin
-        FLayoutNameEdit := Reg.ReadString('', 'EditLayout', sScriptDebuggerLayoutNameDefault);
-        FLayoutNameDebug := Reg.ReadString('', 'DebugLayout', sScriptDebuggerLayoutNameDefault);
-        if (FLayoutNameEdit = '') then
-          FLayoutNameEdit := sScriptDebuggerLayoutNameDefault;
-        if (FLayoutNameDebug = '') then
-          FLayoutNameDebug := sScriptDebuggerLayoutNameDefault;
-
-        Reg.ReadSections('', LayoutNames);
-      end;
-    finally
-      Reg.Free;
-    end;
-
-    if (LayoutNames.Count = 0) then
-    begin
-      FLayoutName := sScriptDebuggerLayoutNameDefault;
-      FLayoutNameEdit := FLayoutName;
-      FLayoutNameDebug := FLayoutName;
-      LayoutNames.Add(FLayoutName);
-
-      SaveLayout;
-    end;
-
-    if (LayoutNames.IndexOf(FLayoutNameEdit) = -1) then
-      FLayoutNameEdit := LayoutNames[0];
-    if (LayoutNames.IndexOf(FLayoutNameDebug) = -1) then
-      FLayoutNameDebug := LayoutNames[0];
+    for i := 0 to ScriptSettings.Layout.Count-1 do
+      LayoutNames.Add(ScriptSettings.Layout.Names[i]);
 
     BarComboLayout.Items.Assign(LayoutNames);
   finally
     LayoutNames.Free;
   end;
 
-  BarComboLayout.Text := FLayoutNameEdit;
+  BarComboLayout.Text := ScriptSettings.Layout.EditLayout;
 end;
 
 procedure TFormScriptDebugger.SaveLayout;
-var
-  Reg: TRegistryIniFile;
 begin
   if (FLayoutName = '') then
     FLayoutName := sScriptDebuggerLayoutNameDefault;
 
-  DockingManager.SaveLayoutToRegistry(sRegistryRootScriptDebuggerLayout+'\'+FLayoutName);
-
-  Reg := TRegistryIniFile.Create(sRegistryRootScriptDebuggerLayout, KEY_WRITE);
-  try
-    Reg.WriteInteger('', 'Version', nScriptDebuggerLayoutVersion);
-  finally
-    Reg.Free;
-  end;
-end;
-
-procedure TFormScriptDebugger.SaveLayouts;
-var
-  Reg: TRegistryIniFile;
-begin
-  Reg := TRegistryIniFile.Create(sRegistryRootScriptDebuggerLayout, KEY_WRITE);
-  try
-    Reg.WriteInteger('', 'Version', nScriptDebuggerLayoutVersion);
-    Reg.WriteString('', 'EditLayout', FLayoutNameEdit);
-    Reg.WriteString('', 'DebugLayout', FLayoutNameDebug);
-  finally
-    Reg.Free;
-  end;
+  DockingManager.SaveLayoutToRegistry(ScriptSettings.Layout.Key+FLayoutName);
 end;
 
 procedure TFormScriptDebugger.DockingManagerLayoutChanged(Sender: TdxCustomDockControl);
@@ -3178,7 +3459,7 @@ begin
 
     FLauoutLoading := True;
     try
-      DockingManager.LoadLayoutFromRegistry(sRegistryRootScriptDebuggerLayout+'\'+FLayoutName);
+      DockingManager.LoadLayoutFromRegistry(ScriptSettings.Layout.Key+FLayoutName);
     finally
       FLauoutLoading := False;
     end;
@@ -3188,24 +3469,24 @@ end;
 
 procedure TFormScriptDebugger.ActionLayoutDefaultDebugExecute(Sender: TObject);
 begin
-  FLayoutNameDebug := BarComboLayout.Text;
+  ScriptSettings.Layout.DebugLayout := BarComboLayout.Text;
 end;
 
 procedure TFormScriptDebugger.ActionLayoutDefaultDebugUpdate(Sender: TObject);
 begin
   TAction(Sender).Enabled := (BarComboLayout.ItemIndex <> -1);
-  TAction(Sender).Checked := (FLayoutName = FLayoutNameDebug);
+  TAction(Sender).Checked := (FLayoutName = ScriptSettings.Layout.DebugLayout);
 end;
 
 procedure TFormScriptDebugger.ActionLayoutDefaultEditExecute(Sender: TObject);
 begin
-  FLayoutNameEdit := BarComboLayout.Text;
+  ScriptSettings.Layout.EditLayout := BarComboLayout.Text;
 end;
 
 procedure TFormScriptDebugger.ActionLayoutDefaultEditUpdate(Sender: TObject);
 begin
   TAction(Sender).Enabled := (BarComboLayout.ItemIndex <> -1);
-  TAction(Sender).Checked := (FLayoutName = FLayoutNameEdit);
+  TAction(Sender).Checked := (FLayoutName = ScriptSettings.Layout.EditLayout);
 end;
 
 procedure TFormScriptDebugger.ActionLayoutSaveExecute(Sender: TObject);
@@ -3338,27 +3619,6 @@ procedure TFormScriptDebugger.AddStatusMessage(const AStr: string);
 begin
   StatusBar.Panels[3].Text := AStr;
   StatusBar.Update;
-end;
-
-procedure TFormScriptDebugger.AddWatch(const Expression: string);
-var
-  Watch: TdwsDebuggerWatch;
-  Added: boolean;
-begin
-  Watch := TdwsDebuggerWatch.Create;
-  try
-    Watch.ExpressionText := Expression;
-
-    Debugger.Watches.AddOrFind(Watch, Added);
-
-    if (Added) then
-    begin
-      Watch := nil;
-      NotifyDebuggerFrames(dnUpdateWatches);
-    end;
-  finally
-    Watch.Free;
-  end;
 end;
 
 procedure TFormScriptDebugger.ClearMessagesWindow;
@@ -3544,20 +3804,6 @@ begin
     NotifyDebuggerFrames(dnCompiled);
 end;
 
-function TFormScriptDebugger.UnitNameFromInternalName(const Name: string): string;
-begin
-  Result := Name;
-  if (Result = MSG_MainModule) then
-    Result := MainUnitName;
-end;
-
-function TFormScriptDebugger.UnitNameFromScriptPos(const ScriptPos: TScriptPos): string;
-begin
-  Result := ScriptPos.SourceFile.Name;
-  if (ScriptPos.IsMainModule) or (Result = MSG_MainModule) then
-    Result := MainUnitName;
-end;
-
 function TFormScriptDebugger.NameToEditorPageIndex(const AName: string): Integer;
 begin
   Result := EditorPageCount - 1;
@@ -3615,27 +3861,6 @@ begin
     if (Page.Modified) then
       SavePage(Page);
   end;
-end;
-
-procedure TFormScriptDebugger.Evaluate(const Expression: string; ScriptPos: PScriptPos);
-begin
-  if (FFormEvaluate = nil) then
-  begin
-    FFormEvaluate := TFormDebugEvaluate.Create(Self);
-    FFormEvaluate.Initialize(Self);
-  end;
-
-  FFormEvaluate.Evaluate(Expression, ScriptPos);
-end;
-
-function TFormScriptDebugger.Execute(Modal: boolean): boolean;
-begin
-  if (Modal) then
-    ShowModal
-  else
-    Show;
-
-  Result := True;
 end;
 
 procedure TFormScriptDebugger.SavePage(Page: TEditorPage);
@@ -3810,19 +4035,18 @@ begin
   PageControlEditor.InvalidateWithChildren;
 end;
 
-procedure TFormScriptDebugger.SetOptions(const Value: TDwsIdeOptions);
-begin
-  FOptions := Value;
-end;
-
 procedure TFormScriptDebugger.DoOnExecutionStarted(Execution: TdwsProgramExecution);
 begin
+  if (FScriptDebuggerHost <> nil) then
+    FScriptDebuggerHost.NotifyExecution(Self, Execution, senStarted);
   if (Assigned(FOnBeforeExecution)) then
     FOnBeforeExecution(Execution);
 end;
 
 procedure TFormScriptDebugger.DoOnExecutionEnded(Execution: TdwsProgramExecution);
 begin
+  if (FScriptDebuggerHost <> nil) then
+    FScriptDebuggerHost.NotifyExecution(Self, Execution, senEnded);
   if (Assigned(OnAfterExecution)) then
     OnAfterExecution(Execution);
 end;
@@ -4066,7 +4290,7 @@ begin
 //        ActionLayoutDefaultDebug.Visible := False;
 //        ActionLayoutDefaultEdit.Visible := True;
         // Switch to edit layout
-        BarComboLayout.Text := FLayoutNameEdit;
+        BarComboLayout.Text := ScriptSettings.Layout.EditLayout;
       end
   end;
 
@@ -4078,29 +4302,24 @@ end;
 procedure TFormScriptDebugger.GotoHomePosition;
 begin
   FHomePositionCaptionSuffix := '';
-  if FOptions.HomePositionFileName <> '' then
-    if OpenEditorPage(FOptions.HomePositionFileName) then
+  if (ScriptSettings.Editor.HomePositionFileName <> '') then
+    if OpenEditorPage(ScriptSettings.Editor.HomePositionFileName) then
     begin
-      FHomePositionCaptionSuffix := FOptions.HomePositionFileName;
-      if FOptions.HomePositionFileIdentifier <> '' then
+      FHomePositionCaptionSuffix := ScriptSettings.Editor.HomePositionFileName;
+      if ScriptSettings.Editor.HomePositionFileIdentifier <> '' then
       begin
-        CurrentEditorPage.GotoIdentifier(FOptions.HomePositionFileIdentifier);
+        CurrentEditorPage.GotoIdentifier(ScriptSettings.Editor.HomePositionFileIdentifier);
         FHomePositionCaptionSuffix := Format('%s%s [%s]', [
-          FOptions.HomePositionFileName,
+          ScriptSettings.Editor.HomePositionFileName,
           sScriptFileType,
-          FOptions.HomePositionFileIdentifier]);
+          ScriptSettings.Editor.HomePositionFileIdentifier]);
       end;
     end;
 end;
 
 function TFormScriptDebugger.CanGotoHomePosition: Boolean;
 begin
-  Result := FOptions.HomePositionFileName <> '';
-end;
-
-function TFormScriptDebugger.GetDebugger: TdwsDebugger;
-begin
-  Result := Debugger;
+  Result := ScriptSettings.Editor.HomePositionFileName <> '';
 end;
 
 procedure TFormScriptDebugger.dxBarButton12Click(Sender: TObject);
@@ -4151,97 +4370,6 @@ begin
   Result := False;
 end;
 
-function TFormScriptDebugger.FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
-var
-  Test: TdwsDebuggerBreakpoint;
-begin
-  Result := bpsNone;
-  if (not ScriptPos.Defined) or (Debugger.Breakpoints.Count = 0) then
-    Exit;
-
-  Test := Debugger.Breakpoints.BreakpointAt(ScriptPos);
-  if (Test <> nil) then
-  begin
-    if (Test.Enabled) then
-      Result := bpsBreakpoint
-    else
-      Result := bpsBreakpointDisabled;
-  end;
-end;
-
-procedure TFormScriptDebugger.UpdateBreakpoints(Update: TBreakpointUpdate);
-begin
-  if (CurrentEditorPage <> nil) then
-    CurrentEditorPage.Editor.Invalidate;
-
-  if (Update = bpuReload) then
-    ScriptDebuggerBreakPointsFrame.UpdateInfo
-  else
-    ScriptDebuggerBreakPointsFrame.RefreshInfo(Update);
-
-  Debugger.Breakpoints.BreakPointsChanged;
-end;
-
-procedure TFormScriptDebugger.AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean);
-var
-  BP: TdwsDebuggerBreakpoint;
-  bAdded: Boolean;
-  I: Integer;
-begin
-  BP := TdwsDebuggerBreakpoint.Create;
-  BP.Line := ScriptPos.Line;
-
-  BP.SourceName := ScriptPos.SourceName;
-
-  I := Debugger.Breakpoints.AddOrFind(BP, bAdded);
-  if (not bAdded) then
-    BP.Free;
-  Debugger.Breakpoints[I].Enabled := AEnabled;
-
-  if (CurrentEditorPage <> nil) then
-  begin
-    CurrentEditorPage.Editor.InvalidateGutterLine(ScriptPos.Line);
-    CurrentEditorPage.Editor.InvalidateLine(ScriptPos.Line);
-  end;
-  ScriptDebuggerBreakPointsFrame.UpdateInfo;
-
-  Debugger.Breakpoints.BreakPointsChanged;
-end;
-
-procedure TFormScriptDebugger.ClearBreakpoint(const ScriptPos: TScriptPos);
-var
-  Test, Found: TdwsDebuggerBreakpoint;
-  I: Integer;
-begin
-  if (Debugger.Breakpoints.Count = 0) then
-    Exit;
-
-  Test := TdwsDebuggerBreakpoint.Create;
-  try
-    Test.Line := ScriptPos.Line;
-    Test.SourceName := ScriptPos.SourceName;
-
-    I := Debugger.Breakpoints.IndexOf(Test);
-    if (I <> -1) then
-    begin
-      Found := Debugger.Breakpoints[I];
-      Debugger.Breakpoints.Extract(Found);
-      FreeAndNil(Found);
-    end;
-  finally
-    FreeAndNil(Test);
-  end;
-
-  if (CurrentEditorPage <> nil) then
-  begin
-    CurrentEditorPage.Editor.InvalidateGutterLine(ScriptPos.Line);
-    CurrentEditorPage.Editor.InvalidateLine(ScriptPos.Line);
-  end;
-  ScriptDebuggerBreakPointsFrame.UpdateInfo;
-
-  Debugger.Breakpoints.BreakPointsChanged;
-end;
-
 function TFormScriptDebugger.HasEditorPage: Boolean;
 begin
   Result := EditorCurrentPageIndex <> -1;
@@ -4249,17 +4377,17 @@ end;
 
 function TFormScriptDebugger.IsCompiled: Boolean;
 begin
-  Result := Assigned(FProgram) and (not FProgram.Msgs.HasErrors);
+  Result := (FProgram <> nil) and (not FProgram.Msgs.HasErrors);
 end;
 
 procedure TFormScriptDebugger.SetScript(const Value: TDelphiWebScript);
 begin
   FScript := Value;
 
-  if not Assigned(FScript) then
+  if (FScript = nil) then
     raise EDWScriptStudio.Create(RStrScriptCannotBeNil);
 
-  if FScript.Config.ScriptPaths.Count = 0 then
+  if (FScript.Config.ScriptPaths.Count = 0) then
     raise EDWScriptStudio.Create(RStrScriptDoesNotDefineMainPath);
 
   // Script result type has been saved before calling the IDE form
@@ -4382,63 +4510,6 @@ begin
 {$endif DISABLED_STUFF}
 end;
 
-procedure TFormScriptDebugger.ViewScriptPos(const AScriptPos: TScriptPos; AMoveCurrent: boolean; AHiddenMainModule: Boolean);
-var
-  ScriptName: string;
-  i: integer;
-  EditPage: IScriptDebugEditPage;
-  ScriptProvider: IScriptProvider;
-begin
-  if (not AScriptPos.Defined) then
-    exit;
-
-  ScriptName := UnitNameFromScriptPos(AScriptPos);
-{$ifdef DISABLED_STUFF}
-  if ScriptName = SYS_MainModule then
-  begin
-    if AHiddenMainModule then
-      i := -1
-    else
-      i := ProjectSourceFileIndex
-  end
-  else
-{$endif DISABLED_STUFF}
-    i := NameToEditorPageIndex(ScriptName);
-
-  if (i = -1) then
-  begin
-    if (not AnsiSameText(ExtractFileExt(ScriptName), sScriptFileType)) then
-      ScriptName := ScriptName + sScriptFileType;
-
-    if (MainUnit <> nil) then
-      ScriptProvider := MainUnit.ScriptProvider
-    else
-      ScriptProvider := nil;
-
-    ScriptProvider := OpenScriptStream(ScriptName, ScriptProvider);
-    if (ScriptProvider <> nil) then
-    begin
-      EditPage := EditorPageAddNew(ScriptProvider);
-    end else
-    begin
-      EditPage := EditorPageAddNew(ScriptName, AScriptPos.SourceCode);
-      // Read-only because we have no file to associate the source with
-      EditPage.IsReadOnly := True;
-    end;
-    i := EditPage.Index;
-  end;
-
-  if (i <> -1) then
-  begin
-    EditorCurrentPageIndex := i;
-    CurrentEditorPage.SetCurrentLine(AScriptPos.Line, AScriptPos.Col, AMoveCurrent);
-    if (Visible) and (CurrentEditor.CanFocus) then
-      CurrentEditor.SetFocus;
-    CurrentEditor.InvalidateGutterLine(AScriptPos.Line);
-    CurrentEditor.InvalidateLine(AScriptPos.Line);
-  end;
-end;
-
 procedure TFormScriptDebugger.ShellListViewFileExplorerExecuteItem(Sender: TObject; APIDL: PItemIDList; var AHandled: Boolean);
 var
   Filename: string;
@@ -4456,92 +4527,6 @@ var
 begin
   for I := 0 to EditorPageCount - 1 do
     EditorPage(I).ShowExecutableLines;
-end;
-
-function TFormScriptDebugger.SymbolToImageIndex(Symbol: TSymbol): integer;
-begin
-  Result := DebuggerSymbolImageIndexUnknown;
-
-  if (Symbol is TValueSymbol) then
-  begin
-    if (Symbol is TParamSymbol) then
-      Result := DebuggerSymbolImageIndexParameter
-    else
-    if (Symbol is TPropertySymbol) then
-      Result := DebuggerSymbolImageIndexProperty
-    else
-    if (Symbol is TConstSymbol) then
-    begin
-      if (Symbol is TElementSymbol) then
-        Result := DebuggerSymbolImageIndexElement
-      else
-        Result := DebuggerSymbolImageIndexConst;
-    end else
-      Result := DebuggerSymbolImageIndexVariable;
-  end else
-  if (Symbol is TTypeSymbol) then
-  begin
-    Result := DebuggerSymbolImageIndexType;
-
-    if (Symbol is TStructuredTypeSymbol) then
-    begin
-      if (Symbol is TClassSymbol) then
-        Result := DebuggerSymbolImageIndexClass
-      else
-      if (Symbol is TRecordSymbol) then
-        Result := DebuggerSymbolImageIndexRecord
-      else
-      if (Symbol is TInterfaceSymbol) then
-        Result := DebuggerSymbolImageIndexInterface;
-    end else
-    if (Symbol is TUnitSymbol) then
-      Result := DebuggerSymbolImageIndexUnit
-    else
-    if (Symbol is TEnumerationSymbol) then
-      Result := DebuggerSymbolImageIndexEnum
-    else
-    if (Symbol is TAliasSymbol) then
-      Result := DebuggerSymbolImageIndexType
-    else
-    if (Symbol is TStructuredTypeMetaSymbol) then
-      Result := Ord(High(TdwsSuggestionCategory))+1
-    else
-    if (Symbol is TArraySymbol) then
-      Result := DebuggerSymbolImageIndexArray
-    else
-    if (Symbol is TSetOfSymbol) then
-      Result := DebuggerSymbolImageIndexSet
-    else
-    if (Symbol is TFuncSymbol) then
-    begin
-      if (Symbol is TMethodSymbol) then
-      begin
-        case TMethodSymbol(Symbol).Kind of
-          fkConstructor: Result := DebuggerSymbolImageIndexConstructor;
-          fkDestructor: Result := DebuggerSymbolImageIndexDestructor;
-          fkMethod: Result := DebuggerSymbolImageIndexMethod;
-          fkProcedure: Result := DebuggerSymbolImageIndexProcedure;
-          fkFunction: Result := DebuggerSymbolImageIndexFunction;
-        end;
-      end else
-      if TFuncSymbol(Symbol).IsType then
-        Result := DebuggerSymbolImageIndexDelegate
-      else
-      if (Symbol.Typ = nil) then
-        Result := DebuggerSymbolImageIndexProcedure
-      else
-        Result := DebuggerSymbolImageIndexFunction;
-    end else
-      Result := DebuggerSymbolImageIndexType;
-  end else
-  if (Symbol is TReservedWordSymbol) then
-    Result := DebuggerSymbolImageIndexReservedWord
-  else
-  if (Symbol is TSpecialFunctionSymbol) then
-    Result := DebuggerSymbolImageIndexSpecialFunction
-  else
-  if (Symbol is TClassOperatorSymbol) then
-    Result := DebuggerSymbolImageIndexOperator;
 end;
 
 procedure TFormScriptDebugger.SynCodeCompletionExecute(Kind: SynCompletionType;
@@ -5746,47 +5731,6 @@ begin
   end;
 end;
 
-function TFormScriptDebugger.GetCompiledScript: IdwsProgram;
-var
-  Context: IScriptContext;
-  ScriptProvider: IScriptProvider;
-  DocumentProvider: IScriptDocumentProvider;
-  Document: IScriptHostDocument;
-begin
-  Result := FProgram;
-  if (Result <> nil) then
-    exit;
-
-  if not HasEditorPage then
-    Exit;
-
-  try
-
-    ScriptProvider := MainUnit.ScriptProvider;
-    if (ScriptProvider <> nil) then
-    begin
-      // If the current script hasn't been modified use the page's provider...
-      if (MainUnit.Modified) then
-        // ...otherwise create a temporary provider with the modified script.
-        ScriptProvider := TStaticScriptProvider.Create(ScriptProvider.ScriptName, MainUnit.Script, ScriptProvider.Folder)
-    end else
-      ScriptProvider := TStaticScriptProvider.Create(MainUnit.UnitName, MainUnit.Script);
-
-    if (Supports(ScriptProvider, IScriptDocumentProvider, DocumentProvider)) then
-      Document := DocumentProvider.Document
-    else
-      Document := nil;
-
-    Context := ScriptService.CreateContext(Document, nil, True);
-
-    Context.Compile(ScriptProvider, False, True); // Compile for debug
-    Result := Context.ScriptProgram;
-
-  except
-    Result := nil;
-  end;
-end;
-
 function TFormScriptDebugger.GetEditorCurrentPageIndex: Integer;
 begin
   Result := PageControlEditor.ActivePageIndex;
@@ -5834,12 +5778,6 @@ begin
     FGotoForm := TDwsIdeGotoLineNumber.Create(Self);
 
   Result := FGotoForm;
-end;
-
-
-function TFormScriptDebugger.GetProgram: IdwsProgram;
-begin
-  Result := FProgram;
 end;
 
 {$REGION 'Action Handler'}
@@ -6210,19 +6148,22 @@ begin
     if (CurrentEditorPage.ScriptProvider <> nil) then
       Filename := CurrentEditorPage.ScriptProvider.Folder
     else
-      Filename := ExtractFilePath(CurrentEditorPage.Filename);
+      Filename := TPath.GetDirectoryName(CurrentEditorPage.Filename);
 
     if (Filename = '') and (MainUnit <> nil) and (MainUnit.ScriptProvider <> nil) then
       Filename := MainUnit.ScriptProvider.Folder;
 
     if (Filename <> '') then
-      OpenFileDialog.DefaultFolder := Filename;
-  end;
+      OpenFileDialog.DefaultFolder := Filename
+    else
+      OpenFileDialog.DefaultFolder := ScriptSettings.Folders.FolderScript;
+  end else
+    OpenFileDialog.DefaultFolder := ScriptSettings.Folders.FolderScript;
 
   if (not OpenFileDialog.Execute) then
     Exit;
 
-  OpenFileDialog.DefaultFolder := ExtractFilePath(OpenFileDialog.FileName);
+  ScriptSettings.Folders.FolderScript := TPath.GetDirectoryName(OpenFileDialog.FileName);
 
   for i := 0 to OpenFileDialog.Files.Count - 1 do
   begin
@@ -6266,17 +6207,15 @@ begin
 
   AddMessage('Running program in debugger', mkInfo);
 
-  if (Assigned(FOnBeforeExecution)) then
-    TdwsProgramExecution(Exec).OnExecutionStarted := DoOnExecutionStarted;
-  if (Assigned(FOnAfterExecution)) then
-    TdwsProgramExecution(Exec).OnExecutionEnded := DoOnExecutionEnded;
+  TdwsProgramExecution(Exec).OnExecutionStarted := DoOnExecutionStarted;
+  TdwsProgramExecution(Exec).OnExecutionEnded := DoOnExecutionEnded;
 
   Result := True;
 
   Debugger.AttachDebug(Exec);
   try
     // Switch to debug layout
-    BarComboLayout.Text := FLayoutNameDebug;
+    BarComboLayout.Text := ScriptSettings.Layout.DebugLayout;
 
     Exec.Debugger := Debugger;
     FIntializationFinalizationMode := True;
@@ -6534,7 +6473,7 @@ begin
 
   try
     // Switch to debug layout
-    BarComboLayout.Text := FLayoutNameDebug;
+    BarComboLayout.Text := ScriptSettings.Layout.DebugLayout;
     try
 
       Stopwatch := TStopwatch.Create;
@@ -6567,7 +6506,7 @@ begin
 
     finally
       // Switch to edit layout
-      BarComboLayout.Text := FLayoutNameEdit;
+      BarComboLayout.Text := ScriptSettings.Layout.EditLayout;
     end;
   finally
 
@@ -7309,6 +7248,34 @@ begin
   TAction(Sender).Enabled := (GetProgram <> nil);
 end;
 
+procedure TFormScriptDebugger.ButtonToolDocumentBuildClick(Sender: TObject);
+var
+  ScriptProgram: IdwsProgram;
+  DocumentationBuilder: TScriptCustomDocBuilder;
+  Folder: string;
+begin
+  ScriptProgram := GetProgram;
+  if (ScriptProgram = nil) then
+    exit;
+
+{$ifdef DEBUG}
+  Folder := ExpandEnvironmentVariable(sScriptHelpRtlSourceFolder);
+{$else DEBUG}
+  Folder := ExtractFilePath(ExpandEnvironmentVariable(sScriptHelpRtlFilenameDownload));
+{$endif DEBUG}
+
+  DocumentationBuilder := TScriptSourceBuilder.Create(ScriptProgram, TPath.GetFileNameWithoutExtension(sScriptHelpRtlFilename));
+  try
+
+    DocumentationBuilder.Compile(IncludeTrailingPathDelimiter(Folder));
+
+  finally
+    DocumentationBuilder.Free;
+  end;
+
+  ShowMessage('Documentation has been compiled in:'+#13+Folder);
+end;
+
 procedure TFormScriptDebugger.ButtonToolDocumentSourceClick(Sender: TObject);
 var
   ScriptProgram: IdwsProgram;
@@ -7325,7 +7292,7 @@ begin
   Folder := ExtractFilePath(ExpandEnvironmentVariable(sScriptHelpRtlFilenameDownload));
 {$endif DEBUG}
 
-  DocumentationBuilder := TScriptSourceBuilder.Create(ScriptProgram);
+  DocumentationBuilder := TScriptSourceBuilder.Create(ScriptProgram, TPath.GetFileNameWithoutExtension(sScriptHelpRtlFilename));
   try
 
     DocumentationBuilder.Build(IncludeTrailingPathDelimiter(Folder));
@@ -7426,4 +7393,27 @@ procedure TSynAutoComplete.SetShortCut(const Value: TShortCut);
 begin
 end;
 
+// -----------------------------------------------------------------------------
+//
+//              ScriptDebuggerFactory
+//
+// -----------------------------------------------------------------------------
+function ScriptDebuggerFactory(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
+var
+  DebuggerForm: TFormScriptDebugger;
+begin
+  if (CreateAsMainForm) then
+  begin
+    Application.CreateForm(TFormScriptDebugger, DebuggerForm);
+    Result := IScriptDebugger(DebuggerForm);
+  end else
+    Result := TFormScriptDebugger.Create(nil);
+
+  TFormScriptDebugger(Result).SetDebuggerHost(ScriptDebuggerHost);
+end;
+
+initialization
+  RegisterScriptDebuggerFactory(ScriptDebuggerFactory);
+finalization
+  RegisterScriptDebuggerFactory(nil);
 end.
