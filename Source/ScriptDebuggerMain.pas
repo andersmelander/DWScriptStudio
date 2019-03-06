@@ -882,7 +882,7 @@ const
   sScriptHeaderTemplateAuthorID = '<your public API key>';
 
   // The folder where we will output files when generating documentation
-  sScriptHelpRtlSourceFolder = '%AppInstall%\Documentation\Source';
+  sScriptHelpRtlSourceFolder = '%AppInstall%\..\Documentation\Source';
   // The name of the generated help file
   sScriptHelpRtlFilename = 'ScriptRTL.chm';
 
@@ -890,7 +890,7 @@ const
   // Location of preinstalled help file
   sScriptHelpRtlFilenameDefault = '%AppInstall%\Help\'+sScriptHelpRtlFilename;
   // Fallback location used during debug/development (grab file directly from the place where it's generated)
-  sScriptHelpRtlFilenameDebug = '%AppInstall%\Documentation\Output\CHM\'+sScriptHelpRtlFilename;
+  sScriptHelpRtlFilenameDebug = '%AppInstall%\..\Documentation\Output\CHM\'+sScriptHelpRtlFilename;
   // Location of downloaded help file
   sScriptHelpRtlFilenameDownload = '%Documents%\%AppName%\Help\'+sScriptHelpRtlFilename;
 
