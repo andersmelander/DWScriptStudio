@@ -31,6 +31,7 @@ uses
   amScriptModuleUserInterfaceDialogs,
   amScriptModuleUserInterfaceProgress,
   amScriptModuleUserInterfaceLayout,
-  amScriptModuleUserInterfaceListView;
+  amScriptModuleUserInterfaceListView,
+  amScriptModuleUserInterfaceWizard;
 
 end.
