@@ -2,15 +2,15 @@ program StandaloneDebugger;
 
 uses
   // This causes all script RTL units be be made available
-  ScriptModuleAll,
+  amScriptModuleAll,
   // This causes the script debugger to become available
-  ScriptDebuggerMain,
+  amScriptDebuggerMain,
 
   Vcl.Forms,
 
-  ScriptAPI,
-  ScriptHostAPI,
-  ScriptModule;
+  amScriptAPI,
+  amScriptHostAPI,
+  amScriptModule;
 
 {$R *.res}
 
@@ -18,8 +18,8 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
 
-  ScriptHostAPI.ScriptDebuggerIsApplication := True;
-  ScriptAPI.ScriptService.Edit;
+  amScriptHostAPI.ScriptDebuggerIsApplication := True;
+  amScriptAPI.ScriptService.Edit;
 
   Application.Run;
 end.

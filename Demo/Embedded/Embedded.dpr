@@ -2,9 +2,9 @@ program Embedded;
 
 uses
   // This causes all script RTL units be be made available
-  ScriptModuleAll,
+  amScriptModuleAll,
   // This causes the script debugger to become available
-  ScriptDebuggerMain,
+  amScriptDebuggerMain,
   Vcl.Forms,
   Main in 'Main.pas' {FormMain},
   DemoFrameDocument in 'DemoFrameDocument.pas' {FrameDocument: TFrame};

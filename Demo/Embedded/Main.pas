@@ -10,8 +10,8 @@ uses
   cxLookAndFeelPainters, cxGraphics, dxSkinsCore, cxControls, cxLookAndFeels, dxStatusBar, cxClasses, dxAlertWindow,
   dxBarBuiltInMenu, cxButtons, cxPC,
 
-  ScriptHostAPI,
-  ScriptHostAlertWindow,
+  amScriptHostAPI,
+  amScriptHostAlertWindow,
 
   DemoFrameDocument;
 
@@ -63,7 +63,7 @@ implementation
 {$R *.dfm}
 
 uses
-  ScriptAPI;
+  amScriptAPI;
 
 // -----------------------------------------------------------------------------
 //

@@ -6466,8 +6466,8 @@ begin
   else
     AddMessage('Running program', mkInfo);
 
-  if (Assigned(FOnBeforeExecution)) then
-    TdwsProgramExecution(Exec).OnExecutionStarted := DoOnExecutionStarted;
+  TdwsProgramExecution(Exec).OnExecutionStarted := DoOnExecutionStarted;
+  TdwsProgramExecution(Exec).OnExecutionEnded := DoOnExecutionEnded;
 
   Result := True;
 
