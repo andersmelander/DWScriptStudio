@@ -27,7 +27,7 @@ var
   sScriptAPIKeyPublic: string = '';
 
 var
-  sScriptHostConditionalDefine: string = '';
+  sScriptHostConditionalDefine: string = ''; // TODO : Move to ScriptSettings
 
 //------------------------------------------------------------------------------
 //

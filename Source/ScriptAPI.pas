@@ -163,6 +163,7 @@ type
     function Edit(const ADocument: IScriptHostDocument; AItem: TObject; const ScriptProvider: IScriptProvider; Messages: TdwsMessageList = nil; MsgIndex: integer = -1): boolean; overload;
     function Edit(const Filename: string): boolean; overload;
     function Edit(const ScriptProvider: IScriptProvider = nil): boolean; overload;
+    function CanEdit: boolean;
 
     function GetPackages: IScriptPackageList;
     property Packages: IScriptPackageList read GetPackages;

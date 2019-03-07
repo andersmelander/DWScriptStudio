@@ -195,6 +195,7 @@ type
 procedure RegisterScriptDebuggerFactory(Factory: TScriptDebuggerFactory);
 
 function CreateScriptDebugger(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean = False): IScriptDebugger;
+function CanCreateScriptDebugger: boolean;
 
 
 // -----------------------------------------------------------------------------
@@ -447,9 +448,14 @@ begin
   FScriptDebuggerFactory := Factory;
 end;
 
+function CanCreateScriptDebugger: boolean;
+begin
+  Result := Assigned(FScriptDebuggerFactory);
+end;
+
 function CreateScriptDebugger(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
 begin
-  if (not Assigned(FScriptDebuggerFactory)) then
+  if (not CanCreateScriptDebugger) then
     raise Exception.Create('No Script Debugger Factory has been registered');
 
   Result := FScriptDebuggerFactory(ScriptDebuggerHost, CreateAsMainForm);
