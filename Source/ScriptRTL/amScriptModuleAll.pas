@@ -1,4 +1,4 @@
-unit amScriptModuleAll;
+﻿unit amScriptModuleAll;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -29,6 +29,7 @@ uses
   amScriptModuleUserInterfaceActionList,
   amScriptModuleUserInterfaceImageList,
   amScriptModuleUserInterfaceDialogs,
-  amScriptModuleUserInterfaceProgress;
+  amScriptModuleUserInterfaceProgress,
+  amScriptModuleUserInterfaceLayout;
 
 end.

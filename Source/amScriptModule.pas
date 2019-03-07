@@ -248,8 +248,9 @@ type
     function Environment(const ScriptObj: IScriptObj): IScriptEnvironment; overload;
     function Environment(Info: TProgramInfo): IScriptEnvironment; overload;
     function Environment(Wrapper: TScriptObjectWrapperBase): IScriptEnvironment; overload;
-    // Easy access to TScriptEnvironment.FindWrappers from modules
+    // Easy access to global TScriptEnvironment wrapper list function from modules
     class function ScriptFindWrappers(AObject: TObject): TWrapperList;
+    class procedure ScriptUnregisterWrappers(AObject: TObject);
 
     // IScriptModule
     procedure Initialize(DelphiWebScript: TDelphiWebScript); virtual;
@@ -1119,6 +1120,11 @@ end;
 class function TScriptModule.ScriptFindWrappers(AObject: TObject): TWrapperList;
 begin
   Result := TScriptEnvironment.FindWrappers(AObject);
+end;
+
+class procedure TScriptModule.ScriptUnregisterWrappers(AObject: TObject);
+begin
+  TScriptEnvironment.UnregisterWrappers(AObject);
 end;
 
 // -----------------------------------------------------------------------------
