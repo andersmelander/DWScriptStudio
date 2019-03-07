@@ -31,12 +31,12 @@ uses
   dwsInfo,
 {$endif OLD_DWSCRIPT}
 
-  ScriptAPI,
-  ScriptDebuggerAPI,
-  ScriptHostAPI,
-  ScriptProviderAPI,
-  ScriptPackageAPI,
-  ScriptModule;
+  amScriptAPI,
+  amScriptDebuggerAPI,
+  amScriptHostAPI,
+  amScriptProviderAPI,
+  amScriptPackageAPI,
+  amScriptModule;
 
 
 // -----------------------------------------------------------------------------
@@ -224,22 +224,22 @@ uses
   amDialogs,
   amVersionInfo,
 
-  ScriptFileSystemAPI,
-  ScriptFileSystem,
-  ScriptHostFileSystem,
-  ScriptPackage,
-  ScriptProvider,
+  amScriptFileSystemAPI,
+  amScriptFileSystem,
+  amScriptHostFileSystem,
+  amScriptPackage,
+  amScriptProvider,
   amScriptEnvironment,
 {$ifdef FEATURE_SCRIPT_BUNDLE}
-  ScriptDebuggerDialogBundleBuilder,
+  amScriptDebuggerDialogBundleBuilder,
 {$endif FEATURE_SCRIPT_BUNDLE}
 {$ifdef FEATURE_LICENSING}
   amLicenseService,
 {$else FEATURE_LICENSING}
-  ScriptLicenseServiceAPI,
+  amScriptLicenseServiceAPI,
 {$endif FEATURE_LICENSING}
-  ScriptExternalFunctionManager,
-  ScriptDebuggerSettings;
+  amScriptExternalFunctionManager,
+  amScriptDebuggerSettings;
 
 
 // -----------------------------------------------------------------------------

@@ -16,8 +16,8 @@ uses
   dwsSymbols,
   dwsUtils,
 
-  ScriptModule,
-  ScriptHostAPI;
+  amScriptModule,
+  amScriptHostAPI;
 
 // -----------------------------------------------------------------------------
 //
@@ -75,7 +75,7 @@ uses
 {$ifdef DEBUG}
   amDialogs,
 {$endif DEBUG}
-  ScriptAPI;
+  amScriptAPI;
 
 type
   TScriptObjectWrapperBaseCracker = class(TScriptObjectWrapperBase);
