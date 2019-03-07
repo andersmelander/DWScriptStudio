@@ -30,6 +30,7 @@ uses
   amScriptModuleUserInterfaceImageList,
   amScriptModuleUserInterfaceDialogs,
   amScriptModuleUserInterfaceProgress,
-  amScriptModuleUserInterfaceLayout;
+  amScriptModuleUserInterfaceLayout,
+  amScriptModuleUserInterfaceListView;
 
 end.
