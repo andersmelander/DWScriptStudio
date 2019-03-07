@@ -25,6 +25,7 @@ uses
   amScriptModuleSystemInfo,
   amScriptModuleSystemInput,
   amScriptModuleZip,
+  amScriptModuleWebClient,
   amScriptModuleUserInterface,
   amScriptModuleUserInterfaceActionList,
   amScriptModuleUserInterfaceImageList,
