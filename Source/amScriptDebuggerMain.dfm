@@ -265,7 +265,7 @@ object FormScriptDebugger: TFormScriptDebugger
           Height = 140
           ParentShowHint = False
           ShowHint = False
-          ActiveChildIndex = 0
+          ActiveChildIndex = 2
           AllowFloating = True
           AutoHide = False
           CustomCaptionButtons.Buttons = <>
@@ -344,12 +344,14 @@ object FormScriptDebugger: TFormScriptDebugger
               TabOrder = 0
             end
           end
-          object DockPanelBreakProints: TdxDockPanel
+          object DockPanelBreakPoints: TdxDockPanel
             Left = 0
             Top = 0
             Width = 663
             Height = 87
-            OnVisibleChanged = DockPanelDebugOtherVisibleChanged
+            HelpType = htKeyword
+            HelpKeyword = 'TScriptDebuggerBreakPointsFrame'
+            OnVisibleChanged = DockPanelDebugFrameVisibleChanged
             AllowFloating = True
             AutoHide = False
             Caption = 'Break points'
@@ -357,25 +359,12 @@ object FormScriptDebugger: TFormScriptDebugger
             CustomCaptionButtons.Buttons = <>
             ImageIndex = 55
             TabsProperties.CustomButtons.Buttons = <>
+            OnClose = DockPanelDebugFrameClose
+            ExplicitLeft = 2
+            ExplicitTop = -3
             DockingType = 0
             OriginalWidth = 892
             OriginalHeight = 140
-            inline ScriptDebuggerBreakPointsFrame: TScriptDebuggerBreakPointsFrame
-              Left = 0
-              Top = 0
-              Width = 663
-              Height = 87
-              Align = alClient
-              TabOrder = 0
-              ExplicitWidth = 663
-              ExplicitHeight = 87
-              inherited ListViewBreakPoints: TcxListView
-                Width = 663
-                Height = 87
-                ExplicitWidth = 663
-                ExplicitHeight = 87
-              end
-            end
           end
         end
       end
@@ -485,7 +474,6 @@ object FormScriptDebugger: TFormScriptDebugger
     ColorSchemeName = 'VisualStudio2013Blue'
     EnableTabAero = False
     QuickAccessToolbar.Toolbar = BarManagerBarQuickAccess
-    TabAreaToolbar.Toolbar = BarManagerBarLayout
     SupportNonClientDrawing = True
     Contexts = <
       item
@@ -493,6 +481,7 @@ object FormScriptDebugger: TFormScriptDebugger
         Color = 16756834
         Visible = True
       end>
+    TabAreaToolbar.Toolbar = BarManagerBarLayout
     TabOrder = 1
     TabStop = False
     object RibbonTabFile: TdxRibbonTab
@@ -506,6 +495,7 @@ object FormScriptDebugger: TFormScriptDebugger
       Index = 0
     end
     object RibbonTabEditor: TdxRibbonTab
+      Active = True
       Caption = 'Editor'
       Groups = <
         item
@@ -559,7 +549,6 @@ object FormScriptDebugger: TFormScriptDebugger
       ContextIndex = 0
     end
     object RibbonDebugTabTools: TdxRibbonTab
-      Active = True
       Caption = 'Tools'
       Groups = <
         item

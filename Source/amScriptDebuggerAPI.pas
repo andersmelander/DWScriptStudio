@@ -61,7 +61,28 @@ type
 type
   TBreakpointStatus = (bpsNone, bpsBreakpoint, bpsBreakpointDisabled);
 
-  TBreakpointUpdate = (bpuRefreshState, bpuRefreshLines, bpuRefreshFull, bpuReload);
+  TBreakpointUpdate = (bpuRefreshState, bpuRefreshLines, bpuRefreshContext);
+  TBreakpointUpdates = set of TBreakpointUpdate;
+
+  (*
+  ** dnBreakPointAdd            The specified break point is being added.
+  ** dnBreakPointAdded          The specified break point has been added.
+  ** dnBreakPointRemove         The specified break point is being removed.
+  ** dnBreakPointRemoved        The specified break point has been removed.
+  ** dnBreakPointChanged        The state of the specified break point has changed (e.g. Enabled changed)
+  ** dnBreakPointsUpdate        All existing break points should be refreshed (e.g. line numbers has changed).
+  ** dnBreakPointsClear         All break points has been removed.
+  *)
+  TScriptDebuggerBreakpointNotification = (
+    dnBreakPointAdd, dnBreakPointAdded,
+    dnBreakPointRemove, dnBreakPointRemoved,
+    dnBreakPointChanged,
+    dnBreakPointsUpdate, dnBreakPointsClear);
+
+  IScriptDebuggerBreakPointHandler = interface
+    ['{2AAC6E3B-4EF4-4F8F-9A2A-FDA5031A0727}']
+    procedure BreakPointNotification(Breakpoint: TdwsDebuggerBreakpoint; Notification: TScriptDebuggerBreakpointNotification; Updates: TBreakpointUpdates);
+  end;
 
 // -----------------------------------------------------------------------------
 //
@@ -127,7 +148,7 @@ type
     function FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
     procedure AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean = True);
     procedure ClearBreakpoint(const ScriptPos: TScriptPos);
-    procedure UpdateBreakpoints(Update: TBreakpointUpdate);
+    procedure NotifyBreakPoint(Breakpoint: TdwsDebuggerBreakpoint; Notification: TScriptDebuggerBreakpointNotification; Updates: TBreakpointUpdates = []);
 
     function SymbolToImageIndex(Symbol: TSymbol): integer;
 
@@ -183,6 +204,7 @@ type
 
     procedure DebuggerStateChanged(State: TScriptDebuggerNotification);
   end;
+
 
 // -----------------------------------------------------------------------------
 //

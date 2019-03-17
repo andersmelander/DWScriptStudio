@@ -392,8 +392,7 @@ type
     dxBarButton6: TdxBarButton;
     SynAutoComplete: TSynAutoComplete;
     ImageListSymbols: TcxImageList;
-    DockPanelBreakProints: TdxDockPanel;
-    ScriptDebuggerBreakPointsFrame: TScriptDebuggerBreakPointsFrame;
+    DockPanelBreakPoints: TdxDockPanel;
     ActionDebugEvaluate: TAction;
     ActionDebug: TAction;
     Debug1: TMenuItem;
@@ -831,7 +830,7 @@ type
     function FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
     procedure AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean = True);
     procedure ClearBreakpoint(const ScriptPos: TScriptPos);
-    procedure UpdateBreakpoints(Update: TBreakpointUpdate);
+    procedure NotifyBreakPoint(Breakpoint: TdwsDebuggerBreakpoint; Notification: TScriptDebuggerBreakpointNotification; Updates: TBreakpointUpdates = []);
     function SymbolToImageIndex(Symbol: TSymbol): integer;
     procedure AddWatch(const Expression: string);
     function GetCompiledScript: IdwsProgram;
@@ -1176,8 +1175,9 @@ begin
 
   // Redraw the gutter for updated icons.
   FPage.Editor.InvalidateGutter;
+
   if (UpdateBreakpoints) then
-    FPage.FForm.UpdateBreakpoints(bpuRefreshLines);
+    IScriptDebugger(FPage.FForm).NotifyBreakPoint(nil, dnBreakPointsUpdate, [bpuRefreshLines]);
 end;
 
 procedure TEditorPageSynEditPlugin.PaintTransient(ACanvas: TCanvas;
@@ -1289,8 +1289,9 @@ begin
 
   // Redraw the gutter for updated icons.
   FPage.Editor.InvalidateGutter;
+
   if (UpdateBreakpoints) then
-    FPage.FForm.UpdateBreakpoints(bpuRefreshLines);
+    IScriptDebugger(FPage.FForm).NotifyBreakPoint(nil, dnBreakPointsUpdate, [bpuRefreshLines]);
 end;
 
 
@@ -1651,32 +1652,39 @@ end;
 //
 procedure TEditorPage.AddBreakpoint(ALineNum: Integer; AEnabled: Boolean);
 var
-  BP: TdwsDebuggerBreakpoint;
-  bAdded: Boolean;
-  I: Integer;
+  Breakpoint: TdwsDebuggerBreakpoint;
+  WasAdded: Boolean;
+  Index: Integer;
 begin
-  BP := TdwsDebuggerBreakpoint.Create;
-  BP.Line := ALineNum;
+  Breakpoint := TdwsDebuggerBreakpoint.Create;
+  try
+    Breakpoint.Line := ALineNum;
+    Breakpoint.SourceName := InternalUnitName;
 
-  BP.SourceName := InternalUnitName;
+    IScriptDebugger(FForm).NotifyBreakPoint(Breakpoint, dnBreakPointAdd);
 
-  I := FForm.Debugger.Breakpoints.AddOrFind(BP, bAdded);
-  if not bAdded then
-    BP.Free;
-  FForm.Debugger.Breakpoints[I].Enabled := AEnabled;
+    WasAdded := False;
+    Index := FForm.Debugger.Breakpoints.AddOrFind(Breakpoint, WasAdded);
+
+  finally
+    if not WasAdded then
+      Breakpoint.Free;
+  end;
+
+  FForm.Debugger.Breakpoints[Index].Enabled := AEnabled;
 
   Editor.InvalidateGutterLine(ALineNum);
   Editor.InvalidateLine(ALineNum);
 
-  FForm.UpdateBreakpoints(bpuReload);
+  IScriptDebugger(FForm).NotifyBreakPoint(FForm.Debugger.Breakpoints[Index], dnBreakPointAdded);
 end;
 
 // ClearBreakpoint
 //
 procedure TEditorPage.ClearBreakpoint(ALineNum: Integer);
 var
-  Test, Found: TdwsDebuggerBreakpoint;
-  I: Integer;
+  Test, Breakpoint: TdwsDebuggerBreakpoint;
+  Index: Integer;
 begin
   if FForm.Debugger.Breakpoints.Count = 0 then
     Exit;
@@ -1686,31 +1694,36 @@ begin
     Test.Line := ALineNum;
     Test.SourceName := InternalUnitName;
 
-    I := FForm.Debugger.Breakpoints.IndexOf(Test);
-    if I <> -1 then
-    begin
-      Found := FForm.Debugger.Breakpoints[I];
-      FForm.Debugger.Breakpoints.Extract(Found);
-      FreeAndNil(Found);
-    end;
+    Index := FForm.Debugger.Breakpoints.IndexOf(Test);
   finally
-    FreeAndNil(Test);
+    Test.Free;
+  end;
+
+  if (Index <> -1) then
+  begin
+    Breakpoint := FForm.Debugger.Breakpoints[Index];
+    IScriptDebugger(FForm).NotifyBreakPoint(Breakpoint, dnBreakPointRemove);
+    FForm.Debugger.Breakpoints.Extract(Breakpoint);
+    try
+      IScriptDebugger(FForm).NotifyBreakPoint(Breakpoint, dnBreakPointRemoved);
+    finally
+      Breakpoint.Free;
+    end;
   end;
 
   Editor.InvalidateGutterLine(ALineNum);
   Editor.InvalidateLine(ALineNum);
-  FForm.UpdateBreakpoints(bpuReload);
 end;
 
 // GetBreakpointStatus
 //
 function TEditorPage.GetBreakpointStatus(ALine: Integer): TBreakpointStatus;
 var
-  Test, Found: TdwsDebuggerBreakpoint;
-  I: Integer;
+  Test, Breakpoint: TdwsDebuggerBreakpoint;
+  Index: Integer;
 begin
   Result := bpsNone;
-  if FForm.Debugger.Breakpoints.Count = 0 then
+  if (FForm.Debugger.Breakpoints.Count = 0) then
     Exit;
 
   Test := TdwsDebuggerBreakpoint.Create;
@@ -1718,17 +1731,18 @@ begin
     Test.Line := ALine;
     Test.SourceName := InternalUnitName;
 
-    I := FForm.Debugger.Breakpoints.IndexOf(Test);
-    if I <> -1 then
-    begin
-      Found := FForm.Debugger.Breakpoints[I];
-      if Found.Enabled then
-        Result := bpsBreakpoint
-      else
-        Result := bpsBreakpointDisabled;
-    end;
+    Index := FForm.Debugger.Breakpoints.IndexOf(Test);
   finally
     FreeAndNil(Test);
+  end;
+
+  if (Index <> -1) then
+  begin
+    Breakpoint := FForm.Debugger.Breakpoints[Index];
+    if Breakpoint.Enabled then
+      Result := bpsBreakpoint
+    else
+      Result := bpsBreakpointDisabled;
   end;
 end;
 
@@ -2741,8 +2755,6 @@ begin
   inherited;
 
   // Set up callback links
-  FDebuggerFrames.Add(ScriptDebuggerBreakPointsFrame);
-
   for DebuggerFrame in FDebuggerFrames do
     DebuggerFrame.Initialize(Self, SmallImages, ImageListSymbols);
 
@@ -3005,34 +3017,41 @@ end;
 
 procedure TFormScriptDebugger.AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean);
 var
-  BP: TdwsDebuggerBreakpoint;
-  bAdded: Boolean;
-  I: Integer;
+  Breakpoint: TdwsDebuggerBreakpoint;
+  WasAdded: Boolean;
+  Index: Integer;
 begin
-  BP := TdwsDebuggerBreakpoint.Create;
-  BP.Line := ScriptPos.Line;
+  Breakpoint := TdwsDebuggerBreakpoint.Create;
+  try
+    Breakpoint.Line := ScriptPos.Line;
+    Breakpoint.SourceName := ScriptPos.SourceName;
 
-  BP.SourceName := ScriptPos.SourceName;
+    NotifyBreakPoint(Breakpoint, dnBreakPointAdd);
 
-  I := Debugger.Breakpoints.AddOrFind(BP, bAdded);
-  if (not bAdded) then
-    BP.Free;
-  Debugger.Breakpoints[I].Enabled := AEnabled;
+    Index := Debugger.Breakpoints.AddOrFind(Breakpoint, WasAdded);
+
+  finally
+    if (not WasAdded) then
+      Breakpoint.Free;
+  end;
+
+  Debugger.Breakpoints[Index].Enabled := AEnabled;
 
   if (CurrentEditorPage <> nil) then
   begin
     CurrentEditorPage.Editor.InvalidateGutterLine(ScriptPos.Line);
     CurrentEditorPage.Editor.InvalidateLine(ScriptPos.Line);
   end;
-  ScriptDebuggerBreakPointsFrame.UpdateInfo;
+
+  NotifyBreakPoint(Debugger.Breakpoints[Index], dnBreakPointAdded);
 
   Debugger.Breakpoints.BreakPointsChanged;
 end;
 
 procedure TFormScriptDebugger.ClearBreakpoint(const ScriptPos: TScriptPos);
 var
-  Test, Found: TdwsDebuggerBreakpoint;
-  I: Integer;
+  Test, Breakpoint: TdwsDebuggerBreakpoint;
+  Index: Integer;
 begin
   if (Debugger.Breakpoints.Count = 0) then
     Exit;
@@ -3042,15 +3061,24 @@ begin
     Test.Line := ScriptPos.Line;
     Test.SourceName := ScriptPos.SourceName;
 
-    I := Debugger.Breakpoints.IndexOf(Test);
-    if (I <> -1) then
-    begin
-      Found := Debugger.Breakpoints[I];
-      Debugger.Breakpoints.Extract(Found);
-      FreeAndNil(Found);
-    end;
+    Index := Debugger.Breakpoints.IndexOf(Test);
   finally
-    FreeAndNil(Test);
+    Test.Free;
+  end;
+
+  if (Index = -1) then
+    exit;
+
+  Breakpoint := Debugger.Breakpoints[Index];
+  NotifyBreakPoint(Breakpoint, dnBreakPointRemove);
+
+  Debugger.Breakpoints.Extract(Breakpoint);
+  try
+
+    NotifyBreakPoint(Breakpoint, dnBreakPointRemoved);
+
+  finally
+    Breakpoint.Free;
   end;
 
   if (CurrentEditorPage <> nil) then
@@ -3058,20 +3086,6 @@ begin
     CurrentEditorPage.Editor.InvalidateGutterLine(ScriptPos.Line);
     CurrentEditorPage.Editor.InvalidateLine(ScriptPos.Line);
   end;
-  ScriptDebuggerBreakPointsFrame.UpdateInfo;
-
-  Debugger.Breakpoints.BreakPointsChanged;
-end;
-
-procedure TFormScriptDebugger.UpdateBreakpoints(Update: TBreakpointUpdate);
-begin
-  if (CurrentEditorPage <> nil) then
-    CurrentEditorPage.Editor.Invalidate;
-
-  if (Update = bpuReload) then
-    ScriptDebuggerBreakPointsFrame.UpdateInfo
-  else
-    ScriptDebuggerBreakPointsFrame.RefreshInfo(Update);
 
   Debugger.Breakpoints.BreakPointsChanged;
 end;
@@ -3439,7 +3453,7 @@ begin
   if (FLayoutName = '') then
     FLayoutName := sScriptDebuggerLayoutNameDefault;
 
-  DockingManager.SaveLayoutToRegistry(ScriptSettings.Layout.Key+FLayoutName);
+  DockingManager.SaveLayoutToRegistry(ScriptSettings.Layout.KeyPath+FLayoutName);
 end;
 
 procedure TFormScriptDebugger.DockingManagerLayoutChanged(Sender: TdxCustomDockControl);
@@ -3459,7 +3473,7 @@ begin
 
     FLauoutLoading := True;
     try
-      DockingManager.LoadLayoutFromRegistry(ScriptSettings.Layout.Key+FLayoutName);
+      DockingManager.LoadLayoutFromRegistry(ScriptSettings.Layout.KeyPath+FLayoutName);
     finally
       FLauoutLoading := False;
     end;
@@ -3815,6 +3829,21 @@ begin
   end;
 end;
 
+procedure TFormScriptDebugger.NotifyBreakPoint(Breakpoint: TdwsDebuggerBreakpoint; Notification: TScriptDebuggerBreakpointNotification; Updates: TBreakpointUpdates);
+var
+  Handler: IScriptDebuggerBreakPointHandler;
+  DebuggerFrame: IScriptDebuggerWindow;
+begin
+  if (CurrentEditorPage <> nil) then
+    CurrentEditorPage.Editor.Invalidate;
+
+  for DebuggerFrame in FDebuggerFrames do
+    if (Supports(DebuggerFrame, IScriptDebuggerBreakPointHandler, Handler)) then
+      Handler.BreakPointNotification(Breakpoint, Notification, Updates);
+
+  Debugger.Breakpoints.BreakPointsChanged;
+end;
+
 procedure TFormScriptDebugger.NotifyDebuggerFrames(State: TScriptDebuggerNotification);
 var
   DebuggerFrame: IScriptDebuggerWindow;
@@ -3992,9 +4021,10 @@ var
   I: Integer;
 begin
   Debugger.Breakpoints.Clean;
+  NotifyBreakPoint(nil, dnBreakPointsClear);
+
   for I := 0 to EditorPageCount - 1 do
     EditorPage(I).Editor.Invalidate;
-  ScriptDebuggerBreakPointsFrame.UpdateInfo;
 end;
 
 function TFormScriptDebugger.CurrentEditor: TSynEdit;
@@ -4002,7 +4032,7 @@ begin
   if HasEditorPage then
     Result := EditorPage(EditorCurrentPageIndex).Editor
   else
-     Result := nil;
+    Result := nil;
 end;
 
 function TFormScriptDebugger.CurrentEditorPage: TEditorPage;
@@ -5233,12 +5263,12 @@ end;
 
 procedure TFormScriptDebugger.ActionViewBreakpointsExecute(Sender: TObject);
 begin
-  DockPanelBreakProints.Visible := TAction(Sender).Checked;
+  DockPanelBreakPoints.Visible := TAction(Sender).Checked;
 end;
 
 procedure TFormScriptDebugger.ActionViewBreakpointsUpdate(Sender: TObject);
 begin
-  TAction(Sender).Checked := DockPanelBreakProints.Visible;
+  TAction(Sender).Checked := DockPanelBreakPoints.Visible;
 end;
 
 procedure TFormScriptDebugger.ActionViewCallStackExecute(Sender: TObject);
@@ -6384,7 +6414,7 @@ begin
   if (DebuggerFrame = nil) then
     exit;
 
-  if (not Supports(DebuggerWindow, IScriptDebuggerWindow, DebuggerFrame)) then
+  if (not Supports(DebuggerFrame, IScriptDebuggerWindow, DebuggerWindow)) then
     exit;
 
   DebuggerWindow.Finalize;
@@ -6412,6 +6442,15 @@ begin
   DebuggerFrameClassName := Sender.HelpKeyword;
   DebuggerFrameClass := TControlClass(FindClass(DebuggerFrameClassName));
 
+  // Look for existing frame
+  for DebuggerWindow in FDebuggerFrames do
+    if (TObject(DebuggerWindow) is DebuggerFrameClass) then
+    begin
+      TControl(DebuggerWindow).Show;
+      exit;
+    end;
+
+  // Create new frame
   DebuggerFrame := DebuggerFrameClass.Create(Self);
   DebuggerFrame.Parent := Sender;
 

@@ -156,7 +156,7 @@ type
 type
   TScriptDebuggerLayoutSettings = class(TConfigurationSectionValues<TConfigurationSection>)
   private const
-    nScriptDebuggerLayoutVersion = 5; // Bump this if dock panels are added or removed
+    nScriptDebuggerLayoutVersion = 6; // Bump this if dock panels are added or removed
   private
     FVersion: integer;
     FDebugLayout: string;

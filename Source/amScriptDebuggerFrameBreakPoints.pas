@@ -29,21 +29,23 @@ uses
 type
   TFrame = TScriptDebuggerFrame;
 
-  TScriptDebuggerBreakPointsFrame = class(TFrame)
+  TScriptDebuggerBreakPointsFrame = class(TFrame, IScriptDebuggerBreakPointHandler)
     ListViewBreakPoints: TcxListView;
     procedure ListViewBreakPointsDblClick(Sender: TObject);
     procedure ListViewBreakPointsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
     procedure ListViewBreakPointsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
+    procedure RefreshInfo(Updates: TBreakpointUpdates);
+    procedure UpdateInfo;
   protected
     function BreakPointToScriptPos(Breakpoint: TdwsDebuggerBreakpoint; var ScriptPos: TScriptPos): boolean;
 
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
     procedure Finalize; override;
     procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
+    // IScriptDebuggerBreakPointHandler
+    procedure BreakPointNotification(Breakpoint: TdwsDebuggerBreakpoint; Notification: TScriptDebuggerBreakpointNotification; Updates: TBreakpointUpdates);
   public
-    procedure UpdateInfo;
-    procedure RefreshInfo(Update: TBreakpointUpdate);
   end;
 
 implementation
@@ -54,14 +56,32 @@ uses
   Generics.Collections,
   Generics.Defaults,
   dwsUtils,
-  dwsExprs,
 {$ifndef OLD_DWSCRIPT}
   dwsInfo,
   dwsContextMap,
 {$endif OLD_DWSCRIPT}
-  amScriptDebuggerMain;
+  dwsExprs;
 
 { TScriptDebuggerBreakPointsFrame }
+
+procedure TScriptDebuggerBreakPointsFrame.BreakPointNotification(Breakpoint: TdwsDebuggerBreakpoint;
+  Notification: TScriptDebuggerBreakpointNotification; Updates: TBreakpointUpdates);
+begin
+  case Notification of
+    dnBreakPointAdded,
+    dnBreakPointRemoved:
+      UpdateInfo;
+
+    dnBreakPointChanged:
+      RefreshInfo([bpuRefreshState]);
+
+    dnBreakPointsUpdate:
+      RefreshInfo(Updates);
+
+    dnBreakPointsClear:
+      UpdateInfo;
+  end;
+end;
 
 function TScriptDebuggerBreakPointsFrame.BreakPointToScriptPos(Breakpoint: TdwsDebuggerBreakpoint; var ScriptPos: TScriptPos): boolean;
 var
@@ -90,10 +110,10 @@ procedure TScriptDebuggerBreakPointsFrame.DebuggerStateChanged(State: TScriptDeb
 begin
   case State of
     dnCompiled:
-      RefreshInfo(bpuRefreshFull);
+      RefreshInfo([]);
 
     dnDebugSuspended:
-      UpdateInfo;
+      UpdateInfo; // TODO : Why?
   end;
 end;
 
@@ -107,6 +127,7 @@ procedure TScriptDebuggerBreakPointsFrame.Initialize(const ADebugger: IScriptDeb
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
   ListViewBreakPoints.SmallImages := AImageList;
+  UpdateInfo;
 end;
 
 procedure TScriptDebuggerBreakPointsFrame.ListViewBreakPointsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
@@ -122,7 +143,7 @@ begin
     exit;
 
   Breakpoint.Enabled := Item.Checked;
-  Debugger.UpdateBreakpoints(bpuRefreshState);
+  Debugger.NotifyBreakPoint(Breakpoint, dnBreakPointChanged);
 end;
 
 procedure TScriptDebuggerBreakPointsFrame.ListViewBreakPointsDblClick(Sender: TObject);
@@ -149,7 +170,7 @@ begin
   end;
 end;
 
-procedure TScriptDebuggerBreakPointsFrame.RefreshInfo(Update: TBreakpointUpdate);
+procedure TScriptDebuggerBreakPointsFrame.RefreshInfo(Updates: TBreakpointUpdates);
 var
   Breakpoint: TdwsDebuggerBreakpoint;
   i: integer;
@@ -157,12 +178,6 @@ var
   ScriptPos: TScriptPos;
   SourceContext: TdwsSourceContext;
 begin
-  if (Update = bpuReload) then
-  begin
-    UpdateInfo;
-    exit;
-  end;
-
   ListViewBreakPoints.Items.BeginUpdate;
   try
     for i := 0 to ListViewBreakPoints.Items.Count-1 do
@@ -170,7 +185,7 @@ begin
       Item := ListViewBreakPoints.Items[i];
       Breakpoint := TdwsDebuggerBreakpoint(Item.Data);
 
-      if (Update >= bpuRefreshState) then
+      if (Updates = []) or (bpuRefreshState in Updates) then
       begin
         Item.Checked := (Breakpoint <> nil) and (Breakpoint.Enabled);
 
@@ -180,10 +195,10 @@ begin
           Item.ImageIndex := 14;
       end;
 
-      if (Update >= bpuRefreshLines) then
+      if (Updates = []) or (bpuRefreshLines in Updates) then
         Item.SubItems[0] := IntToStr(Breakpoint.Line);
 
-      if (Update >= bpuRefreshFull) and (BreakPointToScriptPos(Breakpoint, ScriptPos)) then
+      if ((Updates = []) or (bpuRefreshContext in Updates)) and (BreakPointToScriptPos(Breakpoint, ScriptPos)) then
       begin
         SourceContext := Debugger.GetProgram.SourceContextMap.FindContext(ScriptPos);
         while (SourceContext <> nil) do
@@ -226,7 +241,7 @@ begin
       begin
         Result := AnsiCompareStr(L.SourceName, R.SourceName);
         if (Result = 0) then
-          Result := L.Line-R.Line;
+          Result := L.Line - R.Line;
       end));
 
     ListViewBreakPoints.Items.BeginUpdate;
@@ -273,5 +288,8 @@ begin
   end;
 end;
 
+initialization
+  RegisterClass(TScriptDebuggerBreakPointsFrame);
+finalization
 end.
 
