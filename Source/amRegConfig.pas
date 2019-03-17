@@ -77,6 +77,8 @@ type
     procedure DoWriteObject(const Key: string; Instance: TObject); virtual;
     procedure DoReadObject(const Key: string; Instance: TObject); virtual;
     function GetKey: string; virtual;
+    function GetKeyPath: string; virtual;
+    function KeyRoot: string; virtual;
     procedure Initialize; virtual;
     procedure ApplyDefault; virtual;
     procedure WriteStream(const AKey, AName: string; Stream: TMemoryStream); overload; virtual;
@@ -90,7 +92,10 @@ type
     procedure ReadStream(const AName: string; Stream: TMemoryStream); overload; virtual;
     function SectionByName(const Name: string): TConfigurationSection;
     property Owner: TConfigurationSection read FOwner;
+    // Registry key relative to configuration root
     property Key: string read GetKey;
+    // Full registry path
+    property KeyPath: string read GetKeyPath;
     property PurgeOnWrite: boolean read FPurgeOnWrite write FPurgeOnWrite;
     property Sections: TConfigurationSectionList read FSections;
     property Registry: TFixedRegIniFile read GetRegistry;
@@ -169,10 +174,12 @@ type
   TConfiguration = class(TConfigurationSection)
   private
     FRegistry: TFixedRegIniFile;
+    FPath: string;
     FSubPath: string;
     procedure SetSubPath(const Value: string);
   protected
     function GetKey: string; override;
+    function KeyRoot: string; override;
     function GetRegistry: TFixedRegIniFile; override;
   public
     constructor Create(Root: HKEY; const APath: string; AAccess: LongWord = KEY_ALL_ACCESS); reintroduce; virtual;
@@ -581,6 +588,9 @@ begin
   FRegistry := TFixedRegIniFile.Create('\', AAccess);
   Registry.RootKey := Root;
   Registry.OpenKey(APath, True);
+  FPath := APath;
+  if (not FPath.IsEmpty) and (not FPath.EndsWith('\')) then
+    FPath := FPath+'\';
 end;
 
 destructor TConfiguration.Destroy;
@@ -593,7 +603,7 @@ procedure TConfiguration.SetSubPath(const Value: string);
 begin
   FSubPath := Value;
   // SubPath must end with '\'
-  if (FSubPath <> '') and (FSubPath[Length(FSubPath)] <> '\') then
+  if (not FSubPath.IsEmpty) and (not FSubPath.EndsWith('\')) then
     FSubPath := FSubPath+'\';
 end;
 
@@ -620,6 +630,11 @@ end;
 function TConfiguration.GetKey: string;
 begin
   Result := '';
+end;
+
+function TConfiguration.KeyRoot: string;
+begin
+  Result := FPath;
 end;
 
 function TConfiguration.GetRegistry: TFixedRegIniFile;
@@ -1034,6 +1049,19 @@ begin
     FreeMem(PropList);
   end;
   Result := Owner.Key+Result+'\';
+end;
+
+function TConfigurationSection.GetKeyPath: string;
+begin
+  Result := KeyRoot + GetKey;
+end;
+
+function TConfigurationSection.KeyRoot: string;
+begin
+  if (Owner <> nil) then
+    Result := Owner.KeyRoot
+  else
+    Result := '\';
 end;
 
 procedure TConfiguration.ReadStream(const AKey, AName: string;
