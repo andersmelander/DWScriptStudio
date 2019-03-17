@@ -281,6 +281,8 @@ end;
 destructor TDataModuleScriptUserInterfaceLayout.Destroy;
 begin
   inherited;
+  if (FLayoutLookAndFeel <> nil) then
+    FreeAndNil(FLayoutLookAndFeel);
 end;
 
 // -----------------------------------------------------------------------------
@@ -333,7 +335,15 @@ end;
 function TDataModuleScriptUserInterfaceLayout.GetLayoutLookAndFeel: TdxCustomLayoutLookAndFeel;
 begin
   if (FLayoutLookAndFeel = nil) then
-    FLayoutLookAndFeel := TdxLayoutSkinLookAndFeel.Create(Self);
+  begin
+    // Note: We use dxLayoutDefaultLookAndFeel as owner to ensure that the layout is
+    // destroyed no later than the dxLayoutLookAndFeels finalization. Destruction later
+    // than that causes AV because required subsystems has been destroyed.
+    FLayoutLookAndFeel := TdxLayoutSkinLookAndFeel.Create(dxLayoutDefaultLookAndFeel);
+    FLayoutLookAndFeel.FreeNotification(Self);
+    // Copy defaults
+    FLayoutLookAndFeel.Assign(dxLayoutDefaultLookAndFeel);
+  end;
   Result := FLayoutLookAndFeel;
 end;
 
@@ -1096,7 +1106,16 @@ end;
 procedure TDataModuleScriptUserInterfaceLayout.dwsUnitLayoutClassesTLayoutStyleConstructorsCreateEval(Info: TProgramInfo; var ExtObject: TObject);
 begin
   if (ExtObject = nil) then
-    ExtObject := TScriptLayoutLookAndFeel.Create(Self);
+  begin
+    // See explanation for use of dxLayoutDefaultLookAndFeel in GetLayoutLookAndFeel().
+    ExtObject := TScriptLayoutLookAndFeel.Create(dxLayoutDefaultLookAndFeel);
+    TScriptLayoutLookAndFeel(ExtObject).FreeNotification(Self);
+    // Copy defaults
+    if (FLayoutLookAndFeel <> nil) then
+      TScriptLayoutLookAndFeel(ExtObject).Assign(FLayoutLookAndFeel)
+    else
+      TScriptLayoutLookAndFeel(ExtObject).Assign(dxLayoutDefaultLookAndFeel);
+  end;
 end;
 
 // -----------------------------------------------------------------------------

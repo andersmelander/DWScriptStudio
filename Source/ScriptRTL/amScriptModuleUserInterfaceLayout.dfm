@@ -386,6 +386,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutGroup'
         Ancestor = 'TCustomLayoutItem'
+        IsSealed = True
         Methods = <
           item
             Name = 'GetExpanded'
@@ -629,6 +630,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       end
       item
         Name = 'TLayoutOffsets'
+        IsAbstract = True
         Methods = <
           item
             Name = 'GetValue'
@@ -696,6 +698,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TControlMargin'
         Ancestor = 'TLayoutOffsets'
+        IsSealed = True
         Deprecated = 'I have forgotten what this was supposed to be used for'
       end
       item
@@ -705,9 +708,11 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       end
       item
         Name = 'TLayoutItemSize'
+        IsSealed = True
       end
       item
         Name = 'TCustomLayoutItemCaption'
+        IsAbstract = True
         Methods = <
           item
             Name = 'GetText'
@@ -1019,6 +1024,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutGroupCaption'
         Ancestor = 'TCustomLayoutItemCaption'
+        IsSealed = True
         Properties = <
           item
             Name = 'Glyph'
@@ -1040,6 +1046,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutItemCaption'
         Ancestor = 'TLayoutLabeledItemCustomCaption'
+        IsSealed = True
         Properties = <
           item
             Name = 'ShowAccelChar'
@@ -1150,6 +1157,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutLabelItemCaption'
         Ancestor = 'TLayoutLabeledItemCustomCaption'
+        IsSealed = True
         Properties = <
           item
             Name = 'WordWrap'
@@ -1208,6 +1216,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       end
       item
         Name = 'TLayoutItemList'
+        IsSealed = True
         Methods = <
           item
             Name = 'GetCount'
@@ -1248,6 +1257,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       end
       item
         Name = 'TLayoutStyle'
+        IsSealed = True
         Constructors = <
           item
             Name = 'Create'
@@ -1295,6 +1305,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       end
       item
         Name = 'TLayoutStyleItemOptions'
+        IsSealed = True
         Methods = <
           item
             Name = 'GetCaptionOptions'
@@ -1312,6 +1323,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       end
       item
         Name = 'TLayoutStyleGroupOptions'
+        IsSealed = True
         Methods = <
           item
             Name = 'GetCaptionOptions'
@@ -1381,6 +1393,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       end
       item
         Name = 'TLayoutStyleCaptionOptions'
+        IsSealed = True
         Methods = <
           item
             Name = 'GetTextColor'
@@ -1464,6 +1477,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       end
       item
         Name = 'TLayoutStyleOffsets'
+        IsSealed = True
         Methods = <
           item
             Name = 'GetValue'
@@ -1555,7 +1569,6 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutGroupScrollOptions'
         IsSealed = True
-        IsAbstract = True
         Methods = <
           item
             Name = 'GetHorizontal'
