@@ -241,6 +241,7 @@ uses
 
   dxLayoutControl,
   dxLayoutCommon,
+  dxSmartImage,
 
   amScriptAPI;
 
@@ -769,20 +770,20 @@ end;
 
 procedure TDataModuleScriptUserInterfaceLayout.dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetGlyphEval(Info: TProgramInfo; ExtObject: TObject);
 var
-  Glyph: TBitmap;
+  Glyph: TdxCustomSmartImage;
 begin
-  //Glyph := TdxCustomLayoutItemCaptionOptionsCracker(TdxCustomLayoutItemCracker(TScriptLayoutItemWrapper(ExtObject).Item).CaptionOptions).Glyph;
-  //Info.ResultAsVariant := CreateResultScriptObject(Info, Glyph);
+  Glyph := TdxCustomLayoutItemCaptionOptionsCracker(TdxCustomLayoutItemCracker(TScriptLayoutItemWrapper(ExtObject).Item).CaptionOptions).Glyph;
+  Info.ResultAsVariant := CreateResultScriptObject(Info, Glyph);
   // DevExpress 17.1.1
-  Info.ResultAsVariant := IUnknown(nil);
+  //Info.ResultAsVariant := IUnknown(nil);
 end;
 
 procedure TDataModuleScriptUserInterfaceLayout.dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetGlyphEval(Info: TProgramInfo; ExtObject: TObject);
 var
-  Glyph: TBitmap;
+  Glyph: TdxCustomSmartImage;
 begin
   if (Info.ParamAsScriptObj[0] <> nil) then
-    Glyph := TBitmap(Info.ParamAsObject[0])
+    Glyph := (Info.ParamAsObject[0] as TdxCustomSmartImage)
   else
     Glyph := nil;
   TdxCustomLayoutItemCaptionOptionsCracker(TdxCustomLayoutItemCracker(TScriptLayoutItemWrapper(ExtObject).Item).CaptionOptions).Glyph.Assign(Glyph);

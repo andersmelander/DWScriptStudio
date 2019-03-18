@@ -2211,23 +2211,10 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Methods = <
           item
             Name = 'GetGlyph'
-            ResultType = 'TBitmap'
+            ResultType = 'TSmartImage'
             OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetGlyphEval
             Visibility = cvProtected
             Kind = mkFunction
-          end
-          item
-            Name = 'SetGlyph'
-            Parameters = <
-              item
-                Name = 'value'
-                DataType = 'TBitmap'
-                IsVarParam = True
-                IsWritable = False
-              end>
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetGlyphEval
-            Visibility = cvPrivate
-            Kind = mkProcedure
           end
           item
             Name = 'GetLayout'
@@ -2312,9 +2299,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Properties = <
           item
             Name = 'Glyph'
-            DataType = 'TBitmap'
+            DataType = 'TSmartImage'
             ReadAccess = 'GetGlyph'
-            WriteAccess = 'SetGlyph'
           end
           item
             Name = 'Layout'
@@ -3820,7 +3806,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
           end
           item
             Name = 'GetGlyph'
-            ResultType = 'TBitmap'
+            ResultType = 'TSmartImage'
             OnEval = dwsUnitControlsClassesTEditButtonMethodsGetGlyphEval
             Visibility = cvProtected
             Kind = mkFunction
@@ -3888,7 +3874,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
           end
           item
             Name = 'Glyph'
-            DataType = 'TBitmap'
+            DataType = 'TSmartImage'
             ReadAccess = 'GetGlyph'
           end>
       end>

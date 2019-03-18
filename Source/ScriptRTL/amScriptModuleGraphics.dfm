@@ -475,6 +475,30 @@ object DataModuleScriptGraphics: TDataModuleScriptGraphics
         Ancestor = 'TCustomCanvas'
         IsSealed = True
         IsAbstract = True
+      end
+      item
+        Name = 'TSmartImage'
+        Ancestor = 'TGraphic'
+        Constructors = <
+          item
+            Name = 'Create'
+            OnEval = dwsUnitGraphicsClassesTSmartImageConstructorsCreateEval
+          end>
+        Methods = <
+          item
+            Name = 'GetImageFormat'
+            ResultType = 'TSmartImageFormat'
+            OnEval = dwsUnitGraphicsClassesTSmartImageMethodsGetImageFormatEval
+            Visibility = cvProtected
+            Kind = mkFunction
+          end>
+        Properties = <
+          item
+            Name = 'ImageFormat'
+            DataType = 'TSmartImageFormat'
+            ReadAccess = 'GetImageFormat'
+          end>
+        OnCleanUp = dwsUnitGraphicsClassesTSmartImageCleanUp
       end>
     Dependencies.Strings = (
       'System.Classes'
@@ -563,6 +587,28 @@ object DataModuleScriptGraphics: TDataModuleScriptGraphics
           end
           item
             Name = 'afPremultiplied'
+          end>
+      end
+      item
+        Name = 'TSmartImageFormat'
+        Elements = <
+          item
+            Name = 'ifUnknown'
+          end
+          item
+            Name = 'ifBitmap'
+          end
+          item
+            Name = 'ifPNG'
+          end
+          item
+            Name = 'ifJPEG'
+          end
+          item
+            Name = 'ifGIF'
+          end
+          item
+            Name = 'ifTIFF'
           end>
       end>
     Sets = <

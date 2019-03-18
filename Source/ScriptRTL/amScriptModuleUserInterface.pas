@@ -302,7 +302,6 @@ type
     procedure dwsUnitControlsClassesTCustomControlMethodsPostMessageSelfEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitControlsClassesTButtonMethodsGetImageOptionsEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitControlsClassesTButtonImageOptionsMethodsGetGlyphEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure dwsUnitControlsClassesTButtonImageOptionsMethodsSetGlyphEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitControlsClassesTButtonImageOptionsMethodsGetLayoutEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitControlsClassesTButtonImageOptionsMethodsSetLayoutEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitControlsClassesTButtonImageOptionsMethodsGetMarginEval(Info: TProgramInfo; ExtObject: TObject);
@@ -373,7 +372,7 @@ uses
   cxSpinEdit,
   cxGraphics,
   cxLookAndFeelPainters,
-  dxGDIPlusClasses, // TdxSmartImage
+  dxSmartImage,
 
   amEnvironment,
 
@@ -2391,7 +2390,7 @@ end;
 // -----------------------------------------------------------------------------
 procedure TDataModuleUserInterface.dwsUnitControlsClassesTEditButtonMethodsGetGlyphEval(Info: TProgramInfo; ExtObject: TObject);
 var
-  Bitmap: TdxSmartImage;
+  Bitmap: TdxCustomSmartImage;
 begin
   Bitmap := TcxEditButton(ExtObject).Glyph;
   Info.ResultAsVariant := CreateResultScriptObject(Info, Bitmap);
@@ -2592,25 +2591,10 @@ end;
 // -----------------------------------------------------------------------------
 procedure TDataModuleUserInterface.dwsUnitControlsClassesTButtonImageOptionsMethodsGetGlyphEval(Info: TProgramInfo; ExtObject: TObject);
 var
-  Bitmap: TdxSmartImage;
+  Bitmap: TdxCustomSmartImage;
 begin
   Bitmap := TcxButtonImageOptions(ExtObject).Glyph;
   Info.ResultAsVariant := CreateResultScriptObject(Info, Bitmap);
-end;
-
-procedure TDataModuleUserInterface.dwsUnitControlsClassesTButtonImageOptionsMethodsSetGlyphEval(Info: TProgramInfo; ExtObject: TObject);
-var
-  Bitmap: TBitmap;
-begin
-  if (Info.Params[0].ScriptObj <> nil) then
-    Bitmap := Info.ParamAsObject[0] as TBitmap
-  else
-    Bitmap := nil;
-
-  if (Bitmap <> nil) then
-    TcxButtonImageOptions(ExtObject).Glyph.Assign(Bitmap)
-  else
-    TcxButtonImageOptions(ExtObject).Glyph.Assign(nil);
 end;
 
 // -----------------------------------------------------------------------------
@@ -2883,10 +2867,12 @@ begin
     raise EScript.Create('Invalid stream object');
   Stream := Info.Params[0].ExternalObject as TStream;
 
+(* TPicture now supports detecting the image type from a stream
   if (Image.Picture.Graphic = nil) then
     Image.Picture.Assign(TJPEGImage(nil));
+*)
 
-  Image.Picture.Graphic.LoadFromStream(Stream);
+  Image.Picture.LoadFromStream(Stream);
 end;
 
 procedure TDataModuleUserInterface.dwsUnitControlsClassesTImageMethodsSaveToStreamEval(Info: TProgramInfo; ExtObject: TObject);
@@ -2961,8 +2947,13 @@ begin
     try
       GraphicTemplate := GraphicClass.Create;
       try
-        GraphicTemplate.LoadFromStream(Stream);
-        Image.Picture.Assign(GraphicTemplate);
+        if (GraphicTemplate.CanLoadFromStream(Stream)) then
+        begin
+          GraphicTemplate.LoadFromStream(Stream);
+          Image.Picture.Assign(GraphicTemplate);
+        end else
+          // Fall back to having TPicture detect the image type
+          Image.Picture.LoadFromStream(Stream);
       finally
         GraphicTemplate.Free;
       end;

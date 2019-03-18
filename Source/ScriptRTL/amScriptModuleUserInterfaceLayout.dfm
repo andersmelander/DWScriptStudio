@@ -836,7 +836,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           end
           item
             Name = 'GetGlyph'
-            ResultType = 'TBitmap'
+            ResultType = 'TSmartImage'
             OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetGlyphEval
             Visibility = cvProtected
             Kind = mkFunction
@@ -866,7 +866,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
             Parameters = <
               item
                 Name = 'Value'
-                DataType = 'TBitmap'
+                DataType = 'TSmartImage'
               end>
             OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetGlyphEval
             Visibility = cvProtected
@@ -889,7 +889,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           end
           item
             Name = 'Glyph'
-            DataType = 'TBitmap'
+            DataType = 'TSmartImage'
             Visibility = cvProtected
             ReadAccess = 'GetGlyph'
             WriteAccess = 'SetGlyph'
@@ -1014,7 +1014,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           end
           item
             Name = 'Glyph'
-            DataType = 'TBitmap'
+            DataType = 'TSmartImage'
           end
           item
             Name = 'VisibleElements'
@@ -1028,7 +1028,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Properties = <
           item
             Name = 'Glyph'
-            DataType = 'TBitmap'
+            DataType = 'TSmartImage'
           end
           item
             Name = 'Position'
@@ -1066,7 +1066,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           end
           item
             Name = 'Glyph'
-            DataType = 'TBitmap'
+            DataType = 'TSmartImage'
           end
           item
             Name = 'VisibleElements'

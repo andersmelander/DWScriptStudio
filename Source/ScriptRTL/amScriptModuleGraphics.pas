@@ -1,4 +1,4 @@
-unit amScriptModuleGraphics;
+﻿unit amScriptModuleGraphics;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -72,6 +72,9 @@ type
     procedure dwsUnitGraphicsClassesTBitmapMethodsGetCanvasEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitGraphicsClassesTCustomCanvasMethodsGetPixelEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitGraphicsClassesTCustomCanvasMethodsSetPixelEval(Info: TProgramInfo; ExtObject: TObject);
+    procedure dwsUnitGraphicsClassesTSmartImageCleanUp(ExternalObject: TObject);
+    procedure dwsUnitGraphicsClassesTSmartImageConstructorsCreateEval(Info: TProgramInfo; var ExtObject: TObject);
+    procedure dwsUnitGraphicsClassesTSmartImageMethodsGetImageFormatEval(Info: TProgramInfo; ExtObject: TObject);
   private
   protected
     // IScriptModule
@@ -154,6 +157,7 @@ begin
   FileSystem := Info.Execution.FileSystem;
   Stream := FileSystem.OpenFileStream(Info.Params[0].ValueAsString, fomReadOnly);
   try
+    // TODO : Maybe use TPicture instead. It supports detecting the image type now.
     SmartImage := TScriptSmartImage.Create;
     try
       SmartImage.LoadFromStream(Stream);
@@ -175,6 +179,7 @@ begin
   if (Info.Params[0].ExternalObject = nil) then
     raise EScript.Create('Invalid stream object');
 
+  // TODO : Maybe use TPicture instead. It supports detecting the image type now.
   SmartImage := TScriptSmartImage.Create;
   try
     SmartImage.LoadFromStream(Info.Params[0].ExternalObject as TStream);
@@ -242,6 +247,7 @@ begin
 
   if (Info.ParamAsBoolean[1]) then
   begin
+    // TODO : Maybe use TPicture instead. It supports detecting the image type now.
     SmartImage := TdxSmartImage.Create;
     try
       SmartImage.LoadFromStream(Info.Params[0].ExternalObject as TStream);
@@ -275,6 +281,7 @@ begin
   try
     if (Info.ParamAsBoolean[1]) then
     begin
+      // TODO : Maybe use TPicture instead. It supports detecting the image type now.
       SmartImage := TdxSmartImage.Create;
       try
         SmartImage.LoadFromStream(Stream);
@@ -429,6 +436,43 @@ procedure TDataModuleScriptGraphics.dwsUnitGraphicsClassesTPNGImageCleanUp(Exter
 begin
   if (ExternalObject is TScriptPngImage) then
     ExternalObject.Free;
+end;
+
+// -----------------------------------------------------------------------------
+// TSmartImage
+// Encapsulates a DevExpress TdxSmartImage
+// -----------------------------------------------------------------------------
+procedure TDataModuleScriptGraphics.dwsUnitGraphicsClassesTSmartImageConstructorsCreateEval(Info: TProgramInfo; var ExtObject: TObject);
+begin
+  if (ExtObject = nil) then
+    ExtObject := TScriptSmartImage.Create;
+end;
+
+procedure TDataModuleScriptGraphics.dwsUnitGraphicsClassesTSmartImageCleanUp(ExternalObject: TObject);
+begin
+  if (ExternalObject is TScriptSmartImage) then
+    ExternalObject.Free;
+
+end;
+
+procedure TDataModuleScriptGraphics.dwsUnitGraphicsClassesTSmartImageMethodsGetImageFormatEval(Info: TProgramInfo; ExtObject: TObject);
+begin
+  if (ExtObject is TdxBMPImage) then
+    Info.ResultAsInteger := 1
+  else
+  if (ExtObject is TdxPNGImage) then
+    Info.ResultAsInteger := 2
+  else
+  if (ExtObject is TdxJPEGImage) then
+    Info.ResultAsInteger := 3
+  else
+  if (ExtObject is TdxGIFImage) then
+    Info.ResultAsInteger := 4
+  else
+  if (ExtObject is TdxTIFFImage) then
+    Info.ResultAsInteger := 5
+  else
+    Info.ResultAsInteger := 0;
 end;
 
 // -----------------------------------------------------------------------------
