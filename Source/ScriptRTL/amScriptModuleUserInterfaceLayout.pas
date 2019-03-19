@@ -213,16 +213,18 @@ type
     procedure dwsUnitLayoutClassesTLayoutImageItemMethodsGetImageEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetGlyphEval(Info: TProgramInfo; ExtObject: TObject);
   private
-    FLayoutLookAndFeel: TdxCustomLayoutLookAndFeel;
+    class var FLayoutLookAndFeel: TdxCustomLayoutLookAndFeel;
+  private
+    class destructor Destroy;
+  protected
     function GetLayoutLookAndFeel: TdxCustomLayoutLookAndFeel;
+    property LayoutLookAndFeel: TdxCustomLayoutLookAndFeel read GetLayoutLookAndFeel;
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     // IScriptModule
     procedure Initialize(ADelphiWebScript: TDelphiWebScript); override;
     procedure Finalize; override;
-
-    property LayoutLookAndFeel: TdxCustomLayoutLookAndFeel read GetLayoutLookAndFeel;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -282,6 +284,10 @@ end;
 destructor TDataModuleScriptUserInterfaceLayout.Destroy;
 begin
   inherited;
+end;
+
+class destructor TDataModuleScriptUserInterfaceLayout.Destroy;
+begin
   if (FLayoutLookAndFeel <> nil) then
     FreeAndNil(FLayoutLookAndFeel);
 end;
@@ -337,10 +343,7 @@ function TDataModuleScriptUserInterfaceLayout.GetLayoutLookAndFeel: TdxCustomLay
 begin
   if (FLayoutLookAndFeel = nil) then
   begin
-    // Note: We use dxLayoutDefaultLookAndFeel as owner to ensure that the layout is
-    // destroyed no later than the dxLayoutLookAndFeels finalization. Destruction later
-    // than that causes AV because required subsystems has been destroyed.
-    FLayoutLookAndFeel := TdxLayoutSkinLookAndFeel.Create(dxLayoutDefaultLookAndFeel);
+    FLayoutLookAndFeel := TdxLayoutSkinLookAndFeel.Create(nil); // Destroyed by class destructor
     FLayoutLookAndFeel.FreeNotification(Self);
     // Copy defaults
     FLayoutLookAndFeel.Assign(dxLayoutDefaultLookAndFeel);
@@ -1108,7 +1111,9 @@ procedure TDataModuleScriptUserInterfaceLayout.dwsUnitLayoutClassesTLayoutStyleC
 begin
   if (ExtObject = nil) then
   begin
-    // See explanation for use of dxLayoutDefaultLookAndFeel in GetLayoutLookAndFeel().
+    // Note: We use dxLayoutDefaultLookAndFeel as owner to ensure that the layout is
+    // destroyed no later than the dxLayoutLookAndFeels finalization. Destruction later
+    // than that causes AV because required subsystems has been destroyed.
     ExtObject := TScriptLayoutLookAndFeel.Create(dxLayoutDefaultLookAndFeel);
     TScriptLayoutLookAndFeel(ExtObject).FreeNotification(Self);
     // Copy defaults
