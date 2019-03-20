@@ -17,7 +17,9 @@ uses
   Dialogs, ImgList, ComCtrls, ActnList, System.Actions, System.ImageList,
 
   cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore,
-  cxContainer, cxEdit, cxTreeView, dxSkinsdxBarPainter, dxBar, cxClasses, cxImageList,
+  cxContainer, cxEdit, dxSkinsdxBarPainter, dxBar, cxClasses, cxImageList,
+
+  VirtualTrees,
 
   dwsSymbols,
 {$ifndef OLD_DWSCRIPT}
@@ -26,13 +28,12 @@ uses
 
   amProgressForm,
 
-  amScriptDebuggerAPI;
+  amScriptDebuggerAPI, dxLayoutContainer, dxLayoutLookAndFeels, dxLayoutControl;
 
 type
   TFrame = TScriptDebuggerFrame;
 
   TScriptDebuggerSymbolsFrame = class(TFrame)
-    TreeViewSymbols: TcxTreeView;
     ImageListSymbols: TcxImageList;
     ActionListSymbols: TActionList;
     ActionSymbolsViewScopePublished: TAction;
@@ -49,18 +50,37 @@ type
     BarPopupMenuSymbols: TdxBarPopupMenu;
     ActionSymbolsViewSource: TAction;
     BarButtonSymbolsViewSource: TdxBarButton;
-    procedure TreeViewSymbolsDblClick(Sender: TObject);
+    LayoutControlGroup_Root: TdxLayoutGroup;
+    LayoutControl: TdxLayoutControl;
+    LayoutItemTreeView: TdxLayoutItem;
+    LayoutLookAndFeelList: TdxLayoutLookAndFeelList;
+    LayoutLookAndFeelStandard: TdxLayoutStandardLookAndFeel;
+    LayoutGroupWarning: TdxLayoutGroup;
+    LayoutLabeledItemWarning: TdxLayoutLabeledItem;
     procedure ActionSymbolsViewScopeExecute(Sender: TObject);
     procedure ActionSymbolsViewScopeUpdate(Sender: TObject);
     procedure ActionListSymbolsUpdate(Action: TBasicAction; var Handled: Boolean);
     procedure ActionSymbolsViewSourceExecute(Sender: TObject);
     procedure ActionSymbolsViewSourceUpdate(Sender: TObject);
+  private type
+    TSymbolTreeNodeData = record
+     Symbol: TSymbol;
+     Caption: string;
+     ImageIndex: integer;
+     StateIndex: integer;
+    end;
+    PSymbolTreeNodeData = ^TSymbolTreeNodeData;
   private
-    FSymbols: TDictionary<TSymbol, TTreeNode>;
+    FTreeView: TVirtualStringTree;
+    procedure TreeViewOnGetCellText(Sender: TCustomVirtualStringTree; var E: TVSTGetCellTextEventArgs);
+    procedure TreeViewOnGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
+    procedure TreeViewOnNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+  private
+    FSymbols: TDictionary<TSymbol, PVirtualNode>;
     FVisibilities: TdwsVisibilities;
     FProgress: IProgress;
-    function LoadSymbol(Symbol, ParentSymbol: TSymbol; ParentNode: TTreeNode; Visibilities: TdwsVisibilities): TTreeNode;
-    procedure LoadSymbols(ATable: TSymbolTable; ParentSymbol: TSymbol; ParentNode: TTreeNode; Visibilities: TdwsVisibilities);
+    function LoadSymbol(Symbol, ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities): PVirtualNode;
+    procedure LoadSymbols(ATable: TSymbolTable; ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities);
   private
 {$ifndef OLD_DWSCRIPT}
     FUnitSymbols: TList<TUnitSymbol>;
@@ -267,11 +287,11 @@ begin
 end;
 {$endif OLD_DWSCRIPT}
 
-function TScriptDebuggerSymbolsFrame.LoadSymbol(Symbol, ParentSymbol: TSymbol; ParentNode: TTreeNode; Visibilities: TdwsVisibilities): TTreeNode;
+function TScriptDebuggerSymbolsFrame.LoadSymbol(Symbol, ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities): PVirtualNode;
 var
-  ScopeNode: TTreeNode;
-  s: string;
-  ImageIndex: integer;
+  NodeData: PSymbolTreeNodeData;
+
+  ScopeNode: PVirtualNode;
   FuncSymbol: TFuncSymbol;
   ChildVisibilities: TdwsVisibilities;
   SymClass: TClass;
@@ -320,8 +340,6 @@ begin
     end;
   end;
 
-  ImageIndex := Ord(scUnknown);
-
   if (Visibilities <> []) then
   begin
     SymClass := Symbol.ClassType;
@@ -358,20 +376,19 @@ TdwsSuggestionCategory = (scUnknown,
                          scSpecialFunction);
 *)
 
-  s := GetSymbolDescription(Symbol, ImageIndex);
+  Result := FTreeView.AddChild(ParentNode);
+  NodeData := FTreeView.GetNodeData(Result);
+  NodeData.Symbol := Symbol;
+  NodeData.ImageIndex := -1;
+  NodeData.StateIndex := -1;
 
-  Result := TreeViewSymbols.Items.AddChild(ParentNode, s);
 
   FuncSymbol := Symbol.AsFuncSymbol;
   if (FuncSymbol <> nil) and (FuncSymbol.SourcePosition.SourceFile <> nil) then
   begin
-    Result.Data := FuncSymbol;
-    Result.StateIndex := 1;
-  end else
-    Result.StateIndex := -1;
-  Result.ImageIndex := ImageIndex;
-  Result.SelectedIndex := ImageIndex;
-  Result.ExpandedImageIndex := ImageIndex;
+    NodeData.Symbol := FuncSymbol;
+    NodeData.StateIndex := 1;
+  end;
 
   if (Symbol is TUnitSymbol) then
   begin
@@ -417,38 +434,42 @@ TdwsSuggestionCategory = (scUnknown,
 
       if (cvPrivate in ChildVisibilities) then
       begin
-        ScopeNode := TreeViewSymbols.Items.AddChild(Result, 'private');
-        ScopeNode.StateIndex := -1;
-        ScopeNode.ImageIndex := -1;
-        ScopeNode.SelectedIndex := -1;
-        ScopeNode.ExpandedImageIndex := -1;
+        ScopeNode := FTreeView.AddChild(Result);
+        NodeData := FTreeView.GetNodeData(ScopeNode);
+        NodeData.Caption := 'private';
+        NodeData.ImageIndex := -1;
+        NodeData.StateIndex := -1;
+
         LoadSymbols(TCompositeTypeSymbol(Symbol).Members, Symbol, ScopeNode, [cvPrivate]);
       end;
       if (cvProtected in ChildVisibilities) then
       begin
-        ScopeNode := TreeViewSymbols.Items.AddChild(Result, 'protected');
-        ScopeNode.StateIndex := -1;
-        ScopeNode.ImageIndex := -1;
-        ScopeNode.SelectedIndex := -1;
-        ScopeNode.ExpandedImageIndex := -1;
+        ScopeNode := FTreeView.AddChild(Result);
+        NodeData := FTreeView.GetNodeData(ScopeNode);
+        NodeData.Caption := 'protected';
+        NodeData.ImageIndex := -1;
+        NodeData.StateIndex := -1;
+
         LoadSymbols(TCompositeTypeSymbol(Symbol).Members, Symbol, ScopeNode, [cvProtected]);
       end;
       if (cvPublic in ChildVisibilities) then
       begin
-        ScopeNode := TreeViewSymbols.Items.AddChild(Result, 'public');
-        ScopeNode.StateIndex := -1;
-        ScopeNode.ImageIndex := -1;
-        ScopeNode.SelectedIndex := -1;
-        ScopeNode.ExpandedImageIndex := -1;
+        ScopeNode := FTreeView.AddChild(Result);
+        NodeData := FTreeView.GetNodeData(ScopeNode);
+        NodeData.Caption := 'public';
+        NodeData.ImageIndex := -1;
+        NodeData.StateIndex := -1;
+
         LoadSymbols(TCompositeTypeSymbol(Symbol).Members, Symbol, ScopeNode, [cvPublic]);
       end;
       if (cvPublished in ChildVisibilities) then
       begin
-        ScopeNode := TreeViewSymbols.Items.AddChild(Result, 'published');
-        ScopeNode.StateIndex := -1;
-        ScopeNode.ImageIndex := -1;
-        ScopeNode.SelectedIndex := -1;
-        ScopeNode.ExpandedImageIndex := -1;
+        ScopeNode := FTreeView.AddChild(Result);
+        NodeData := FTreeView.GetNodeData(ScopeNode);
+        NodeData.Caption := 'published';
+        NodeData.ImageIndex := -1;
+        NodeData.StateIndex := -1;
+
         LoadSymbols(TCompositeTypeSymbol(Symbol).Members, Symbol, ScopeNode, [cvPublished]);
       end;
 
@@ -459,7 +480,7 @@ TdwsSuggestionCategory = (scUnknown,
   end;
 end;
 
-procedure TScriptDebuggerSymbolsFrame.LoadSymbols(ATable: TSymbolTable; ParentSymbol: TSymbol; ParentNode: TTreeNode; Visibilities: TdwsVisibilities);
+procedure TScriptDebuggerSymbolsFrame.LoadSymbols(ATable: TSymbolTable; ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities);
 var
   i: Integer;
 begin
@@ -495,20 +516,39 @@ end;
 
 procedure TScriptDebuggerSymbolsFrame.ActionSymbolsViewSourceExecute(Sender: TObject);
 var
+  NodeData: PSymbolTreeNodeData;
   ScriptPos: TScriptPos;
 begin
-  if (TreeViewSymbols.Selected = nil) or (TreeViewSymbols.Selected.Data = nil) then
+  if (FTreeView.FocusedNode = nil) then
     exit;
 
-  ScriptPos := TFuncSymbol(TreeViewSymbols.Selected.Data).SourcePosition;
+  NodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
+  if (NodeData = nil) or (NodeData.Symbol = nil) then
+    exit;
+
+  if (not(NodeData.Symbol is TFuncSymbol)) then
+    exit;
+
+  ScriptPos := TFuncSymbol(NodeData.Symbol).SourcePosition;
   ScriptPos.Col := 0;
 
   Debugger.ViewScriptPos(ScriptPos);
 end;
 
 procedure TScriptDebuggerSymbolsFrame.ActionSymbolsViewSourceUpdate(Sender: TObject);
+var
+  NodeData: PSymbolTreeNodeData;
+  Enabled: boolean;
 begin
-  TAction(Sender).Enabled := (TreeViewSymbols.Selected <> nil) and (TreeViewSymbols.Selected.Data <> nil);
+  Enabled := (FTreeView.FocusedNode <> nil);
+
+  if (Enabled) then
+  begin
+    NodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
+    Enabled := (NodeData <> nil) and (NodeData.Symbol <> nil) and (NodeData.Symbol is TFuncSymbol);
+  end;
+
+  TAction(Sender).Enabled := Enabled;
 end;
 
 constructor TScriptDebuggerSymbolsFrame.Create(AOwner: TComponent);
@@ -516,6 +556,45 @@ begin
   inherited;
 
   FVisibilities := [cvPublic, cvPublished, cvProtected];
+
+  FTreeView := TVirtualStringTree.Create(Self);
+  FTreeView.BorderStyle := bsNone;
+  FTreeView.StateImages := ImageListSymbols;
+  FTreeView.NodeDataSize := SizeOf(TSymbolTreeNodeData);
+  FTreeView.TreeOptions.PaintOptions := [toShowRoot, toShowButtons, toShowTreeLines, toHotTrack, toPopupMode, toThemeAware, toUseBlendedImages, toUseBlendedSelection, toGhostedIfUnfocused, toUseExplorerTheme, toHideTreeLinesIfThemed];
+  FTreeView.TreeOptions.SelectionOptions := [toFullRowSelect, toRightClickSelect, toSimpleDrawSelection];
+  FTreeView.TreeOptions.AutoOptions := [toAutoSpanColumns, toAutoChangeScale, toAutoHideButtons];
+  FTreeView.TreeOptions.MiscOptions := [toToggleOnDblClick, toFullRepaintOnResize];
+  FTreeView.TreeOptions.AnimationOptions := [toAdvancedAnimatedToggle];
+  FTreeView.DrawSelectionMode := smBlendedRectangle;
+  FTreeView.DragType := dtVCL;
+  FTreeView.AutoScrollInterval := 100;
+  FTreeView.ScrollBarOptions.HorizontalIncrement := 1;
+  FTreeView.ScrollBarOptions.VerticalIncrement := 10;
+  FTreeView.HintMode := hmTooltip;
+(*
+  FTreeView.Header.Columns.Add;
+  FTreeView.Header.Columns.Add;
+  FTreeView.Header.Columns[0].Margin := 0;
+  FTreeView.Header.Columns[0].Spacing := 0;
+  FTreeView.Header.Columns[1].Options := [{coEnabled, }coVisible, coFixed, coResizable];//, coSmartResize];
+  FTreeView.Header.Columns[1].Alignment := taRightJustify;
+  FTreeView.Header.Columns[1].Margin := 0;
+  FTreeView.Header.Columns[1].Spacing := 0;
+  FTreeView.Header.Options := [hoAutoResize{, hoVisible, hoColumnResize}];
+  FTreeView.Header.AutoSizeIndex := 0;
+*)
+  // FTreeView.TextMargin := 0;
+  FTreeView.ParentShowHint := True;
+  FTreeView.ParentFont := True;
+
+  FTreeView.OnGetCellText := TreeViewOnGetCellText;
+  FTreeView.OnGetImageIndex := TreeViewOnGetImageIndex;
+  FTreeView.OnNodeDblClick := TreeViewOnNodeDblClick;
+//  FTreeView.OnGetPopupMenu := TreeViewOnGetPopupMenu;
+//  FTreeView.OnExpanded := TreeViewOnExpanded;
+
+  LayoutItemTreeView.Control := FTreeView;
 end;
 
 procedure TScriptDebuggerSymbolsFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
@@ -524,7 +603,7 @@ begin
     dnCompiled:
       UpdateInfo;
   else
-    TreeViewSymbols.Items.Clear;
+    FTreeView.Clear;
   end;
 end;
 
@@ -536,10 +615,47 @@ end;
 procedure TScriptDebuggerSymbolsFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
-  TreeViewSymbols.Images := AImageListSymbols;
+  FTreeView.Images := AImageListSymbols;
 end;
 
-procedure TScriptDebuggerSymbolsFrame.TreeViewSymbolsDblClick(Sender: TObject);
+procedure TScriptDebuggerSymbolsFrame.TreeViewOnGetCellText(Sender: TCustomVirtualStringTree; var E: TVSTGetCellTextEventArgs);
+var
+  NodeData: PSymbolTreeNodeData;
+begin
+  NodeData := FTreeView.GetNodeData(E.Node);
+
+  if (NodeData.Caption.IsEmpty) and (NodeData.Symbol <> nil) then
+    NodeData.Caption := GetSymbolDescription(NodeData.Symbol, NodeData.ImageIndex);
+
+  E.CellText := NodeData.Caption;
+end;
+
+procedure TScriptDebuggerSymbolsFrame.TreeViewOnGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+  Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
+var
+  NodeData: PSymbolTreeNodeData;
+begin
+  NodeData := FTreeView.GetNodeData(Node);
+
+  if (Kind <> ikState) then
+  begin
+    if (NodeData.Caption.IsEmpty) then
+    begin
+      if (NodeData.Symbol <> nil) then
+        NodeData.Caption := GetSymbolDescription(NodeData.Symbol, NodeData.ImageIndex)
+      else
+        NodeData.ImageIndex := -1;
+    end;
+
+    ImageIndex := NodeData.ImageIndex;
+  end else
+  if (NodeData.Symbol <> nil) then
+    ImageIndex := NodeData.StateIndex
+  else
+    ImageIndex := -1;
+end;
+
+procedure TScriptDebuggerSymbolsFrame.TreeViewOnNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
 begin
   ActionSymbolsViewSource.Execute;
 end;
@@ -548,7 +664,8 @@ procedure TScriptDebuggerSymbolsFrame.UpdateInfo;
 
   procedure AddStaticSymbols;
   var
-    Node: TTreeNode;
+    NodeData: PSymbolTreeNodeData;
+    Node: PVirtualNode;
     UnitMains: TUnitMainSymbols;
     Table: TSymbolTable;
     i: Integer;
@@ -563,11 +680,11 @@ procedure TScriptDebuggerSymbolsFrame.UpdateInfo;
       begin
         if (Node = nil) then
         begin
-          Node := TreeViewSymbols.Items.AddChild(nil, 'Static types');
-          Node.StateIndex := -1;
-          Node.ImageIndex := -1;
-          Node.SelectedIndex := Node.ImageIndex;
-          Node.ExpandedImageIndex := Node.ImageIndex;
+          Node := FTreeView.AddChild(nil);
+          NodeData := FTreeView.GetNodeData(Node);
+          NodeData.Caption := 'Static types';
+          NodeData.ImageIndex := -1;
+          NodeData.StateIndex := -1;
         end;
 
         LoadSymbols(TLinkedSymbolTable(Table).Parent.SymbolTable, nil, Node, FVisibilities);
@@ -576,34 +693,37 @@ procedure TScriptDebuggerSymbolsFrame.UpdateInfo;
   end;
 
 var
-  Node: TTreeNode;
+  Node: PVirtualNode;
+  NodeData: PSymbolTreeNodeData;
 begin
-  TreeViewSymbols.Items.BeginUpdate;
+  FTreeView.BeginUpdate;
   try
-    TreeViewSymbols.Items.Clear;
+    FTreeView.Clear;
 
     if (Debugger.GetProgram = nil) then
       exit;
+
+    LayoutGroupWarning.Visible := (Debugger.GetProgram.Msgs.HasErrors);
 
     SaveCursor(crHourGlass);
     FProgress := ShowProgress('Loading symbols');
     try
       FProgress.Marquee := True;
 
-      FSymbols := TDictionary<TSymbol, TTreeNode>.Create;
+      FSymbols := TDictionary<TSymbol, PVirtualNode>.Create;
       try
-        Node := TreeViewSymbols.Items.AddChild(nil, 'Default types');
-        Node.StateIndex := -1;
-        Node.ImageIndex := -1;
-        Node.SelectedIndex := Node.ImageIndex;
-        Node.ExpandedImageIndex := Node.ImageIndex;
+        Node := FTreeView.AddChild(nil);
+        NodeData := FTreeView.GetNodeData(Node);
+        NodeData.Caption := 'Default types';
+        NodeData.ImageIndex := -1;
+        NodeData.StateIndex := -1;
         LoadSymbols(Debugger.GetProgram.ProgramObject.SystemTable.SymbolTable, nil, Node, FVisibilities);
 
-        Node := TreeViewSymbols.Items.AddChild(nil, 'Standard functions');
-        Node.StateIndex := -1;
-        Node.ImageIndex := -1;
-        Node.SelectedIndex := Node.ImageIndex;
-        Node.ExpandedImageIndex := Node.ImageIndex;
+        Node := FTreeView.AddChild(nil);
+        NodeData := FTreeView.GetNodeData(Node);
+        NodeData.Caption := 'Standard functions';
+        NodeData.ImageIndex := -1;
+        NodeData.StateIndex := -1;
         LoadSymbols(dwsInternalUnit.StaticTable.SymbolTable, nil, Node, FVisibilities);
 
         AddStaticSymbols;
@@ -618,7 +738,7 @@ begin
     end;
 
   finally
-    TreeViewSymbols.Items.EndUpdate;
+    FTreeView.EndUpdate;
   end;
 end;
 
