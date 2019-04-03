@@ -1,4 +1,4 @@
-unit amMSXMLUtils;
+﻿unit amMSXMLUtils;
 
 (*
  * Copyright © 2008 Anders Melander
@@ -24,7 +24,8 @@ type
   MSXMLTool = class abstract
   public
     class function CreateDOM: IXMLDOMDocument2;
-    class procedure WriteDocumentToStream(const Document: IXMLDOMDocument; const Stream: IStream; Encoding: string = 'UTF-8');
+    class procedure WriteDocumentToStream(const Document: IXMLDOMDocument; const Stream: IStream; Encoding: string = 'UTF-8'); overload;
+    class procedure WriteDocumentToStream(const Document: IXMLDOMDocument; const Stream: TStream; Encoding: string = 'UTF-8'); overload;
     class procedure WriteDocumentToFile(const Document: IXMLDOMDocument; const Filename: string; Encoding: string = 'UTF-8');
   end;
 
@@ -51,18 +52,24 @@ end;
 class procedure MSXMLTool.WriteDocumentToFile(const Document: IXMLDOMDocument; const Filename: string; Encoding: string);
 var
   Stream: TFileStream;
-  StreamAdapter: IStream;
 begin
   Stream := TFileStream.Create(Filename, fmCreate);
   try
-    StreamAdapter := TFixedStreamAdapter.Create(Stream);
-    try
-      WriteDocumentToStream(Document, StreamAdapter, Encoding);
-    finally
-      StreamAdapter := nil;
-    end;
+    WriteDocumentToStream(Document, Stream, Encoding);
   finally
     Stream.Free;
+  end;
+end;
+
+class procedure MSXMLTool.WriteDocumentToStream(const Document: IXMLDOMDocument; const Stream: TStream; Encoding: string);
+var
+  StreamAdapter: IStream;
+begin
+  StreamAdapter := TFixedStreamAdapter.Create(Stream);
+  try
+    WriteDocumentToStream(Document, StreamAdapter, Encoding);
+  finally
+    StreamAdapter := nil;
   end;
 end;
 
