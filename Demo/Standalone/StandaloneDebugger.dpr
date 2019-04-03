@@ -21,5 +21,6 @@ begin
   amScriptHostAPI.ScriptDebuggerIsApplication := True;
   amScriptAPI.ScriptService.Edit;
 
+  Application.Title := 'DWScript debugger';
   Application.Run;
 end.
