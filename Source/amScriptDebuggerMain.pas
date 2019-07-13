@@ -665,6 +665,7 @@ type
     FPendingExceptionPos: TScriptPos;
 
   protected
+    procedure WMWindowPosChanged(var Msg: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
     procedure MsgExecReset(var Msg: TMessage); message MSG_EXEC_RESET;
     procedure MsgFormMaximize(var Msg: TMessage); message MSG_FORM_MAXIMIZE;
     procedure DoCreate; override;
@@ -2995,6 +2996,22 @@ begin
     CurrentEditor.InvalidateGutterLine(AScriptPos.Line);
     CurrentEditor.InvalidateLine(AScriptPos.Line);
   end;
+end;
+
+procedure TFormScriptDebugger.WMWindowPosChanged(var Msg: TWMWindowPosChanged);
+begin
+  // This is just here to experiment with solutions to the DevExpress ribbon form shadow appearing before the form
+  inherited;
+//  OutputDebugString(Format('%8.X', [Msg.WindowPos.flags]));
+//  if (Msg.WindowPos.flags and $8100 = $8100) then
+//  if (Msg.WindowPos.flags and $10000000 = $10000000) then
+//    MessageBeep(1);
+(*
+ SetWindowPos undocumented flags
+ #define SWP_NOCLIENTSIZE 0x0800
+ #define SWP_NOCLIENTMOVE 0x1000
+ #define SWP_STATECHANGED 0x8000
+*)
 end;
 
 function TFormScriptDebugger.FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
