@@ -1,4 +1,4 @@
-unit amCursorService;
+﻿unit amCursorService;
 
 (*
  * Copyright © 2008 Anders Melander
@@ -34,12 +34,12 @@ function CursorService: ICursorService;
 //
 //------------------------------------------------------------------------------
 type
-  IRecall = interface
+  ICursorRecall = interface
     procedure Store;
     procedure Forget;
   end;
 
-  TCursorRecall = class(TInterfacedObject, IRecall)
+  TCursorRecall = class(TInterfacedObject, ICursorRecall)
   private
     FSavedCursor: TCursor;
   protected
@@ -52,7 +52,7 @@ type
     property SavedCursor: TCursor read FSavedCursor;
   end;
 
-function SaveCursor(NewCursor: TCursor = crNone; OnlyIfDefault: boolean = False): IRecall;
+function SaveCursor(NewCursor: TCursor = crNone; OnlyIfDefault: boolean = False): ICursorRecall;
 
 // Use UpdateCursor to force immediate update of cursor
 procedure UpdateCursor;
@@ -153,7 +153,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-function SaveCursor(NewCursor: TCursor; OnlyIfDefault: boolean): IRecall;
+function SaveCursor(NewCursor: TCursor; OnlyIfDefault: boolean): ICursorRecall;
 begin
   if (not OnlyIfDefault) or (Screen.Cursor = crDefault) then
     Result := TCursorRecall.Create(NewCursor)

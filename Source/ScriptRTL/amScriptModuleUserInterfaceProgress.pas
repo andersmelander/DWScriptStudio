@@ -1,4 +1,4 @@
-unit amScriptModuleUserInterfaceProgress;
+﻿unit amScriptModuleUserInterfaceProgress;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -149,7 +149,7 @@ end;
 // -----------------------------------------------------------------------------
 procedure TDataModuleScriptUserInterfaceProgress.dwsUnitProgressFunctionsSaveCursorEval(info: TProgramInfo);
 var
-  Recall: IRecall;
+  Recall: ICursorRecall;
 begin
   Recall := SaveCursor(Info.ParamAsInteger[0], Info.ParamAsBoolean[1]);
   Recall._AddRef;
@@ -164,16 +164,16 @@ end;
 // -----------------------------------------------------------------------------
 procedure TDataModuleScriptUserInterfaceProgress.dwsUnitProgressClassesTCursorRecallCleanUp(ExternalObject: TObject);
 var
-  Recall: IRecall;
+  Recall: ICursorRecall;
 begin
-  Recall := IRecall(pointer(ExternalObject));
+  Recall := ICursorRecall(pointer(ExternalObject));
   Recall._Release;
   Recall := nil;
 end;
 
 procedure TDataModuleScriptUserInterfaceProgress.dwsUnitProgressClassesTCursorRecallMethodsForgetEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  IRecall(pointer(ExtObject)).Forget;
+  ICursorRecall(pointer(ExtObject)).Forget;
 end;
 
 
