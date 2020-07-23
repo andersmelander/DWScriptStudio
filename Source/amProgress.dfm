@@ -73,9 +73,8 @@ object CustomProgressForm: TCustomProgressForm
       Style.TextColor = 10040064
       Style.TransparentBorder = False
       Properties.ShowAccelChar = False
-      Properties.WordWrap = True
+      Properties.ShowEndEllipsis = True
       Transparent = True
-      Width = 399
     end
     object ProgressBar: TProgressBar
       AlignWithMargins = True

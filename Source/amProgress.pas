@@ -1,4 +1,4 @@
-unit amProgressForm;
+﻿unit amProgress;
 
 (*
  * Copyright © 2012 Anders Melander

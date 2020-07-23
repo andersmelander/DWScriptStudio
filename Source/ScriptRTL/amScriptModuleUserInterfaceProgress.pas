@@ -102,7 +102,7 @@ uses
   dwsInfo,
   dwsDataContext,
   dwsSymbols,
-  amProgressForm,
+  amProgress,
   amCursorService;
 
 

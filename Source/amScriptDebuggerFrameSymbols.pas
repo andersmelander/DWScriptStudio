@@ -26,7 +26,7 @@ uses
   dwsUnitSymbols,
 {$endif OLD_DWSCRIPT}
 
-  amProgressForm,
+  amProgress,
 
   amScriptDebuggerAPI, dxLayoutContainer, dxLayoutLookAndFeels, dxLayoutControl;
 
