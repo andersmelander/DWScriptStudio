@@ -357,7 +357,7 @@ end;
 
 procedure TDataModuleScriptUserInterfaceListView.dwsUnitListViewClassesTListViewMethodsSetItemFocusedEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
     TScriptListViewWrapper(ExtObject).Item.ItemFocused := TListItem(Info.ParamAsObject[0])
   else
     TScriptListViewWrapper(ExtObject).Item.ItemFocused := nil;
@@ -386,7 +386,7 @@ end;
 
 procedure TDataModuleScriptUserInterfaceListView.dwsUnitListViewClassesTListViewMethodsSetSelectedEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
     TScriptListViewWrapper(ExtObject).Item.Selected := TListItem(Info.ParamAsObject[0])
   else
     TScriptListViewWrapper(ExtObject).Item.Selected := nil;
@@ -443,7 +443,7 @@ end;
 procedure TDataModuleScriptUserInterfaceListView.dwsUnitListViewClassesTListViewMethodsSetOnEditedEval(Info: TProgramInfo; ExtObject: TObject);
 begin
   // Attach wrapper's handler to controls event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnEdited'].Value := Info.Params[0].Value;
     TScriptListViewWrapper(ExtObject).Item.OnEdited := TScriptListViewWrapper(ExtObject).OnEdited;
@@ -454,7 +454,7 @@ end;
 procedure TDataModuleScriptUserInterfaceListView.dwsUnitListViewClassesTListViewMethodsSetOnEditingEval(Info: TProgramInfo; ExtObject: TObject);
 begin
   // Attach wrapper's handler to controls event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnEditing'].Value := Info.Params[0].Value;
     TScriptListViewWrapper(ExtObject).Item.OnEditing := TScriptListViewWrapper(ExtObject).OnEditing;
@@ -465,7 +465,7 @@ end;
 procedure TDataModuleScriptUserInterfaceListView.dwsUnitListViewClassesTListViewMethodsSetOnItemCheckedEval(Info: TProgramInfo; ExtObject: TObject);
 begin
   // Attach wrapper's handler to controls event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnItemChecked'].Value := Info.Params[0].Value;
     TScriptListViewWrapper(ExtObject).Item.InnerListView.OnItemChecked := TScriptListViewWrapper(ExtObject).OnItemChecked;
@@ -476,7 +476,7 @@ end;
 procedure TDataModuleScriptUserInterfaceListView.dwsUnitListViewClassesTListViewMethodsSetOnSelectItemEval(Info: TProgramInfo; ExtObject: TObject);
 begin
   // Attach wrapper's handler to controls event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnSelectItem'].Value := Info.Params[0].Value;
     TScriptListViewWrapper(ExtObject).Item.OnSelectItem := TScriptListViewWrapper(ExtObject).OnSelectItem;

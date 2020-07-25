@@ -1,4 +1,4 @@
-unit amScriptModuleRegExp;
+﻿unit amScriptModuleRegExp;
 
 (*
  * Copyright © 2014 Anders Melander

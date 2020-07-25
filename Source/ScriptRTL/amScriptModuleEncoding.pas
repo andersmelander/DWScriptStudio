@@ -1,4 +1,4 @@
-unit amScriptModuleEncoding;
+﻿unit amScriptModuleEncoding;
 
 (*
  * Copyright © 2014 Anders Melander

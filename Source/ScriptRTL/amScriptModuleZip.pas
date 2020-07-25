@@ -1,4 +1,4 @@
-unit amScriptModuleZip;
+﻿unit amScriptModuleZip;
 
 (*
  * Copyright © 2014 Anders Melander

@@ -776,7 +776,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnAfterShow'].Value := Info.Params[0].Value;
 

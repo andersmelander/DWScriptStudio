@@ -1,4 +1,4 @@
-unit amScriptModuleSystemInput;
+﻿unit amScriptModuleSystemInput;
 
 (*
  * Copyright © 2014 Anders Melander

@@ -1,4 +1,4 @@
-unit amScriptModuleIniFiles;
+﻿unit amScriptModuleIniFiles;
 
 (*
  * Copyright © 2014 Anders Melander

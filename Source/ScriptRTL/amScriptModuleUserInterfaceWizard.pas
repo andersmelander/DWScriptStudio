@@ -207,7 +207,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnAfterShow'].Value := Info.Params[0].Value;
 
@@ -399,7 +399,7 @@ procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardContro
 begin
   ASSERT(ExtObject is TScriptFrameWizardWrapper);
   // Attach wrapper's handler to control's event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnWizardPageActivating'].Value := Info.Params[0].Value;
     TScriptFrameWizardWrapper(ExtObject).Item.OnWizardPageActivating := OnWizardPageActivatingHandler;
@@ -411,7 +411,7 @@ procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardContro
 begin
   ASSERT(ExtObject is TScriptFrameWizardWrapper);
   // Attach wrapper's handler to control's event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnWizardGetNextPage'].Value := Info.Params[0].Value;
     TScriptFrameWizardWrapper(ExtObject).Item.OnWizardGetNextPage := OnWizardGetNextPageHandler;
@@ -423,7 +423,7 @@ procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardContro
 begin
   ASSERT(ExtObject is TScriptFrameWizardWrapper);
   // Attach wrapper's handler to control's event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnWizardGetPrevPage'].Value := Info.Params[0].Value;
     TScriptFrameWizardWrapper(ExtObject).Item.OnWizardGetPrevPage := OnWizardGetPrevPageHandler;
@@ -435,7 +435,7 @@ procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardContro
 begin
   ASSERT(ExtObject is TScriptFrameWizardWrapper);
   // Attach wrapper's handler to control's event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnWizardPageActivated'].Value := Info.Params[0].Value;
     TScriptFrameWizardWrapper(ExtObject).Item.OnWizardPageActivated := OnWizardPageActivatedHandler;
@@ -447,7 +447,7 @@ procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardContro
 begin
   ASSERT(ExtObject is TScriptFrameWizardWrapper);
   // Attach wrapper's handler to control's event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnWizardCancel'].Value := Info.Params[0].Value;
     TScriptFrameWizardWrapper(ExtObject).Item.OnWizardCancel := OnWizardCancelHandler;
@@ -459,7 +459,7 @@ procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardContro
 begin
   ASSERT(ExtObject is TScriptFrameWizardWrapper);
   // Attach wrapper's handler to control's event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnWizardFinish'].Value := Info.Params[0].Value;
     TScriptFrameWizardWrapper(ExtObject).Item.OnWizardFinish := OnWizardFinishHandler;
@@ -471,7 +471,7 @@ procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardContro
 begin
   ASSERT(ExtObject is TScriptFrameWizardWrapper);
   // Attach wrapper's handler to control's event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnWizardNextPage'].Value := Info.Params[0].Value;
     TScriptFrameWizardWrapper(ExtObject).Item.OnWizardNextPage := OnWizardNextPageHandler;
@@ -483,7 +483,7 @@ procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardContro
 begin
   ASSERT(ExtObject is TScriptFrameWizardWrapper);
   // Attach wrapper's handler to control's event
-  if (not VarIsNull(Info.Params[0].Value)) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnWizardPrevPage'].Value := Info.Params[0].Value;
     TScriptFrameWizardWrapper(ExtObject).Item.OnWizardPrevPage := OnWizardPrevPageHandler;
