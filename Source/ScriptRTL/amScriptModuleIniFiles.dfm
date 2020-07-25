@@ -7,6 +7,7 @@ object DataModuleScriptIniFiles: TDataModuleScriptIniFiles
       item
         Name = 'TCustomIniFile'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'ReadString'

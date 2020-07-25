@@ -118,6 +118,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TCustomLayoutItem'
         IsAbstract = True
+        IsInternal = True
         Fields = <
           item
             Name = 'FSize'
@@ -387,6 +388,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Name = 'TLayoutGroup'
         Ancestor = 'TCustomLayoutItem'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetExpanded'
@@ -631,6 +633,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutOffsets'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetValue'
@@ -699,20 +702,24 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Name = 'TControlMargin'
         Ancestor = 'TLayoutOffsets'
         IsSealed = True
+        IsInternal = True
         Deprecated = 'I have forgotten what this was supposed to be used for'
       end
       item
         Name = 'TLayoutPadding'
         Ancestor = 'TLayoutOffsets'
         IsSealed = True
+        IsInternal = True
       end
       item
         Name = 'TLayoutItemSize'
         IsSealed = True
+        IsInternal = True
       end
       item
         Name = 'TCustomLayoutItemCaption'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetText'
@@ -930,6 +937,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Name = 'TLayoutLabeledItemCustomCaption'
         Ancestor = 'TCustomLayoutItemCaption'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetWordWrap'
@@ -1025,6 +1033,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Name = 'TLayoutGroupCaption'
         Ancestor = 'TCustomLayoutItemCaption'
         IsSealed = True
+        IsInternal = True
         Properties = <
           item
             Name = 'Glyph'
@@ -1047,6 +1056,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Name = 'TLayoutItemCaption'
         Ancestor = 'TLayoutLabeledItemCustomCaption'
         IsSealed = True
+        IsInternal = True
         Properties = <
           item
             Name = 'ShowAccelChar'
@@ -1080,11 +1090,13 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutEmptySpaceItem'
         Ancestor = 'TCustomLayoutItem'
+        IsInternal = True
       end
       item
         Name = 'TCustomLayoutLabeledItem'
         Ancestor = 'TCustomLayoutItem'
         IsAbstract = True
+        IsInternal = True
         Properties = <
           item
             Name = 'Padding'
@@ -1094,6 +1106,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutControlItem'
         Ancestor = 'TCustomLayoutLabeledItem'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetControl'
@@ -1139,6 +1152,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutLabelItem'
         Ancestor = 'TCustomLayoutLabeledItem'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaption'
@@ -1158,6 +1172,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Name = 'TLayoutLabelItemCaption'
         Ancestor = 'TLayoutLabeledItemCustomCaption'
         IsSealed = True
+        IsInternal = True
         Properties = <
           item
             Name = 'WordWrap'
@@ -1179,14 +1194,17 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutSeparatorItem'
         Ancestor = 'TCustomLayoutLabeledItem'
+        IsInternal = True
       end
       item
         Name = 'TLayoutSplitterItem'
         Ancestor = 'TCustomLayoutItem'
+        IsInternal = True
       end
       item
         Name = 'TLayoutImageItem'
         Ancestor = 'TCustomLayoutLabeledItem'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetImage'
@@ -1217,6 +1235,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutItemList'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCount'
@@ -1258,6 +1277,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutStyle'
         IsSealed = True
+        IsInternal = True
         Constructors = <
           item
             Name = 'Create'
@@ -1306,6 +1326,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutStyleItemOptions'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaptionOptions'
@@ -1324,6 +1345,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutStyleGroupOptions'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaptionOptions'
@@ -1394,6 +1416,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutStyleCaptionOptions'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetTextColor'
@@ -1478,6 +1501,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutStyleOffsets'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetValue'
@@ -1569,6 +1593,7 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutGroupScrollOptions'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetHorizontal'

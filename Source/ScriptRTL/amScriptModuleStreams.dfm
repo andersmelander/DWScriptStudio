@@ -18,6 +18,7 @@ object DataModuleScriptStreams: TDataModuleScriptStreams
       item
         Name = 'TStream'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Read'
@@ -247,6 +248,7 @@ object DataModuleScriptStreams: TDataModuleScriptStreams
       item
         Name = 'TTextReader'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Peek'
@@ -405,6 +407,7 @@ object DataModuleScriptStreams: TDataModuleScriptStreams
       item
         Name = 'TTextWriter'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Close'

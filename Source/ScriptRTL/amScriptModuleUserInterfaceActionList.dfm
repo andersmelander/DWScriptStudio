@@ -7,8 +7,7 @@ object DataModuleScriptUserInterfaceActionList: TDataModuleScriptUserInterfaceAc
       item
         Name = 'TAction'
         Ancestor = 'TComponent'
-        IsSealed = True
-        IsAbstract = True
+        IsInternal = True
         Fields = <
           item
             Name = 'FOnUpdate'

@@ -8,6 +8,7 @@ object DataModuleScriptEncoding: TDataModuleScriptEncoding
       item
         Name = 'TEncoding'
         IsAbstract = True
+        IsInternal = True
         Constructors = <
           item
             Name = 'Create'

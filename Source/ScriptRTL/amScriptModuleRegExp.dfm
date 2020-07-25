@@ -323,6 +323,7 @@ object DataModuleScriptRegExp: TDataModuleScriptRegExp
       end
       item
         Name = 'TRegExpMatch'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetSuccess'
@@ -395,6 +396,7 @@ object DataModuleScriptRegExp: TDataModuleScriptRegExp
       end
       item
         Name = 'TRegExpMatchCollection'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCount'
@@ -435,6 +437,7 @@ object DataModuleScriptRegExp: TDataModuleScriptRegExp
       end
       item
         Name = 'TRegExpGroup'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetSuccess'
@@ -488,6 +491,7 @@ object DataModuleScriptRegExp: TDataModuleScriptRegExp
       end
       item
         Name = 'TRegExpGroupCollection'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCount'

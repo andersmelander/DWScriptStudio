@@ -363,7 +363,7 @@ object DataModuleScriptZip: TDataModuleScriptZip
       item
         Name = 'TZipFileItem'
         IsSealed = True
-        IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetComment'

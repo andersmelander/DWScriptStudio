@@ -8,6 +8,7 @@ object DataModuleScriptNetWebClient: TDataModuleScriptNetWebClient
       item
         Name = 'TWebCredential'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetUsername'
@@ -66,6 +67,7 @@ object DataModuleScriptNetWebClient: TDataModuleScriptNetWebClient
       item
         Name = 'TWebCredentials'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Add'
@@ -205,6 +207,7 @@ object DataModuleScriptNetWebClient: TDataModuleScriptNetWebClient
       end
       item
         Name = 'TWebClient'
+        IsInternal = True
         Methods = <
           item
             Name = 'Connect'
@@ -510,6 +513,7 @@ object DataModuleScriptNetWebClient: TDataModuleScriptNetWebClient
       item
         Name = 'TWebRequest'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetHeaders'
@@ -804,6 +808,7 @@ object DataModuleScriptNetWebClient: TDataModuleScriptNetWebClient
       item
         Name = 'TWebResponse'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetHeaders'

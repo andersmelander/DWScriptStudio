@@ -7,6 +7,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       item
         Name = 'TControlOffset'
         IsAbstract = True
+        IsInternal = True
         Constructors = <
           item
             Name = 'Create'
@@ -135,13 +136,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
       item
         Name = 'TControlMargin'
         Ancestor = 'TControlOffset'
+        IsInternal = True
       end
       item
         Name = 'TControlPadding'
         Ancestor = 'TControlOffset'
+        IsInternal = True
       end
       item
         Name = 'TSizeConstraints'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetConstraint'
@@ -210,6 +214,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Name = 'TControl'
         Ancestor = 'TComponent'
         IsAbstract = True
+        IsInternal = True
         Fields = <
           item
             Name = 'FOnClick'
@@ -1062,6 +1067,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Name = 'TCustomControl'
         Ancestor = 'TControl'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'SetFocus'
@@ -1163,6 +1169,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       end
       item
         Name = 'TControlList'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCount'
@@ -1212,6 +1219,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Name = 'TContainerControl'
         Ancestor = 'TCustomControl'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetControls'
@@ -1503,6 +1511,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Name = 'TCustomEdit'
         Ancestor = 'TCustomControl'
         IsAbstract = True
+        IsInternal = True
         Fields = <
           item
             Name = 'FOnChange'
@@ -1698,6 +1707,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Name = 'TCustomTextEdit'
         Ancestor = 'TCustomEdit'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetDisplayFormat'
@@ -1929,6 +1939,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       end
       item
         Name = 'TEditAlignment'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetHorz'
@@ -2206,8 +2217,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       end
       item
         Name = 'TButtonImageOptions'
-        IsSealed = True
-        IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetGlyph'
@@ -3446,6 +3456,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       item
         Name = 'TCheckGroupItems'
         Ancestor = 'TCollection'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetItem'
@@ -3481,6 +3492,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       item
         Name = 'TCaptionCollectionItem'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaption'
@@ -3537,6 +3549,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       item
         Name = 'TCheckGroupItem'
         Ancestor = 'TCaptionCollectionItem'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetEnabled'
@@ -3567,6 +3580,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       item
         Name = 'TEditButtons'
         Ancestor = 'TCollection'
+        IsInternal = True
         Methods = <
           item
             Name = 'Add'
@@ -3602,7 +3616,7 @@ object DataModuleUserInterface: TDataModuleUserInterface
       item
         Name = 'TEditButton'
         Ancestor = 'TCollectionItem'
-        IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetAction'

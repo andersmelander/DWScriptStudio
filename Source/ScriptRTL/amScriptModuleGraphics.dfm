@@ -8,6 +8,7 @@ object DataModuleScriptGraphics: TDataModuleScriptGraphics
         Name = 'TGraphic'
         Ancestor = 'TPersistent'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetEmpty'
@@ -306,6 +307,7 @@ object DataModuleScriptGraphics: TDataModuleScriptGraphics
       item
         Name = 'TFont'
         Ancestor = 'TPersistent'
+        IsInternal = True
         Constructors = <
           item
             Name = 'Create'
@@ -417,6 +419,7 @@ object DataModuleScriptGraphics: TDataModuleScriptGraphics
       item
         Name = 'TCustomCanvas'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetPixel'
@@ -473,8 +476,7 @@ object DataModuleScriptGraphics: TDataModuleScriptGraphics
       item
         Name = 'TCanvas'
         Ancestor = 'TCustomCanvas'
-        IsSealed = True
-        IsAbstract = True
+        IsInternal = True
       end
       item
         Name = 'TSmartImage'

@@ -7,6 +7,7 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
       item
         Name = 'TProgressDialog'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Progress'
@@ -578,6 +579,7 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
       item
         Name = 'TCursorRecall'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Forget'

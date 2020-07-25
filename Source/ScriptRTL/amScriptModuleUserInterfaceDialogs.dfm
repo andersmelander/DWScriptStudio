@@ -400,6 +400,7 @@ object DataModuleScriptUserInterfaceDialogs: TDataModuleScriptUserInterfaceDialo
       item
         Name = 'TTaskDialogButtons'
         Ancestor = 'TCollection'
+        IsInternal = True
         Methods = <
           item
             Name = 'Add'
@@ -435,6 +436,7 @@ object DataModuleScriptUserInterfaceDialogs: TDataModuleScriptUserInterfaceDialo
       item
         Name = 'TTaskDialogButton'
         Ancestor = 'TCollectionItem'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaption'

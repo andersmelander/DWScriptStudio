@@ -14,6 +14,7 @@ object DataModuleScriptClasses: TDataModuleScriptClasses
       item
         Name = 'TPersistent'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'AssignTo'
@@ -43,6 +44,7 @@ object DataModuleScriptClasses: TDataModuleScriptClasses
         Name = 'TStrings'
         Ancestor = 'TPersistent'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Add'
@@ -829,6 +831,7 @@ object DataModuleScriptClasses: TDataModuleScriptClasses
         Name = 'TCollection'
         Ancestor = 'TPersistent'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCount'
@@ -868,10 +871,12 @@ object DataModuleScriptClasses: TDataModuleScriptClasses
         Name = 'TCollectionItem'
         Ancestor = 'TPersistent'
         IsAbstract = True
+        IsInternal = True
       end
       item
         Name = 'TComponent'
         IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetOwner'

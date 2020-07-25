@@ -362,6 +362,7 @@ object DataModuleScriptUserInterfaceWizard: TDataModuleScriptUserInterfaceWizard
       item
         Name = 'TWizardInfoPanel'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaption'
@@ -468,6 +469,7 @@ object DataModuleScriptUserInterfaceWizard: TDataModuleScriptUserInterfaceWizard
       item
         Name = 'TWizardPages'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Add'
@@ -525,6 +527,7 @@ object DataModuleScriptUserInterfaceWizard: TDataModuleScriptUserInterfaceWizard
       item
         Name = 'TWizardPageHeader'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetTitle'
@@ -608,6 +611,7 @@ object DataModuleScriptUserInterfaceWizard: TDataModuleScriptUserInterfaceWizard
         Name = 'TWizardPage'
         Ancestor = 'TContainerControl'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Activate'
@@ -703,6 +707,7 @@ object DataModuleScriptUserInterfaceWizard: TDataModuleScriptUserInterfaceWizard
       item
         Name = 'TWizardButton'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaption'
@@ -783,6 +788,7 @@ object DataModuleScriptUserInterfaceWizard: TDataModuleScriptUserInterfaceWizard
       item
         Name = 'TWizardButtons'
         IsSealed = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetBack'
@@ -909,6 +915,7 @@ object DataModuleScriptUserInterfaceWizard: TDataModuleScriptUserInterfaceWizard
       end
       item
         Name = 'TWizardOptions'
+        IsInternal = True
         Methods = <
           item
             Name = 'GetAutoDisableCancel'

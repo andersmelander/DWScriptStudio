@@ -13,7 +13,6 @@ object DataModuleScriptIO: TDataModuleScriptIO
       item
         Name = 'Directory'
         IsSealed = True
-        IsAbstract = True
         IsStatic = True
         Methods = <
           item
@@ -336,7 +335,6 @@ object DataModuleScriptIO: TDataModuleScriptIO
       item
         Name = 'Path'
         IsSealed = True
-        IsAbstract = True
         IsStatic = True
         Methods = <
           item
@@ -636,7 +634,6 @@ object DataModuleScriptIO: TDataModuleScriptIO
       item
         Name = 'File'
         IsSealed = True
-        IsAbstract = True
         IsStatic = True
         Methods = <
           item
@@ -1128,7 +1125,6 @@ object DataModuleScriptIO: TDataModuleScriptIO
       item
         Name = 'Shell'
         IsSealed = True
-        IsAbstract = True
         IsStatic = True
         Methods = <
           item
@@ -1177,7 +1173,6 @@ object DataModuleScriptIO: TDataModuleScriptIO
       item
         Name = 'FileSystem'
         IsSealed = True
-        IsAbstract = True
         IsStatic = True
         Methods = <
           item

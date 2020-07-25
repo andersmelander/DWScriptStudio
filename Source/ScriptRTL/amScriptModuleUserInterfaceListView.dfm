@@ -390,7 +390,7 @@ object DataModuleScriptUserInterfaceListView: TDataModuleScriptUserInterfaceList
       item
         Name = 'TListItems'
         IsSealed = True
-        IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCount'
@@ -474,7 +474,7 @@ object DataModuleScriptUserInterfaceListView: TDataModuleScriptUserInterfaceList
       item
         Name = 'TListItem'
         IsSealed = True
-        IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaption'
@@ -610,7 +610,7 @@ object DataModuleScriptUserInterfaceListView: TDataModuleScriptUserInterfaceList
         Name = 'TListColumns'
         Ancestor = 'TCollection'
         IsSealed = True
-        IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'Add'
@@ -647,7 +647,7 @@ object DataModuleScriptUserInterfaceListView: TDataModuleScriptUserInterfaceList
         Name = 'TListColumn'
         Ancestor = 'TCollectionItem'
         IsSealed = True
-        IsAbstract = True
+        IsInternal = True
         Methods = <
           item
             Name = 'GetCaption'

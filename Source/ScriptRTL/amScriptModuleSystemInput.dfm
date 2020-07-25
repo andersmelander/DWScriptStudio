@@ -7,7 +7,6 @@ object DataModuleScriptSystemInput: TDataModuleScriptSystemInput
       item
         Name = 'Keyboard'
         IsSealed = True
-        IsAbstract = True
         IsStatic = True
         Methods = <
           item
@@ -67,7 +66,6 @@ object DataModuleScriptSystemInput: TDataModuleScriptSystemInput
       item
         Name = 'Mouse'
         IsSealed = True
-        IsAbstract = True
         IsStatic = True
         Methods = <
           item
