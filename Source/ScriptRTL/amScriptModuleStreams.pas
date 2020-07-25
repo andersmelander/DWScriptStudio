@@ -1,4 +1,4 @@
-unit amScriptModuleStreams;
+﻿unit amScriptModuleStreams;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -548,7 +548,7 @@ var
 begin
   ASSERT(ExtObject = nil);
   ASSERT(Info.Params[0].ExternalObject is TStream);
-  if (Info.Params[1].ScriptObj <> nil) then
+  if (not Info.Params[1].ValueIsEmpty) then
     Encoding := TEncoding(Info.ParamAsObject[1])
   else
     Encoding := nil;
@@ -575,7 +575,7 @@ begin
   if (Stream = nil) then
     raise EScript.CreateFmt('File not found: %s', [Filename]);
 
-  if (Info.Params[1].ScriptObj <> nil) then
+  if (not Info.Params[1].ValueIsEmpty) then
     Encoding := TEncoding(Info.ParamAsObject[1])
   else
     Encoding := nil;
@@ -707,7 +707,7 @@ var
 begin
   ASSERT(ExtObject = nil);
   ASSERT(Info.Params[0].ExternalObject is TStream);
-  if (Info.Params[1].ScriptObj <> nil) then
+  if (not Info.Params[1].ValueIsEmpty) then
     Encoding := TEncoding(Info.ParamAsObject[1])
   else
     Encoding := nil;
@@ -745,7 +745,7 @@ begin
   if (Stream = nil) then
     raise EScript.CreateFmt('File not found: %s', [Filename]);
 
-  if (Info.Params[2].ScriptObj <> nil) then
+  if (not Info.Params[2].ValueIsEmpty) then
     Encoding := TEncoding(Info.ParamAsObject[2])
   else
     Encoding := nil;
@@ -1037,7 +1037,7 @@ var
 {$endif FEATURE_CSV_IMPORT}
 begin
 {$ifdef FEATURE_CSV_IMPORT}
-  if (Info.Params[1].ScriptObj <> nil) then
+  if (not Info.Params[1].ValueIsEmpty) then
     Encoding := TEncoding(Info.ParamAsObject[1])
   else
     Encoding := nil;
@@ -1066,7 +1066,7 @@ begin
   if (Stream = nil) then
     raise EScript.CreateFmt('File not found: %s', [Filename]);
 
-  if (Info.Params[1].ScriptObj <> nil) then
+  if (not Info.Params[1].ValueIsEmpty) then
     Encoding := TEncoding(Info.ParamAsObject[1])
   else
     Encoding := nil;

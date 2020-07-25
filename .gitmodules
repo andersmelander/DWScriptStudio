@@ -1,3 +1,3 @@
 [submodule "Source/Externals/DWScript"]
 	path = Source/Externals/DWScript
-	url = https://anders_melander@bitbucket.org/egrange/dwscript.git
+url=https://bitbucket.org/egrange/dwscript.git

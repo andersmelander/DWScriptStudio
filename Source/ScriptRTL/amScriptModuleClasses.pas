@@ -1,4 +1,4 @@
-unit amScriptModuleClasses;
+﻿unit amScriptModuleClasses;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -416,7 +416,7 @@ begin
   FileSystem := Info.Execution.FileSystem;
   Stream := FileSystem.OpenFileStream(Info.Params[0].ValueAsString, fomReadOnly);
   try
-    if (Info.Params[1].ScriptObj <> nil) then
+    if (not Info.Params[1].ValueIsEmpty) then
       Encoding := TEncoding(Info.Params[1].ExternalObject)
     else
       Encoding := nil;
@@ -447,7 +447,7 @@ begin
   FileSystem:=Info.Execution.FileSystem;
   Stream:=FileSystem.OpenFileStream(Info.Params[0].ValueAsString, fomCreate);
   try
-    if (Info.Params[1].ScriptObj <> nil) then
+    if (not Info.Params[1].ValueIsEmpty) then
       Encoding := TEncoding(Info.Params[1].ExternalObject)
     else
       Encoding := nil;
@@ -543,7 +543,7 @@ begin
     raise EScript.Create('Invalid stream object');
   Stream := (Info.Params[0].ExternalObject as TStream);
 
-  if (Info.Params[1].ScriptObj <> nil) then
+  if (not Info.Params[1].ValueIsEmpty) then
     Encoding := TEncoding(Info.Params[1].ExternalObject)
   else
     Encoding := nil;
@@ -563,7 +563,7 @@ begin
     raise EScript.Create('Invalid stream object');
   Stream := (Info.Params[0].ExternalObject as TStream);
 
-  if (Info.Params[1].ScriptObj <> nil) then
+  if (not Info.Params[1].ValueIsEmpty) then
     Encoding := TEncoding(Info.Params[1].ExternalObject)
   else
     Encoding := nil;
@@ -610,7 +610,7 @@ end;
 
 procedure TDataModuleScriptClasses.dwsUnitClassesClassesTStringsMethodsSetDefaultEncodingEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
     TStrings(ExtObject).DefaultEncoding := TEncoding(Info.ParamAsObject[0])
   else
     TStrings(ExtObject).DefaultEncoding := nil;
@@ -1139,7 +1139,7 @@ end;
 // -----------------------------------------------------------------------------
 procedure TDataModuleScriptClasses.dwsUnitClassesClassesTPersistentMethodsAssignEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
     TPersistent(ExtObject).Assign(TPersistent(Info.ParamAsObject[0]))
   else
     TPersistent(ExtObject).Assign(nil);
@@ -1150,7 +1150,7 @@ type
 
 procedure TDataModuleScriptClasses.dwsUnitClassesClassesTPersistentMethodsAssignToEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (Info.Params[0].ScriptObj = nil) then
+  if (Info.Params[0].ValueIsEmpty) then
     raise Exception.Create('TPersistent.AssignTo(nil) not allowed (duh!)');
   TPersistentCracker(ExtObject).AssignTo(TPersistent(Info.ParamAsObject[0]));
 end;

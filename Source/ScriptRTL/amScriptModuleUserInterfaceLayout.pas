@@ -612,7 +612,7 @@ end;
 
 procedure TDataModuleScriptUserInterfaceLayout.dwsUnitLayoutClassesTCustomLayoutItemMethodsSetStyleEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
     TScriptLayoutItemWrapper(ExtObject).Item.LayoutLookAndFeel := (Info.ParamAsObject[0] as TdxCustomLayoutLookAndFeel)
   else
     TScriptLayoutItemWrapper(ExtObject).Item.LayoutLookAndFeel := nil;

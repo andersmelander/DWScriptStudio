@@ -1,4 +1,4 @@
-unit amScriptModuleSystem;
+﻿unit amScriptModuleSystem;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -97,7 +97,7 @@ begin
   ScriptObjectInfo := AcquireInfo;
   Delegate := ScriptObjectInfo.Info.Member['FOnTimer'];
 
-  if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+  if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
   begin
     try
 

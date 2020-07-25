@@ -1,4 +1,4 @@
-unit amScriptModuleIO;
+﻿unit amScriptModuleIO;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -246,9 +246,7 @@ begin
   PredicateInfo := nil;
   try
 
-    // Note: Currently not possible to test Info.Params[].ScriptObj to determine if parameter was supplied
-    // See DWScript issue #36
-    if (not VarIsEmpty(Info.Params[3].Value)) then
+    if (not Info.Params[3].ValueIsEmpty) then
     begin
       Predicate := FilterPredicate;
       PredicateInfo := Info.Params[3];
@@ -286,9 +284,7 @@ begin
   PredicateInfo := nil;
   try
 
-    // Note: Currently not possible to test Info.Params[].ScriptObj to determine if parameter was supplied
-    // See DWScript issue #36
-    if (not VarIsEmpty(Info.Params[3].Value)) then
+    if (not Info.Params[3].ValueIsEmpty) then
     begin
       Predicate := FilterPredicate;
       PredicateInfo := Info.Params[3];

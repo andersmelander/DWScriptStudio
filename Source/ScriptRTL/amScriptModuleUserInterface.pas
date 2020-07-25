@@ -476,7 +476,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnButtonClick'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj, ButtonIndex]);
@@ -510,7 +510,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnChanged'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -544,7 +544,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnChange'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -578,7 +578,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnEnter'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -612,7 +612,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnExit'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -646,7 +646,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnKeypress'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       Delegate.Parameter['Sender'].Value := Wrapper.ScriptObj;
       Delegate.Parameter['Key'].ValueAsString := Key; // var parameter
@@ -684,7 +684,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnAfterShow'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -718,7 +718,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnShow'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -993,7 +993,7 @@ end;
 
 procedure TDataModuleUserInterface.dwsUnitControlsClassesTControlMethodsSetActionEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
     TScriptControlWrapper(ExtObject).Item.Action := TAction(TScriptComponentWrapper(Info.Params[0].ExternalObject).Item)
   else
     TScriptControlWrapper(ExtObject).Item.Action := nil;
@@ -1125,7 +1125,7 @@ end;
 procedure TDataModuleUserInterface.dwsUnitControlsClassesTControlMethodsSetOnClickEval(Info: TProgramInfo; ExtObject: TObject);
 begin
   // Attach wrapper's OnClick handler to control's OnClick event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnClick'].Value := Info.Params[0].Value;
     TControlCracker(TScriptControlWrapper(ExtObject).Item).OnClick := TScriptControlWrapper(ExtObject).OnClickHandler;
@@ -1136,7 +1136,7 @@ end;
 procedure TDataModuleUserInterface.dwsUnitControlsClassesTControlMethodsSetOnDblClickEval(Info: TProgramInfo; ExtObject: TObject);
 begin
   // Attach wrapper's OnClick handler to control's OnClick event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnDblClick'].Value := Info.Params[0].Value;
     TControlCracker(TScriptControlWrapper(ExtObject).Item).OnDblClick := TScriptControlWrapper(ExtObject).OnDblClickHandler;
@@ -1150,7 +1150,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnEnter'].Value := Info.Params[0].Value;
     TWinControlCracker(TScriptControlWrapper(ExtObject).Item).OnEnter := OnEnterHandler;
@@ -1164,7 +1164,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnExit'].Value := Info.Params[0].Value;
     TWinControlCracker(TScriptControlWrapper(ExtObject).Item).OnExit := OnExitHandler;
@@ -1178,7 +1178,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnKeyPress'].Value := Info.Params[0].Value;
     TWinControlCracker(TScriptControlWrapper(ExtObject).Item).OnKeyPress := OnKeyPressHandler;
@@ -1482,7 +1482,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnShow'].Value := Info.Params[0].Value;
 
@@ -1541,7 +1541,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnAfterShow'].Value := Info.Params[0].Value;
 
@@ -1991,7 +1991,7 @@ begin
   ASSERT(TScriptControlWrapper(ExtObject).Item is TcxCustomEdit);
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnButtonClick'].Value := Info.Params[0].Value;
     TcxCustomEditCracker(TScriptControlWrapper(ExtObject).Item).Properties.OnButtonClick := OnEditButtonClickHandler;
@@ -2006,7 +2006,7 @@ begin
   ASSERT(TScriptControlWrapper(ExtObject).Item is TcxCustomEdit);
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnChanged'].Value := Info.Params[0].Value;
     TcxCustomEditCracker(TScriptControlWrapper(ExtObject).Item).Properties.OnEditValueChanged := OnChangedHandler;
@@ -2021,7 +2021,7 @@ begin
   ASSERT(TScriptControlWrapper(ExtObject).Item is TcxCustomEdit);
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnChange'].Value := Info.Params[0].Value;
     TcxCustomEditCracker(TScriptControlWrapper(ExtObject).Item).Properties.OnChange := OnChangeHandler;
@@ -2273,7 +2273,7 @@ end;
 
 procedure TDataModuleUserInterface.dwsUnitControlsClassesTEditButtonMethodsSetActionEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
     TcxEditButton(ExtObject).Action := TAction(TScriptComponentWrapper(Info.Params[0].ExternalObject).Item)
   else
     TcxEditButton(ExtObject).Action := nil;

@@ -1,4 +1,4 @@
-unit amScriptModuleUserInterfaceActionList;
+﻿unit amScriptModuleUserInterfaceActionList;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -150,7 +150,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnExecute'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -189,7 +189,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnUpdate'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -326,7 +326,7 @@ var
   ActionList: TActionList;
 begin
   ActionList := TScriptComponentWrapper(ExtObject).Item as TActionList;
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
     ActionList.Images := Info.Params[0].ExternalObject as TCustomImageList
   else
     ActionList.Images := nil;
@@ -484,7 +484,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnExecute'].Value := Info.Params[0].Value;
     TAction(TScriptComponentWrapper(ExtObject).Item).OnExecute := OnActionExecuteHandler;
@@ -498,7 +498,7 @@ begin
     exit;
 
   // Attach modules's event handler to control's event event
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
   begin
     Info.Vars['FOnUpdate'].Value := Info.Params[0].Value;
     TAction(TScriptComponentWrapper(ExtObject).Item).OnUpdate := OnActionUpdateHandler;

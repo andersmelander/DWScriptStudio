@@ -734,7 +734,7 @@ begin
   ScriptObjectInfo := AcquireInfo;
   Delegate := ScriptObjectInfo.Info.Member['FOnClick'];
 
-  if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+  if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
   begin
     // One way:
     Delegate.Parameter['Sender'].Value := FScriptObj;
@@ -767,7 +767,7 @@ begin
   ScriptObjectInfo := AcquireInfo;
   Delegate := ScriptObjectInfo.Info.Member['FOnDblClick'];
 
-  if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+  if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
   begin
     try
 

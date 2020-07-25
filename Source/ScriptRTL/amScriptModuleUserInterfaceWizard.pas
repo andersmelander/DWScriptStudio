@@ -242,7 +242,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnAfterShow'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);
@@ -347,7 +347,7 @@ end;
 
 procedure TDataModuleScriptUserInterfaceWizard.dwsUnitWizardClassesTWizardControlMethodsSetActivePageEval(Info: TProgramInfo; ExtObject: TObject);
 begin
-  if (Info.Params[0].ScriptObj <> nil) then
+  if (not Info.Params[0].ValueIsEmpty) then
     TScriptFrameWizardWrapper(ExtObject).Wizard.ActivePage := TdxWizardControlPage(TScriptFrameWizardWrapper(Info.Params[0].ExternalObject).Item)
   else
     TScriptFrameWizardWrapper(ExtObject).Wizard.ActivePage := nil;
@@ -828,7 +828,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnWizardPageActivated'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       if (Page <> nil) then
       begin
@@ -874,7 +874,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnWizardPageActivating'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       if (CurrentPage <> nil) then
       begin
@@ -931,7 +931,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnWizardCancel'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       Delegate.Parameter['Sender'].Value := Wrapper.ScriptObj;
       Delegate.Parameter['Accept'].Value := Accept;
@@ -970,7 +970,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnWizardFinish'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       Delegate.Parameter['Sender'].Value := Wrapper.ScriptObj;
       Delegate.Parameter['Accept'].Value := Accept;
@@ -1011,7 +1011,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnWizardGetNextPage'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       if (NewPage <> nil) then
       begin
@@ -1027,7 +1027,7 @@ begin
         Delegate.Call;
 
         Info := Delegate.Parameter['NewPage'];
-        if (Info.ScriptObj <> nil) then
+        if (not Info.ValueIsEmpty) then
         begin
           PageWrapper := Info.ExternalObject as TScriptControlWrapper;
           NewPage := TScriptControlWrapper(PageWrapper).Item as TdxWizardControlCustomPage;
@@ -1067,7 +1067,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnWizardGetPrevPage'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       if (NewPage <> nil) then
       begin
@@ -1083,7 +1083,7 @@ begin
         Delegate.Call;
 
         Info := Delegate.Parameter['NewPage'];
-        if (Info.ScriptObj <> nil) then
+        if (not Info.ValueIsEmpty) then
         begin
           PageWrapper := Info.ExternalObject as TScriptControlWrapper;
           NewPage := TScriptControlWrapper(PageWrapper).Item as TdxWizardControlCustomPage;
@@ -1123,7 +1123,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnWizardNextPage'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       if (CurrentPage <> nil) then
       begin
@@ -1150,7 +1150,7 @@ begin
 
         Handled := Delegate.Parameter['Handled'].ValueAsBoolean;
         Info := Delegate.Parameter['NewPage'];
-        if (Info.ScriptObj <> nil) then
+        if (not Info.ValueIsEmpty) then
         begin
           PageWrapper := Info.ExternalObject as TScriptControlWrapper;
           NewPage := TScriptControlWrapper(PageWrapper).Item as TdxWizardControlCustomPage;
@@ -1190,7 +1190,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnWizardPrevPage'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       if (CurrentPage <> nil) then
       begin
@@ -1217,7 +1217,7 @@ begin
 
         Handled := Delegate.Parameter['Handled'].ValueAsBoolean;
         Info := Delegate.Parameter['NewPage'];
-        if (Info.ScriptObj <> nil) then
+        if (not Info.ValueIsEmpty) then
         begin
           PageWrapper := Info.ExternalObject as TScriptControlWrapper;
           NewPage := TScriptControlWrapper(PageWrapper).Item as TdxWizardControlCustomPage;

@@ -1,4 +1,4 @@
-unit amScriptModuleUserInterfaceDialogs;
+﻿unit amScriptModuleUserInterfaceDialogs;
 
 (*
  * Copyright © 2014 Anders Melander
@@ -738,7 +738,7 @@ begin
     ScriptObjectInfo := Wrapper.AcquireInfo;
     Delegate := ScriptObjectInfo.Info.Member['FOnAfterShow'];
 
-    if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+    if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
     begin
       try
         Delegate.Call([Wrapper.ScriptObj]);

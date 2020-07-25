@@ -386,7 +386,7 @@ begin
   end else
   if (TypeSym is TClassSymbol) then
   begin
-    if (Info.ScriptObj = nil) then
+    if (Info.ValueIsEmpty) then
       Result := 'nil'
     else
       Result := '(object)';
@@ -443,7 +443,7 @@ begin
   begin
     Node.ImageIndex := Debugger.SymbolToImageIndex(TypeSym);
 
-    if (Info is TInfoClassObj) and (Info.ScriptObj = nil) then
+    if (Info is TInfoClassObj) and (Info.ValueIsEmpty) then
     begin
       if (Node.HasChildren) then
         Node.DeleteChildren;

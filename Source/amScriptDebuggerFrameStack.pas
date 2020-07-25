@@ -392,7 +392,7 @@ begin
   begin
     Node.ImageIndex := Debugger.SymbolToImageIndex(TypeSym);
 
-    if (Info is TInfoClassObj) and (Info.ScriptObj = nil) then
+    if (Info is TInfoClassObj) and (Info.ValueIsEmpty) then
     begin
       if (Node.HasChildren) then
         Node.DeleteChildren;

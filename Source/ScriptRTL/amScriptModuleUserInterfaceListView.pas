@@ -141,7 +141,7 @@ begin
   ScriptObjectInfo := AcquireInfo;
   Delegate := ScriptObjectInfo.Info.Member['FOnEdited'];
 
-  if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+  if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
   begin
     ParamInfo := Delegate.Parameter['Item'];
     VarItem := TScriptModule.CreateScriptObject(Execution, ParamInfo.TypeSym.Name, Item);
@@ -179,7 +179,7 @@ begin
   ScriptObjectInfo := AcquireInfo;
   Delegate := ScriptObjectInfo.Info.Member['FOnEditing'];
 
-  if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+  if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
   begin
     ParamInfo := Delegate.Parameter['Item'];
     VarItem := TScriptModule.CreateScriptObject(Execution, ParamInfo.TypeSym.Name, Item);
@@ -218,7 +218,7 @@ begin
   ScriptObjectInfo := AcquireInfo;
   Delegate := ScriptObjectInfo.Info.Member['FOnItemChecked'];
 
-  if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+  if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
   begin
     ParamInfo := Delegate.Parameter['Item'];
     VarItem := TScriptModule.CreateScriptObject(Execution, ParamInfo.TypeSym.Name, Item);
@@ -253,7 +253,7 @@ begin
 
   Delegate := ScriptObjectInfo.Info.Member['FOnSelectItem'];
 
-  if (Delegate <> nil) and (Delegate.ScriptObj <> nil) then
+  if (Delegate <> nil) and (not Delegate.ValueIsEmpty) then
   begin
     ParamInfo := Delegate.Parameter['Item'];
 
