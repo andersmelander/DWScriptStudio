@@ -1277,7 +1277,6 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
       item
         Name = 'TLayoutStyle'
         IsSealed = True
-        IsInternal = True
         Constructors = <
           item
             Name = 'Create'
