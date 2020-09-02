@@ -22,9 +22,7 @@ uses
   VirtualTrees,
 
   dwsSymbols,
-{$ifndef OLD_DWSCRIPT}
   dwsUnitSymbols,
-{$endif OLD_DWSCRIPT}
 
   amProgress,
 
@@ -82,10 +80,8 @@ type
     function LoadSymbol(Symbol, ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities): PVirtualNode;
     procedure LoadSymbols(ATable: TSymbolTable; ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities);
   private
-{$ifndef OLD_DWSCRIPT}
     FUnitSymbols: TList<TUnitSymbol>;
     procedure CollectUnitSymbol(UnitSymbol: TUnitSymbol);
-{$endif OLD_DWSCRIPT}
   protected
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
     procedure Finalize; override;
@@ -104,11 +100,7 @@ implementation
 {$R *.dfm}
 
 uses
-{$ifndef OLD_DWSCRIPT}
   dwsScriptSource,
-{$else OLD_DWSCRIPT}
-  dwsUnitSymbols,
-{$endif OLD_DWSCRIPT}
   dwsErrors,
   dwsSuggestions,
   dwsFunctions,
@@ -280,12 +272,10 @@ begin
 end;
 
 
-{$ifndef OLD_DWSCRIPT}
 procedure TScriptDebuggerSymbolsFrame.CollectUnitSymbol(UnitSymbol: TUnitSymbol);
 begin
   FUnitSymbols.Add(UnitSymbol);
 end;
-{$endif OLD_DWSCRIPT}
 
 function TScriptDebuggerSymbolsFrame.LoadSymbol(Symbol, ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities): PVirtualNode;
 var
@@ -295,11 +285,6 @@ var
   FuncSymbol: TFuncSymbol;
   ChildVisibilities: TdwsVisibilities;
   SymClass: TClass;
-{$ifdef OLD_DWSCRIPT}
-  i: integer;
-{$else OLD_DWSCRIPT}
-  UnitSymbol: TUnitSymbol;
-{$endif OLD_DWSCRIPT}
 begin
   if (FProgress <> nil) then
     FProgress.AdvanceProgress;
@@ -392,37 +377,41 @@ TdwsSuggestionCategory = (scUnknown,
 
   if (Symbol is TUnitSymbol) then
   begin
-    if (TUnitSymbol(Symbol).Main <> nil) then
-    begin
-      if (ParentSymbol = nil) or ((ParentSymbol is TUnitSymbol) and (TUnitSymbol(ParentSymbol).Main = nil)) then
-      begin
-        FSymbols.Add(Symbol, Result);
-        LoadSymbols(TUnitSymbol(Symbol).Main.Table, Symbol, Result, Visibilities);
-      end;
-    end else
-    if (ParentNode = nil) then
-    begin
-      FSymbols.Add(Symbol, Result);
-{$ifdef OLD_DWSCRIPT}
-      if (TUnitSymbol(Symbol).NameSpace <> nil) then
-      begin
-        for i := 0 to TUnitSymbol(Symbol).NameSpace.Count-1 do
-           LoadSymbol(TUnitSymbol(TUnitSymbol(Symbol).NameSpace.Objects[i]), Symbol, Result, Visibilities);
-      end;
-{$else OLD_DWSCRIPT}
-      if (TUnitSymbol(Symbol).HasNameSpace) then
-      begin
-        FUnitSymbols := TList<TUnitSymbol>.Create;
-        try
-          TUnitSymbol(Symbol).EnumerateNameSpaceUnits(CollectUnitSymbol);
+    var UnitSymbol := TUnitSymbol(Symbol);
 
-          for UnitSymbol in FUnitSymbols do
+    if (UnitSymbol.Main = nil) then
+      Exit;
+
+//    if (ParentNode = nil) then
+    begin
+//      FSymbols.Add(Symbol, Result);
+      if (UnitSymbol.HasNameSpace) then
+      begin
+        var UnitSymbols := TList<TUnitSymbol>.Create;
+        try
+          FUnitSymbols := UnitSymbols;
+          try
+
+            UnitSymbol.EnumerateNameSpaceUnits(CollectUnitSymbol);
+
+
+          finally
+            // Clear reference in case of recursion in LoadSymbol
+            FUnitSymbols := nil;
+          end;
+
+          for UnitSymbol in UnitSymbols do
             LoadSymbol(UnitSymbol, Symbol, Result, Visibilities);
         finally
-          FUnitSymbols.Free;
+          UnitSymbols.Free;
         end;
       end;
-{$endif OLD_DWSCRIPT}
+    end;
+
+    if (ParentSymbol = nil) or ((ParentSymbol is TUnitSymbol) and (TUnitSymbol(ParentSymbol).HasNameSpace)) then
+    begin
+      FSymbols.Add(Symbol, Result);
+      LoadSymbols(UnitSymbol.Main.Table, Symbol, Result, Visibilities);
     end;
   end else
   begin
