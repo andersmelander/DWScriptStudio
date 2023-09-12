@@ -539,13 +539,11 @@ end;
 
 procedure TDataModuleScriptIO.dwsUnitIOClassesFileMethodsWriteAllLinesEval(Info: TProgramInfo; ExtObject: TObject);
 var
-  ScriptContents: dwsUtils.TStringDynArray;
-  Contents: Types.TStringDynArray;
-  i: integer;
+  Contents: TStringDynArray;
 begin
-  ScriptContents := Info.Params[1].ScriptDynArray.ToStringArray;
+  var ScriptContents := Info.Params[1].ScriptDynArray.ToStringArray;
   SetLength(Contents, Length(ScriptContents));
-  for i := 0 to Length(ScriptContents)-1 do
+  for var i := 0 to Length(ScriptContents)-1 do
     Contents[i] := ScriptContents[i];
   TFile.WriteAllLines(Info.ParamAsString[0], Contents);
 end;

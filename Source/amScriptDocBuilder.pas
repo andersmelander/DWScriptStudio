@@ -1132,7 +1132,7 @@ begin
     begin
       StartSection(Writer, stConst);
       Writer.Write('  '+SanitizeIdentifier(ValueSymbol.Name)+': '+ValueSymbol.Typ.Name+' = ');
-      Value := TConstSymbol(ValueSymbol).Data[0];
+      Value := TConstSymbol(ValueSymbol).DataContext[0];
       if (VarType(Value) = varError) then
         Writer.Write('[varError]')
       else

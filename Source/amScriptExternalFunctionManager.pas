@@ -37,11 +37,11 @@ type
     function ConvertToMagicSymbol(value: TFuncSymbol): TFuncSymbol;
     function CreateExternalFunction(funcSymbol: TFuncSymbol): IExternalRoutine;
     procedure RegisterTypeMapping(const name: UnicodeString; const typ: TTypeLookupData);
+    // TODO -cRevival : Changed
+    procedure RegisterExternalFunction(const name: String; address: pointer; ignoreIfMissing : Boolean = False);
   public
     constructor Create;
     destructor Destroy; override;
-
-    procedure RegisterExternalFunction(const name: UnicodeString; address: pointer);
 
     property Compiler: IdwsCompiler read FCompiler;
   end;
@@ -131,6 +131,7 @@ uses
   TypInfo,
   dwsStrings,
   dwsTokenizer,
+  dwsTokenTypes,
   dwsDataContext,
   dwsUnitSymbols;
 
@@ -177,7 +178,8 @@ type
   protected
   public
     function IsCompatible(typSym : TTypeSymbol) : Boolean; override;
-    procedure InitData(const data : TData; offset : Integer); override;
+    // TODO -cRevival : Changed
+    procedure InitDataContext(const data : IDataContext; offset : NativeInt); override;
     function AsValue(Value: int64): TValue; override;
     function GetTypeInfo: PTypeInfo; override;
   end;
@@ -198,9 +200,10 @@ end;
 
 // -----------------------------------------------------------------------------
 
-procedure TWinApiTypeIntegerSymbol<T>.InitData(const data: TData; offset: Integer);
+procedure TWinApiTypeIntegerSymbol<T>.InitDataContext(const data : IDataContext; offset : NativeInt);
 begin
-  data[offset] := 0;
+  // TODO -cRevival : Changed
+  data.AsVariant[offset] := 0;
 end;
 
 // -----------------------------------------------------------------------------
@@ -465,10 +468,10 @@ end;
 
 // -----------------------------------------------------------------------------
 
-procedure TScriptExternalFunctionManager.RegisterExternalFunction(const name: UnicodeString; address: pointer);
+procedure TScriptExternalFunctionManager.RegisterExternalFunction(const name: String; address: pointer; ignoreIfMissing: Boolean);
 begin
+  // TODO -cRevival : Changed
 end;
-
 
 // -----------------------------------------------------------------------------
 

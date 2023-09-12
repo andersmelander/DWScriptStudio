@@ -1248,7 +1248,7 @@ var
   TypeData: PTypeData;
   i: integer;
 begin
-  ASSERT(Info.Kind = tkEnumeration);
+  ASSERT(Info.Kind = System.tkEnumeration);
 
   Enumeration := TdwsEnumeration(dwsUnit.Enumerations.Symbols[ScriptName]);
   ASSERT(Enumeration <> nil);

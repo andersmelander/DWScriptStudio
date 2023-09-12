@@ -1,4 +1,4 @@
-unit amScriptFileSystem;
+﻿unit amScriptFileSystem;
 
 (*
  * Copyright © 2012 Anders Melander
@@ -73,6 +73,11 @@ type
     function FileExists(const Filename: TFilename) : boolean; virtual; abstract;
     function OpenFileStream(const Filename: TFilename; const Mode: TdwsFileOpenMode): TStream; virtual; abstract;
     function LoadTextFile(const Filename: TFilename): UnicodeString;
+
+    // TODO -cRevival :Missing implementation
+    function FindFileName(const fileName : TFileName) : TFileName;
+    function GetSearchPaths : TStrings;
+    procedure SetSearchPaths(const val : TStrings);
   public
   end;
 
@@ -225,6 +230,23 @@ end;
 // TCustomScriptFileSystem
 //
 // -----------------------------------------------------------------------------
+function TCustomScriptFileSystem.FindFileName(const fileName: TFileName): TFileName;
+begin
+  // TODO -cRevival :Missing implementation
+  Result := '';
+end;
+
+function TCustomScriptFileSystem.GetSearchPaths: TStrings;
+begin
+  // TODO -cRevival :Missing implementation
+  Result := nil;
+end;
+
+procedure TCustomScriptFileSystem.SetSearchPaths(const val: TStrings);
+begin
+  // TODO -cRevival :Missing implementation
+end;
+
 function TCustomScriptFileSystem.LoadTextFile(const Filename: TFilename): UnicodeString;
 var
  Stream : TStream;

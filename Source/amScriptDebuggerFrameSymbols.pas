@@ -369,7 +369,7 @@ TdwsSuggestionCategory = (scUnknown,
 
 
   FuncSymbol := Symbol.AsFuncSymbol;
-  if (FuncSymbol <> nil) and (FuncSymbol.SourcePosition.SourceFile <> nil) then
+  if (FuncSymbol <> nil) and (FuncSymbol.DeclarationPosition.SourceFile <> nil) then
   begin
     NodeData.Symbol := FuncSymbol;
     NodeData.StateIndex := 1;
@@ -518,7 +518,7 @@ begin
   if (not(NodeData.Symbol is TFuncSymbol)) then
     exit;
 
-  ScriptPos := TFuncSymbol(NodeData.Symbol).SourcePosition;
+  ScriptPos := TFuncSymbol(NodeData.Symbol).DeclarationPosition;
   ScriptPos.Col := 0;
 
   Debugger.ViewScriptPos(ScriptPos);

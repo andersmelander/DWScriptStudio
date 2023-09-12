@@ -79,7 +79,7 @@ uses
   amScriptDebuggerFrameSymbols,
   amScriptDebuggerFrameStack,
   amScriptDebuggerFrameAST,
-  amScriptDebuggerFrameBreakPoints;
+  amScriptDebuggerFrameBreakPoints, dxCore;
 
 const
   ecOpenFileUnderCursor = ecUserFirst;
@@ -2472,7 +2472,8 @@ begin
 
           // check if current position is declaration
           if (Context.IsPositionInContext(ScriptPos)) then
-            ScriptPos := TFuncSymbol(Symbol).SourcePosition;
+            // TODO -cRevival : We should take advantage of new DeclarationPosition etc.
+            ScriptPos := TFuncSymbol(Symbol).DeclarationPosition;
 
           if (ScriptPos.Line > 0) and (ScriptPos.Col > 0) then
           begin
@@ -4213,7 +4214,8 @@ begin
   begin
     Expr := exceptObj.Exec.GetLastScriptErrorExpr;
     try
-      FPendingExceptionMsg := exceptObj.scriptobj.asstring[0];
+    // TODO -cRevival : Missing implementation
+      Assert(False); // FPendingExceptionMsg := exceptObj.scriptobj.asstring[0];
     except
       FPendingExceptionMsg := Format('Exception "%s" caught', [exceptObj.TypeSym.Name]);
     end;
@@ -6005,6 +6007,9 @@ begin
 //
 end;
 
+type
+  TDataContextCracker = class(TDataContext);
+
 procedure TFormScriptDebugger.ActionDebugLiveObjectsExecute(Sender: TObject);
 var
   ScriptObjInstance: TScriptObjInstance;
@@ -6028,7 +6033,7 @@ begin
     if (Obj <> ScriptObjInstance) and (Supports(Obj, IScriptObj, ScriptObj)) and (ScriptObj.ClassSym <> nil) then
     begin
       Inc(Count);
-      s := Format('%.2d : %s (%d references)', [Count, ScriptObj.ClassSym.Name, Obj.RefCount-1]);
+      s := Format('%.2d : %s (%d references)', [Count, ScriptObj.ClassSym.Name, TDataContextCracker(Obj).RefCount-1]);
       if (ScriptObj.Destroyed) then
         s := s + ' (destroyed)';
       if (List <> '') then

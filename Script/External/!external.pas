@@ -12,4 +12,12 @@ function MyMessageBox(HWND: DWORD; const Text: string; const Caption: string; Ki
 
 
 TestExternal(0);
-MyMessageBox(0, 'Hello world', 'Whoopey!', 3);
+var Res := MyMessageBox(0, 'Hello world', 'Whoopey!', 3);
+
+case Res of
+  2: ShowMessage('You selected: Cancel ');
+  6: ShowMessage('You selected: Yes ');
+  7: ShowMessage('You selected: No ');
+else
+  ShowMessage('Unknown selection');
+end;
