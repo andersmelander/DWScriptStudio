@@ -99,8 +99,9 @@ uses
   dwsCryptProtect,
   dwsSHA3,
 {$endif FEATURE_FULL_CRYPTO}
-  Cipher,
-  DECUtil;
+  DECCiphers,
+  DECUtil,
+  DECFormat;
 
 // -----------------------------------------------------------------------------
 //
@@ -419,9 +420,10 @@ procedure TDataModuleScriptCrypto.dwsCryptoClassesEncryptionBlowfishMethodsDecry
 var
   BF: TCipher_Blowfish;
 begin
-  BF := TCipher_Blowfish.Create(Info.ParamAsDataString[1], nil);
+  BF := TCipher_Blowfish.Create;
   try
-    Info.ResultAsDataString := BF.CodeString(Info.ParamAsDataString[0], paDecode, fmtHex);
+    BF.Init(Info.ParamAsDataString[1]);
+    Info.ResultAsDataString := BF.DecodeStringToString(Info.ParamAsDataString[0], TFormat_HEX);
   finally
     BF.Free;
   end;
@@ -431,9 +433,10 @@ procedure TDataModuleScriptCrypto.dwsCryptoClassesEncryptionBlowfishMethodsEncry
 var
   BF: TCipher_Blowfish;
 begin
-  BF := TCipher_Blowfish.Create(Info.ParamAsDataString[1], nil);
+  BF := TCipher_Blowfish.Create;
   try
-    Info.ResultAsDataString := BF.CodeString(Info.ParamAsDataString[0], paEncode, fmtHex);
+    BF.Init(Info.ParamAsDataString[1]);
+    Info.ResultAsDataString := BF.EncodeStringToString(Info.ParamAsDataString[0], TFormat_HEX);
   finally
     BF.Free;
   end;
