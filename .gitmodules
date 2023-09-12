@@ -1,3 +1,6 @@
 [submodule "Source/Externals/DWScript"]
 	path = Source/Externals/DWScript
 url=https://bitbucket.org/anders_melander/dwscript.git
+[submodule "Source/Externals/mORMot"]
+	path = Source/Externals/mORMot
+	url = https://github.com/synopse/mORMot
