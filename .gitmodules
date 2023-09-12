@@ -13,3 +13,6 @@ url=https://bitbucket.org/anders_melander/dwscript.git
 [submodule "Source/Externals/DragDrop"]
 	path = Source/Externals/DragDrop
 	url = https://anders_melander@bitbucket.org/anders_melander/drag-and-drop-component-suite.git
+[submodule "Source/Externals/VirtualTreeView"]
+	path = Source/Externals/VirtualTreeView
+	url = https://github.com/JAM-Software/Virtual-TreeView.git
