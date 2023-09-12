@@ -1378,8 +1378,10 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
     FEditor.WantTabs := True;
     FEditor.FontSmoothing := fsmClearType;
     FEditor.TabWidth := 8;
+(*
     // SynEdit.IndentWidth requires patched source
     FEditor.IndentWidth := 2;
+*)
 
     if (ScriptSettings.Editor.HighlighterClass <> '') then
     begin

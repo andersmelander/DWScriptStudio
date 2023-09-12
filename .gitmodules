@@ -16,3 +16,6 @@ url=https://bitbucket.org/anders_melander/dwscript.git
 [submodule "Source/Externals/VirtualTreeView"]
 	path = Source/Externals/VirtualTreeView
 	url = https://github.com/JAM-Software/Virtual-TreeView.git
+[submodule "Source/Externals/SynEdit"]
+	path = Source/Externals/SynEdit
+	url = https://github.com/SynEdit/SynEdit.git
