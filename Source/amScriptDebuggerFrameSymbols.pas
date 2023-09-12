@@ -100,6 +100,7 @@ implementation
 {$R *.dfm}
 
 uses
+  VirtualTrees.Types,
   dwsScriptSource,
   dwsErrors,
   dwsSuggestions,
