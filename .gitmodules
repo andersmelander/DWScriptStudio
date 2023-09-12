@@ -10,3 +10,6 @@ url=https://bitbucket.org/anders_melander/dwscript.git
 [submodule "SOurce/Externals/DEC"]
 	path = SOurce/Externals/DEC
 	url = https://github.com/MHumm/DelphiEncryptionCompendium.git
+[submodule "Source/Externals/DragDrop"]
+	path = Source/Externals/DragDrop
+	url = https://anders_melander@bitbucket.org/anders_melander/drag-and-drop-component-suite.git
