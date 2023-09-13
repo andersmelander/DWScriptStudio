@@ -1,5 +1,4 @@
 object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProgress
-  OldCreateOrder = False
   Height = 249
   Width = 390
   object dwsUnitProgress: TdwsUnit
@@ -31,8 +30,8 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsWritable = False
               end>
             Overloaded = True
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsProgress1Eval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsProgress1Eval
           end
           item
             Name = 'Progress'
@@ -50,8 +49,8 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 DataType = 'integer'
               end>
             Overloaded = True
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsProgress2Eval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsProgress2Eval
           end
           item
             Name = 'AdvanceProgress'
@@ -62,8 +61,8 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 HasDefaultValue = True
                 DefaultValue = 1
               end>
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsAdvanceProgressEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsAdvanceProgressEval
           end
           item
             Name = 'UpdateMessage'
@@ -74,45 +73,45 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsUpdateMessageEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsUpdateMessageEval
           end
           item
             Name = 'Show'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsShowEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsShowEval
           end
           item
             Name = 'Hide'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsHideEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsHideEval
           end
           item
             Name = 'ProcessMessages'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsProcessMessagesEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsProcessMessagesEval
           end
           item
             Name = 'AbortProgress'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsAbortProgressEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsAbortProgressEval
           end
           item
             Name = 'SuspendAbort'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSuspendAbortEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSuspendAbortEval
           end
           item
             Name = 'ResumeAbort'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsResumeAbortEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsResumeAbortEval
           end
           item
             Name = 'GetEnableAbort'
             ResultType = 'boolean'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetEnableAbortEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetEnableAbortEval
           end
           item
             Name = 'SetEnableAbort'
@@ -121,16 +120,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSetEnableAbortEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSetEnableAbortEval
           end
           item
             Name = 'GetRaiseOnAbort'
             ResultType = 'boolean'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetRaiseOnAbortEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetRaiseOnAbortEval
           end
           item
             Name = 'SetRaiseOnAbort'
@@ -139,23 +138,23 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSetRaiseOnAbortEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSetRaiseOnAbortEval
           end
           item
             Name = 'GetAborted'
             ResultType = 'boolean'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetAbortedEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetAbortedEval
           end
           item
             Name = 'GetMarquee'
             ResultType = 'boolean'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetMarqueeEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetMarqueeEval
           end
           item
             Name = 'SetMarquee'
@@ -164,16 +163,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSetMarqueeEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSetMarqueeEval
           end
           item
             Name = 'GetEnabled'
             ResultType = 'boolean'
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetEnabledEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsGetEnabledEval
           end
           item
             Name = 'SetEnabled'
@@ -182,9 +181,9 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSetEnabledEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressDialogMethodsSetEnabledEval
           end>
         Properties = <
           item
@@ -235,9 +234,9 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
           item
             Name = 'GetPosition'
             ResultType = 'Float'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetPositionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetPositionEval
           end
           item
             Name = 'SetPosition'
@@ -248,16 +247,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetPositionEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetPositionEval
           end
           item
             Name = 'GetMin'
             ResultType = 'Float'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetMinEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetMinEval
           end
           item
             Name = 'SetMin'
@@ -268,16 +267,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetMinEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetMinEval
           end
           item
             Name = 'GetMax'
             ResultType = 'Float'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetMaxEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetMaxEval
           end
           item
             Name = 'SetMax'
@@ -288,16 +287,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetMaxEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetMaxEval
           end
           item
             Name = 'GetStyle'
             ResultType = 'TProgressBarStyle'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetStyleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetStyleEval
           end
           item
             Name = 'SetStyle'
@@ -308,16 +307,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetStyleEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetStyleEval
           end
           item
             Name = 'GetNativeStyle'
             ResultType = 'boolean'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetNativeStyleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetNativeStyleEval
           end
           item
             Name = 'SetNativeStyle'
@@ -328,16 +327,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetNativeStyleEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetNativeStyleEval
           end
           item
             Name = 'GetMarquee'
             ResultType = 'boolean'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetMarqueeEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetMarqueeEval
           end
           item
             Name = 'SetMarquee'
@@ -348,16 +347,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetMarqueeEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetMarqueeEval
           end
           item
             Name = 'GetOrientation'
             ResultType = 'TProgressBarOrientation'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetOrientationEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetOrientationEval
           end
           item
             Name = 'SetOrientation'
@@ -368,16 +367,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetOrientationEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetOrientationEval
           end
           item
             Name = 'GetShowText'
             ResultType = 'boolean'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetShowTextEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetShowTextEval
           end
           item
             Name = 'SetShowText'
@@ -388,16 +387,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetShowTextEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetShowTextEval
           end
           item
             Name = 'GetTextStyle'
             ResultType = 'TProgressBarTextStyle'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetTextStyleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetTextStyleEval
           end
           item
             Name = 'SetTextStyle'
@@ -408,16 +407,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetTextStyleEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetTextStyleEval
           end
           item
             Name = 'GetTextOrientation'
             ResultType = 'TProgressBarOrientation'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetTextOrientationEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetTextOrientationEval
           end
           item
             Name = 'SetTextOrientation'
@@ -428,16 +427,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetTextOrientationEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetTextOrientationEval
           end
           item
             Name = 'GetBeginColor'
             ResultType = 'TColor'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetBeginColorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetBeginColorEval
           end
           item
             Name = 'SetBeginColor'
@@ -448,16 +447,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetBeginColorEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetBeginColorEval
           end
           item
             Name = 'GetEndColor'
             ResultType = 'TColor'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetEndColorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetEndColorEval
           end
           item
             Name = 'SetEndColor'
@@ -468,16 +467,16 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetEndColorEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetEndColorEval
           end
           item
             Name = 'GetAnimationStyle'
             ResultType = 'TProgressBarAnimationStyle'
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetAnimationStyleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsGetAnimationStyleEval
           end
           item
             Name = 'SetAnimationStyle'
@@ -488,9 +487,9 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetAnimationStyleEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTProgressBarMethodsSetAnimationStyleEval
           end>
         Properties = <
           item
@@ -537,7 +536,6 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
           end
           item
             Name = 'Text'
-            DataType = 'string'
           end
           item
             Name = 'ShowText'
@@ -583,8 +581,8 @@ object DataModuleScriptUserInterfaceProgress: TDataModuleScriptUserInterfaceProg
         Methods = <
           item
             Name = 'Forget'
-            OnEval = dwsUnitProgressClassesTCursorRecallMethodsForgetEval
             Kind = mkProcedure
+            OnEval = dwsUnitProgressClassesTCursorRecallMethodsForgetEval
           end>
         OnCleanUp = dwsUnitProgressClassesTCursorRecallCleanUp
       end>
