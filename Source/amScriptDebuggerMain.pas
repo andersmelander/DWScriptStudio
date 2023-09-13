@@ -4215,12 +4215,7 @@ begin
   if (exceptObj <> nil) then
   begin
     Expr := exceptObj.Exec.GetLastScriptErrorExpr;
-    try
-    // TODO -cRevival : Missing implementation
-      Assert(False); // FPendingExceptionMsg := exceptObj.scriptobj.asstring[0];
-    except
-      FPendingExceptionMsg := Format('Exception "%s" caught', [exceptObj.TypeSym.Name]);
-    end;
+    FPendingExceptionMsg := Format('Exception "%s" caught', [exceptObj.TypeSym.Name]);
   end else
   begin
     Expr := nil;
