@@ -305,10 +305,6 @@ type
     SaveProjectDialog: TFileSaveDialog;
     SaveSourceDialog: TFileSaveDialog;
     SmallImages: TcxImageList;
-    SynCodeCompletion: TSynCompletionProposal;
-    SynEditSearch: TSynEditSearch;
-    SynMacroRecorder: TSynMacroRecorder;
-    SynParameters: TSynCompletionProposal;
     UpdateTimer: TTimer;
     ActionExit: TAction;
     dxBarManager1: TdxBarManager;
@@ -386,11 +382,9 @@ type
     dxBarLargeButton3: TdxBarLargeButton;
     dxBarButton4: TdxBarButton;
     ActionRunStepOut: TAction;
-    SynEditRegexSearch: TSynEditRegexSearch;
     ActionSearchAgain: TAction;
     dxBarButton5: TdxBarButton;
     dxBarButton6: TdxBarButton;
-    SynAutoComplete: TSynAutoComplete;
     ImageListSymbols: TcxImageList;
     DockPanelBreakPoints: TdxDockPanel;
     ActionDebugEvaluate: TAction;
@@ -796,6 +790,16 @@ type
     procedure SavePage(Page: TEditorPage);
 
     function DoOnNeedUnit(const unitName : UnicodeString; var unitSource : UnicodeString) : IdwsUnit;
+
+  private
+    SynCodeCompletion: TSynCompletionProposal;
+    SynEditSearch: TSynEditSearch;
+    SynMacroRecorder: TSynMacroRecorder;
+    SynParameters: TSynCompletionProposal;
+    SynEditRegexSearch: TSynEditRegexSearch;
+    SynAutoComplete: TSynAutoComplete;
+
+    procedure SetupSynEdit;
 
   protected
     procedure ClearLinesChangedState; // declared protected to get rid of "unused" hint
@@ -2756,9 +2760,8 @@ begin
   FSearchOptions := [];
   FSearchRegularExpression := False;
 
-//  SynCodeCompletion.ClSelect := RootLookAndFeel.Painter.DefaultSelectionColor;
-//  SynCodeCompletion.ClSelectedText := RootLookAndFeel.Painter.DefaultSelectionTextColor;
-  SynCodeCompletion.ShortCut := 0;
+  SetupSynEdit;
+
   FDebuggerFrames := TList<IScriptDebuggerWindow>.Create;
 end;
 
@@ -4457,6 +4460,78 @@ begin
   if (not Assigned(FSaveOnNeedUnit)) then
     FSaveOnNeedUnit := FScript.OnNeedUnit;
   FScript.OnNeedUnit := DoOnNeedUnit;
+end;
+
+procedure TFormScriptDebugger.SetupSynEdit;
+begin
+  SynEditSearch := TSynEditSearch.Create(Self);
+
+  SynMacroRecorder := TSynMacroRecorder.Create(Self);
+  SynMacroRecorder.RecordShortCut := 24658;
+  SynMacroRecorder.PlaybackShortCut := 24656;
+
+  SynCodeCompletion := TSynCompletionProposal.Create(Self);
+  SynCodeCompletion.Options := [scoLimitToMatchedText, scoUseInsertList, scoUsePrettyText, scoUseBuiltInTimer, scoEndCharCompletion, scoCompleteWithTab, scoCompleteWithEnter];
+  SynCodeCompletion.NbLinesInWindow := 6;
+  SynCodeCompletion.Width := 400;
+  SynCodeCompletion.EndOfTokenChr := '()[]. ';
+  SynCodeCompletion.TriggerChars := '.';
+  SynCodeCompletion.Font.Height := -11;
+  SynCodeCompletion.Font.Name := 'MS Sans Serif';
+  SynCodeCompletion.TitleFont.Color := clBtnText;
+  SynCodeCompletion.TitleFont.Height := -11;
+  SynCodeCompletion.TitleFont.Name := 'MS Sans Serif';
+  SynCodeCompletion.TitleFont.Style := [fsBold];
+  SynCodeCompletion.OnExecute := SynCodeCompletionExecute;
+  SynCodeCompletion.OnShow := SynCodeCompletionShow;
+  SynCodeCompletion.ShortCut := 16416;
+
+  SynParameters := TSynCompletionProposal.Create(Self);
+  SynParameters.DefaultType := ctParams;
+  SynParameters.Options := [scoLimitToMatchedText, scoUsePrettyText, scoUseBuiltInTimer];
+  SynParameters.ClBackground := clInfoBk;
+  SynParameters.Width := 262;
+  SynParameters.EndOfTokenChr := '()[]. ';
+  SynParameters.TriggerChars := '(';
+  SynParameters.Font.Color := clWindowText;
+  SynParameters.Font.Height := -11;
+  SynParameters.Font.Name := 'MS Sans Serif';
+  SynParameters.TitleFont.Color := clBtnText;
+  SynParameters.TitleFont.Height := -11;
+  SynParameters.TitleFont.Name := 'MS Sans Serif';
+  SynParameters.TitleFont.Style := [fsBold];
+  SynParameters.OnExecute := SynParametersExecute;
+  SynParameters.ShortCut := 24608;
+
+  SynEditRegexSearch := TSynEditRegexSearch.Create(Self);
+
+  SynAutoComplete := TSynAutoComplete.Create(Self);
+  SynAutoComplete.AutoCompleteList.Text :=
+      '[tryf|try..finally block]'#13+
+      'try'#13+
+      '  |'#13+
+      'finally'#13+
+      'end;'#13+
+      '[trye|try..except block]'#13+
+      'try'#13+
+      '  |'#13+
+      'except'#13+
+      'end;'#13+
+      '[begin|begin..end block]'#13+
+      'begin'#13+
+      '  |'#13+
+      'end;'#13+
+      '[if|if..then statement with begin..end block]'#13+
+      'if (|) then'#13+
+      'begin'#13+
+      'end;'#13;
+  SynAutoComplete.EndOfTokenChr := '()[]. ';
+  SynAutoComplete.ShortCut := 8224;
+
+//  SynCodeCompletion.ClSelect := RootLookAndFeel.Painter.DefaultSelectionColor;
+//  SynCodeCompletion.ClSelectedText := RootLookAndFeel.Painter.DefaultSelectionTextColor;
+  SynCodeCompletion.ShortCut := 0;
+
 end;
 
 procedure TFormScriptDebugger.SetEditorCurrentPageIndex(const Value: Integer);

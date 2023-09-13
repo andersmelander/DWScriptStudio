@@ -4196,62 +4196,6 @@ object FormScriptDebugger: TFormScriptDebugger
       Action = ActionEditToggleReadOnly
     end
   end
-  object SynEditSearch: TSynEditSearch
-    Left = 616
-    Top = 268
-  end
-  object SynMacroRecorder: TSynMacroRecorder
-    RecordShortCut = 24658
-    PlaybackShortCut = 24656
-    Left = 616
-    Top = 316
-  end
-  object SynCodeCompletion: TSynCompletionProposal
-    Options = [scoLimitToMatchedText, scoUseInsertList, scoUsePrettyText, scoUseBuiltInTimer, scoEndCharCompletion, scoCompleteWithTab, scoCompleteWithEnter]
-    NbLinesInWindow = 6
-    Width = 400
-    EndOfTokenChr = '()[]. '
-    TriggerChars = '.'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clBtnText
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = [fsBold]
-    Columns = <>
-    OnExecute = SynCodeCompletionExecute
-    OnShow = SynCodeCompletionShow
-    ShortCut = 16416
-    Left = 616
-    Top = 364
-  end
-  object SynParameters: TSynCompletionProposal
-    DefaultType = ctParams
-    Options = [scoLimitToMatchedText, scoUsePrettyText, scoUseBuiltInTimer]
-    ClBackground = clInfoBk
-    Width = 262
-    EndOfTokenChr = '()[]. '
-    TriggerChars = '('
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clBtnText
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = [fsBold]
-    Columns = <>
-    OnExecute = SynParametersExecute
-    ShortCut = 24608
-    Left = 616
-    Top = 416
-  end
   object dxBarManager1: TdxBarManager
     AllowReset = False
     Font.Charset = DEFAULT_CHARSET
@@ -6438,36 +6382,6 @@ object FormScriptDebugger: TFormScriptDebugger
           0000000000000000000000000000000000000000000000000000000000000000
           0000000000000000000000000000000000000000000000000000}
       end>
-  end
-  object SynEditRegexSearch: TSynEditRegexSearch
-    Left = 720
-    Top = 268
-  end
-  object SynAutoComplete: TSynAutoComplete
-    AutoCompleteList.Strings = (
-      '[tryf|try..finally block]'
-      'try'
-      '  |'
-      'finally'
-      'end;'
-      '[trye|try..except block]'
-      'try'
-      '  |'
-      'except'
-      'end;'
-      '[begin|begin..end block]'
-      'begin'
-      '  |'
-      'end;'
-      '[if|if..then statement with begin..end block]'
-      'if (|) then'
-      'begin'
-      'end;')
-    EndOfTokenChr = '()[]. '
-    ShortCut = 8224
-    Options = []
-    Left = 620
-    Top = 468
   end
   object ImageListSymbols: TcxImageList
     SourceDPI = 96
