@@ -1,5 +1,4 @@
 object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
-  OldCreateOrder = False
   Height = 392
   Width = 585
   object dwsUnitLayout: TdwsUnit
@@ -21,16 +20,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetItems'
             ResultType = 'TLayoutGroup'
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsGetItemsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsGetItemsEval
           end
           item
             Name = 'GetCustomization'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsGetCustomizationEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsGetCustomizationEval
           end
           item
             Name = 'SetCustomization'
@@ -41,16 +40,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsSetCustomizationEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsSetCustomizationEval
           end
           item
             Name = 'GetStyle'
             ResultType = 'TLayoutStyle'
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsGetStyleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsGetStyleEval
           end
           item
             Name = 'SetStyle'
@@ -61,31 +60,31 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsSetStyleEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsSetStyleEval
           end
           item
             Name = 'DefaultStyle'
             ResultType = 'TLayoutStyle'
             Attributes = [maClassMethod, maStatic]
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsDefaultStyleEval
             Kind = mkClassFunction
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsDefaultStyleEval
           end
           item
             Name = 'Clear'
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsClearEval
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsClearEval
           end
           item
             Name = 'BeginUpdate'
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsBeginUpdateEval
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsBeginUpdateEval
           end
           item
             Name = 'EndUpdate'
-            OnEval = dwsUnitLayoutClassesTLayoutMethodsEndUpdateEval
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutMethodsEndUpdateEval
           end>
         Properties = <
           item
@@ -101,7 +100,6 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           end
           item
             Name = 'AutoSize'
-            DataType = 'boolean'
           end
           item
             Name = 'Style'
@@ -111,7 +109,6 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           end
           item
             Name = 'ParentBackground'
-            DataType = 'boolean'
           end>
         OnCleanUp = dwsUnitLayoutClassesTLayoutCleanUp
       end
@@ -129,9 +126,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetAlignHorz'
             ResultType = 'TLayoutAlignHorz'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetAlignHorzEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetAlignHorzEval
           end
           item
             Name = 'SetAlignHorz'
@@ -142,16 +139,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetAlignHorzEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetAlignHorzEval
           end
           item
             Name = 'GetAlignVert'
             ResultType = 'TLayoutAlignVert'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetAlignVertEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetAlignVertEval
           end
           item
             Name = 'SetAlignVert'
@@ -162,16 +159,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetAlignVertEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetAlignVertEval
           end
           item
             Name = 'GetEnabled'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetEnabledEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetEnabledEval
           end
           item
             Name = 'SetEnabled'
@@ -182,16 +179,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetEnabledEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetEnabledEval
           end
           item
             Name = 'GetParent'
             ResultType = 'TLayoutGroup'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetParentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetParentEval
           end
           item
             Name = 'SetParent'
@@ -202,16 +199,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetParentEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetParentEval
           end
           item
             Name = 'GetVisible'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetVisibleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetVisibleEval
           end
           item
             Name = 'SetVisible'
@@ -222,23 +219,23 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetVisibleEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetVisibleEval
           end
           item
             Name = 'GetCaption'
             ResultType = 'TCustomLayoutItemCaption'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetCaptionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetCaptionEval
           end
           item
             Name = 'GetHeight'
             ResultType = 'integer'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetHeightEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetHeightEval
           end
           item
             Name = 'SetHeight'
@@ -247,16 +244,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetHeightEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetHeightEval
           end
           item
             Name = 'GetWidth'
             ResultType = 'integer'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetWidthEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetWidthEval
           end
           item
             Name = 'SetWidth'
@@ -265,16 +262,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetWidthEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetWidthEval
           end
           item
             Name = 'GetStyle'
             ResultType = 'TLayoutStyle'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetStyleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetStyleEval
           end
           item
             Name = 'SetStyle'
@@ -285,38 +282,38 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetStyleEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsSetStyleEval
           end
           item
             Name = 'GetOffsets'
             ResultType = 'TLayoutOffsets'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetOffsetsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetOffsetsEval
           end
           item
             Name = 'GetPadding'
             ResultType = 'TLayoutPadding'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetPaddingEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsGetPaddingEval
           end
           item
             Name = 'BeginUpdate'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsBeginUpdateEval
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsBeginUpdateEval
           end
           item
             Name = 'EndUpdate'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsEndUpdateEval
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsEndUpdateEval
           end
           item
             Name = 'MakeVisible'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsMakeVisibleEval
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemMethodsMakeVisibleEval
           end>
         Properties = <
           item
@@ -393,9 +390,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetExpanded'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetExpandedEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetExpandedEval
           end
           item
             Name = 'SetExpanded'
@@ -406,16 +403,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetExpandedEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetExpandedEval
           end
           item
             Name = 'GetHidden'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetHiddenEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetHiddenEval
           end
           item
             Name = 'SetHidden'
@@ -426,16 +423,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetHiddenEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetHiddenEval
           end
           item
             Name = 'GetLayoutDirection'
             ResultType = 'TLayoutDirection'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetLayoutDirectionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetLayoutDirectionEval
           end
           item
             Name = 'SetLayoutDirection'
@@ -446,16 +443,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetLayoutDirectionEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetLayoutDirectionEval
           end
           item
             Name = 'GetShowBorder'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetShowBorderEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetShowBorderEval
           end
           item
             Name = 'SetShowBorder'
@@ -466,16 +463,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetShowBorderEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetShowBorderEval
           end
           item
             Name = 'GetIndent'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetIndentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetIndentEval
           end
           item
             Name = 'SetIndent'
@@ -486,22 +483,22 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetIndentEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetIndentEval
           end
           item
             Name = 'GetItems'
             ResultType = 'TLayoutItemList'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetItemsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetItemsEval
           end
           item
             Name = 'CreateGroup'
             ResultType = 'TLayoutGroup'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateGroupEval
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateGroupEval
           end
           item
             Name = 'CreateItem'
@@ -511,46 +508,46 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 DataType = 'TControl'
               end>
             ResultType = 'TLayoutControlItem'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateItemEval
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateItemEval
           end
           item
             Name = 'CreateEmptySpaceItem'
             ResultType = 'TLayoutEmptySpaceItem'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateEmptySpaceItemEval
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateEmptySpaceItemEval
           end
           item
             Name = 'CreateLabelItem'
             ResultType = 'TLayoutLabelItem'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateLabelItemEval
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateLabelItemEval
           end
           item
             Name = 'CreateSeparatorItem'
             ResultType = 'TLayoutSeparatorItem'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateSeparatorItemEval
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateSeparatorItemEval
           end
           item
             Name = 'CreateSplitterItem'
             ResultType = 'TLayoutSplitterItem'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateSplitterItemEval
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsCreateSplitterItemEval
           end
           item
             Name = 'GetScrollOptions'
             ResultType = 'TLayoutGroupScrollOptions'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetScrollOptionsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetScrollOptionsEval
           end
           item
             Name = 'GetAllowWrapItems'
             ResultType = 'Boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetAllowWrapItemsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetAllowWrapItemsEval
           end
           item
             Name = 'SetAllowWrapItems'
@@ -561,16 +558,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetAllowWrapItemsEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsSetAllowWrapItemsEval
           end
           item
             Name = 'GetCaption'
             ResultType = 'TLayoutGroupCaption'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetCaptionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupMethodsGetCaptionEval
           end>
         Properties = <
           item
@@ -610,7 +607,6 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           end
           item
             Name = 'Padding'
-            DataType = 'TLayoutPadding'
           end
           item
             Name = 'ScrollOptions'
@@ -643,9 +639,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 DataType = 'integer'
               end>
             ResultType = 'Integer'
-            OnEval = dwsUnitLayoutClassesTLayoutOffsetsMethodsGetValueEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutOffsetsMethodsGetValueEval
           end
           item
             Name = 'SetValue'
@@ -660,9 +656,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutOffsetsMethodsSetValueEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutOffsetsMethodsSetValueEval
           end>
         Properties = <
           item
@@ -724,9 +720,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetText'
             ResultType = 'string'
-            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsGetTextEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsGetTextEval
           end
           item
             Name = 'SetText'
@@ -737,16 +733,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsSetTextEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsSetTextEval
           end
           item
             Name = 'GetVisible'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsGetVisibleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsGetVisibleEval
           end
           item
             Name = 'SetVisible'
@@ -757,16 +753,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsSetVisibleEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsSetVisibleEval
           end
           item
             Name = 'GetShowAccelChar'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsGetShowAccelCharEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsGetShowAccelCharEval
           end
           item
             Name = 'SetShowAccelChar'
@@ -777,16 +773,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsSetShowAccelCharEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsSetShowAccelCharEval
           end
           item
             Name = 'GetAlignVert'
             ResultType = 'TAlignmentVert'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetAlignVertEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetAlignVertEval
           end
           item
             Name = 'SetAlignVert'
@@ -797,16 +793,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetAlignVertEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetAlignVertEval
           end
           item
             Name = 'GetAlignHorz'
             ResultType = 'TAlignment'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetAlignHorzEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetAlignHorzEval
           end
           item
             Name = 'SetAlignHorz'
@@ -817,16 +813,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetAlignHorzEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetAlignHorzEval
           end
           item
             Name = 'GetPosition'
             ResultType = 'TLayoutCaptionPosition'
-            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsGetPositionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsGetPositionEval
           end
           item
             Name = 'SetPosition'
@@ -837,23 +833,23 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsSetPositionEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutItemCaptionMethodsSetPositionEval
           end
           item
             Name = 'GetGlyph'
             ResultType = 'TSmartImage'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetGlyphEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetGlyphEval
           end
           item
             Name = 'GetVisibleElements'
             ResultType = 'TLayoutCaptionVisibleElements'
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetVisibleElementsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsGetVisibleElementsEval
           end
           item
             Name = 'SetVisibleElements'
@@ -864,9 +860,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetVisibleElementsEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetVisibleElementsEval
           end
           item
             Name = 'SetGlyph'
@@ -875,9 +871,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 Name = 'Value'
                 DataType = 'TSmartImage'
               end>
-            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetGlyphEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTCustomLayoutItemCaptionMethodsSetGlyphEval
           end>
         Properties = <
           item
@@ -942,9 +938,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetWordWrap'
             ResultType = 'Boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsGetWordWrapEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsGetWordWrapEval
           end
           item
             Name = 'SetWordWrap'
@@ -955,16 +951,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsSetWordWrapEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsSetWordWrapEval
           end
           item
             Name = 'GetCursor'
             ResultType = 'TCursor'
-            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsGetCursorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsGetCursorEval
           end
           item
             Name = 'SetCursor'
@@ -975,16 +971,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsSetCursorEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsSetCursorEval
           end
           item
             Name = 'GetWidth'
             ResultType = 'Integer'
-            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsGetWidthEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsGetWidthEval
           end
           item
             Name = 'SetWidth'
@@ -995,9 +991,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsSetWidthEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutLabeledItemCustomCaptionMethodsSetWidthEval
           end>
         Properties = <
           item
@@ -1022,11 +1018,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           end
           item
             Name = 'Glyph'
-            DataType = 'TSmartImage'
           end
           item
             Name = 'VisibleElements'
-            DataType = 'TLayoutCaptionVisibleElements'
           end>
       end
       item
@@ -1037,19 +1031,15 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Properties = <
           item
             Name = 'Glyph'
-            DataType = 'TSmartImage'
           end
           item
             Name = 'Position'
-            DataType = 'TLayoutCaptionPosition'
           end
           item
             Name = 'ShowAccelChar'
-            DataType = 'boolean'
           end
           item
             Name = 'VisibleElements'
-            DataType = 'TLayoutCaptionVisibleElements'
           end>
       end
       item
@@ -1060,31 +1050,24 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Properties = <
           item
             Name = 'ShowAccelChar'
-            DataType = 'Boolean'
           end
           item
             Name = 'Width'
-            DataType = 'Integer'
           end
           item
             Name = 'Cursor'
-            DataType = 'TCursor'
           end
           item
             Name = 'WordWrap'
-            DataType = 'boolean'
           end
           item
             Name = 'Glyph'
-            DataType = 'TSmartImage'
           end
           item
             Name = 'VisibleElements'
-            DataType = 'TLayoutCaptionVisibleElements'
           end
           item
             Name = 'Position'
-            DataType = 'TLayoutCaptionPosition'
           end>
       end
       item
@@ -1100,7 +1083,6 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Properties = <
           item
             Name = 'Padding'
-            DataType = 'TLayoutPadding'
           end>
       end
       item
@@ -1111,9 +1093,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetControl'
             ResultType = 'TControl'
-            OnEval = dwsUnitLayoutClassesTLayoutItemMethodsGetControlEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutItemMethodsGetControlEval
           end
           item
             Name = 'SetControl'
@@ -1124,16 +1106,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutItemMethodsSetControlEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutItemMethodsSetControlEval
           end
           item
             Name = 'GetCaption'
             ResultType = 'TLayoutItemCaption'
-            OnEval = dwsUnitLayoutClassesTLayoutControlItemMethodsGetCaptionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutControlItemMethodsGetCaptionEval
           end>
         Properties = <
           item
@@ -1157,9 +1139,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetCaption'
             ResultType = 'TLayoutLabelItemCaption'
-            OnEval = dwsUnitLayoutClassesTLayoutLabelItemMethodsGetCaptionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutLabelItemMethodsGetCaptionEval
           end>
         Properties = <
           item
@@ -1176,19 +1158,15 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
         Properties = <
           item
             Name = 'WordWrap'
-            DataType = 'boolean'
           end
           item
             Name = 'ShowAccelChar'
-            DataType = 'boolean'
           end
           item
             Name = 'Width'
-            DataType = 'integer'
           end
           item
             Name = 'Cursor'
-            DataType = 'TCursor'
           end>
       end
       item
@@ -1209,16 +1187,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetImage'
             ResultType = 'TGraphic'
-            OnEval = dwsUnitLayoutClassesTLayoutImageItemMethodsGetImageEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutImageItemMethodsGetImageEval
           end
           item
             Name = 'GetCaption'
             ResultType = 'TLayoutItemCaption'
-            OnEval = dwsUnitLayoutClassesTLayoutImageItemMethodsGetCaptionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutImageItemMethodsGetCaptionEval
           end>
         Properties = <
           item
@@ -1240,9 +1218,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetCount'
             ResultType = 'integer'
-            OnEval = dwsUnitLayoutClassesTLayoutItemListMethodsGetCountEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutItemListMethodsGetCountEval
           end
           item
             Name = 'GetItem'
@@ -1252,9 +1230,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 DataType = 'integer'
               end>
             ResultType = 'TCustomLayoutItem'
-            OnEval = dwsUnitLayoutClassesTLayoutItemListMethodsGetItemEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutItemListMethodsGetItemEval
           end>
         Properties = <
           item
@@ -1286,23 +1264,23 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetItemOptions'
             ResultType = 'TLayoutStyleItemOptions'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleMethodsGetItemOptionsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleMethodsGetItemOptionsEval
           end
           item
             Name = 'GetGroupOptions'
             ResultType = 'TLayoutStyleGroupOptions'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleMethodsGetGroupOptionsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleMethodsGetGroupOptionsEval
           end
           item
             Name = 'GetOffsets'
             ResultType = 'TLayoutStyleOffsets'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleMethodsGetOffsetsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleMethodsGetOffsetsEval
           end>
         Properties = <
           item
@@ -1330,9 +1308,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetCaptionOptions'
             ResultType = 'TLayoutStyleCaptionOptions'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleItemOptionsMethodsGetCaptionOptionsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleItemOptionsMethodsGetCaptionOptionsEval
           end>
         Properties = <
           item
@@ -1349,16 +1327,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetCaptionOptions'
             ResultType = 'TLayoutStyleCaptionOptions'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsGetCaptionOptionsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsGetCaptionOptionsEval
           end
           item
             Name = 'GetColor'
             ResultType = 'TColor'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsGetColorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsGetColorEval
           end
           item
             Name = 'SetColor'
@@ -1369,16 +1347,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsSetColorEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsSetColorEval
           end
           item
             Name = 'GetSpaceBetweenButtons'
             ResultType = 'integer'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsGetSpaceBetweenButtonsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsGetSpaceBetweenButtonsEval
           end
           item
             Name = 'SetSpaceBetweenButtons'
@@ -1389,9 +1367,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsSetSpaceBetweenButtonsEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutStyleGroupOptionsMethodsSetSpaceBetweenButtonsEval
           end>
         Properties = <
           item
@@ -1420,9 +1398,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetTextColor'
             ResultType = 'TColor'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsGetTextColorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsGetTextColorEval
           end
           item
             Name = 'SetTextColor'
@@ -1433,16 +1411,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsSetTextColorEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsSetTextColorEval
           end
           item
             Name = 'GetUseDefaultFont'
             ResultType = 'boolean'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsGetUseDefaultFontEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsGetUseDefaultFontEval
           end
           item
             Name = 'SetUseDefaultFont'
@@ -1453,16 +1431,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsSetUseDefaultFontEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsSetUseDefaultFontEval
           end
           item
             Name = 'GetFont'
             ResultType = 'TFont'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsGetFontEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsGetFontEval
           end
           item
             Name = 'SetFont'
@@ -1473,9 +1451,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsSetFontEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutStyleCaptionOptionsMethodsSetFontEval
           end>
         Properties = <
           item
@@ -1510,9 +1488,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 DataType = 'integer'
               end>
             ResultType = 'Integer'
-            OnEval = dwsUnitLayoutClassesTLayoutStyleOffsetsMethodsGetValueEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutStyleOffsetsMethodsGetValueEval
           end
           item
             Name = 'SetValue'
@@ -1527,9 +1505,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutStyleOffsetsMethodsSetValueEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutStyleOffsetsMethodsSetValueEval
           end>
         Properties = <
           item
@@ -1597,9 +1575,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
           item
             Name = 'GetHorizontal'
             ResultType = 'TLayoutGroupScrollMode'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupScrollOptionsMethodsGetHorizontalEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupScrollOptionsMethodsGetHorizontalEval
           end
           item
             Name = 'SetHorizontal'
@@ -1610,16 +1588,16 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutGroupScrollOptionsMethodsSetHorizontalEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutGroupScrollOptionsMethodsSetHorizontalEval
           end
           item
             Name = 'GetVertical'
             ResultType = 'TLayoutGroupScrollMode'
-            OnEval = dwsUnitLayoutClassesTLayoutGroupScrollOptionsMethodsGetVerticalEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitLayoutClassesTLayoutGroupScrollOptionsMethodsGetVerticalEval
           end
           item
             Name = 'SetVertical'
@@ -1630,9 +1608,9 @@ object DataModuleScriptUserInterfaceLayout: TDataModuleScriptUserInterfaceLayout
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitLayoutClassesTLayoutGroupScrollOptionsMethodsSetVerticalEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitLayoutClassesTLayoutGroupScrollOptionsMethodsSetVerticalEval
           end>
         Properties = <
           item

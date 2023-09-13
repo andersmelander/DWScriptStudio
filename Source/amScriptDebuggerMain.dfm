@@ -1119,6 +1119,13 @@ object FormScriptDebugger: TFormScriptDebugger
       Hint = 'Display list of currently live objects'
       OnExecute = ActionDebugLiveObjectsExecute
     end
+    object ActionJIT: TAction
+      Category = 'Project'
+      AutoCheck = True
+      Caption = 'Enable jitter'
+      Hint = 'Enable JIT native compilation'
+      OnExecute = ActionDummyExecute
+    end
   end
   object OpenFileDialog: TFileOpenDialog
     FavoriteLinks = <>
@@ -4433,6 +4440,10 @@ object FormScriptDebugger: TFormScriptDebugger
           ItemName = 'dxBarButton12'
         end
         item
+          Visible = True
+          ItemName = 'dxBarButton7'
+        end
+        item
           BeginGroup = True
           Visible = True
           ItemName = 'dxBarButton25'
@@ -5029,6 +5040,11 @@ object FormScriptDebugger: TFormScriptDebugger
       Hint = 'Build help file from generated source files'
       Visible = ivAlways
       OnClick = ButtonToolDocumentBuildClick
+    end
+    object dxBarButton7: TdxBarButton
+      Action = ActionJIT
+      Category = 0
+      ButtonStyle = bsChecked
     end
     object MenuItemFileNew: TdxBarSubItem
       Caption = 'New ...'

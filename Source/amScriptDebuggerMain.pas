@@ -79,7 +79,7 @@ uses
   amScriptDebuggerFrameSymbols,
   amScriptDebuggerFrameStack,
   amScriptDebuggerFrameAST,
-  amScriptDebuggerFrameBreakPoints;
+  amScriptDebuggerFrameBreakPoints, dxCore;
 
 const
   ecOpenFileUnderCursor = ecUserFirst;
@@ -491,6 +491,8 @@ type
     dxLayoutDockSite4: TdxLayoutDockSite;
     dxLayoutDockSite5: TdxLayoutDockSite;
     ButtonToolDocumentBuild: TdxBarButton;
+    ActionJIT: TAction;
+    dxBarButton7: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -646,6 +648,7 @@ type
     procedure ActionViewFileExplorerUpdate(Sender: TObject);
     procedure ShellListViewFileExplorerExecuteItem(Sender: TObject; APIDL: PItemIDList; var AHandled: Boolean);
     procedure ButtonToolDocumentBuildClick(Sender: TObject);
+    procedure ActionDummyExecute(Sender: TObject);
   private
     FScript: TDelphiWebScript;
     FCompileContext: IScriptContext;
@@ -917,11 +920,20 @@ uses
   dwsFileSystem,
   dwsDataContext,
   dwsCaseNormalizer,
+
 {$ifndef OLD_DWSCRIPT}
   dwsContextMap,
 {$else OLD_DWSCRIPT}
   dwsInfo,
 {$endif OLD_DWSCRIPT}
+
+  dwsJIT,
+{$ifdef WIN32}
+  dwsJITx86,
+{$endif}
+{$ifdef WIN64}
+  dwsJITx86_64,
+{$endif}
 
   SynTaskDialog,
 
@@ -1378,8 +1390,10 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
     FEditor.WantTabs := True;
     FEditor.FontSmoothing := fsmClearType;
     FEditor.TabWidth := 8;
+(*
     // SynEdit.IndentWidth requires patched source
     FEditor.IndentWidth := 2;
+*)
 
     if (ScriptSettings.Editor.HighlighterClass <> '') then
     begin
@@ -2472,7 +2486,8 @@ begin
 
           // check if current position is declaration
           if (Context.IsPositionInContext(ScriptPos)) then
-            ScriptPos := TFuncSymbol(Symbol).SourcePosition;
+            // TODO -cRevival : We should take advantage of new DeclarationPosition etc.
+            ScriptPos := TFuncSymbol(Symbol).DeclarationPosition;
 
           if (ScriptPos.Line > 0) and (ScriptPos.Col > 0) then
           begin
@@ -3783,6 +3798,8 @@ begin
   if (not ABuild) and (IsCompiled) then
     exit;
 
+  ActionJIT.Enabled := True;
+
   NotifyDebuggerFrames(dnCompiling);
 
   // Make the implicit "main unit" explicit.
@@ -4212,11 +4229,7 @@ begin
   if (exceptObj <> nil) then
   begin
     Expr := exceptObj.Exec.GetLastScriptErrorExpr;
-    try
-      FPendingExceptionMsg := exceptObj.scriptobj.asstring[0];
-    except
-      FPendingExceptionMsg := Format('Exception "%s" caught', [exceptObj.TypeSym.Name]);
-    end;
+    FPendingExceptionMsg := Format('Exception "%s" caught', [exceptObj.TypeSym.Name]);
   end else
   begin
     Expr := nil;
@@ -5838,6 +5851,11 @@ begin
   TAction(Sender).Enabled := (CurrentEditor <> nil);
 end;
 
+procedure TFormScriptDebugger.ActionDummyExecute(Sender: TObject);
+begin
+  //
+end;
+
 procedure TFormScriptDebugger.ActionBuildExecute(Sender: TObject);
 begin
   Compile(True);
@@ -6005,6 +6023,9 @@ begin
 //
 end;
 
+type
+  TDataContextCracker = class(TDataContext);
+
 procedure TFormScriptDebugger.ActionDebugLiveObjectsExecute(Sender: TObject);
 var
   ScriptObjInstance: TScriptObjInstance;
@@ -6028,7 +6049,7 @@ begin
     if (Obj <> ScriptObjInstance) and (Supports(Obj, IScriptObj, ScriptObj)) and (ScriptObj.ClassSym <> nil) then
     begin
       Inc(Count);
-      s := Format('%.2d : %s (%d references)', [Count, ScriptObj.ClassSym.Name, Obj.RefCount-1]);
+      s := Format('%.2d : %s (%d references)', [Count, ScriptObj.ClassSym.Name, TDataContextCracker(Obj).RefCount-1]);
       if (ScriptObj.Destroyed) then
         s := s + ' (destroyed)';
       if (List <> '') then
@@ -6522,6 +6543,23 @@ begin
   else
     AddMessage('Running program', mkInfo);
 
+  if (ActionJIT.Checked) and (ActionJIT.Enabled) then
+  begin
+    AddMessage('Applying jitter', mkInfo);
+{$ifdef WIN32}
+    var Jitter := TdwsJITx86.Create;
+{$endif}
+{$ifdef WIN64}
+    var Jitter := TdwsJITx86_64.Create;
+{$endif};
+    Jitter.Options := Jitter.Options - [jitoNoBranchAlignment];
+    Jitter.GreedyJIT(FProgram.ProgramObject);
+    Jitter.Free;
+
+    // We will need a recompile before jitter can be applied again
+    ActionJIT.Enabled := False;
+  end;
+
   TdwsProgramExecution(Exec).OnExecutionStarted := DoOnExecutionStarted;
   TdwsProgramExecution(Exec).OnExecutionEnded := DoOnExecutionEnded;
 
@@ -6870,7 +6908,8 @@ end;
 
 procedure TFormScriptDebugger.ActionRunUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := HasEditorPage and (Debugger.State in [dsIdle, dsDebugDone]);
+  TAction(Sender).Enabled := HasEditorPage and (Debugger.State in [dsIdle, dsDebugDone]) and
+    (not ActionJIT.Checked);
 end;
 
 // -----------------------------------------------------------------------------

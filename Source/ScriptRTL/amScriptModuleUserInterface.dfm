@@ -1,5 +1,4 @@
 object DataModuleUserInterface: TDataModuleUserInterface
-  OldCreateOrder = False
   Height = 287
   Width = 402
   object dwsUnitControls: TdwsUnit
@@ -20,16 +19,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetLeftEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetLeftEval
           end
           item
             Name = 'GetLeft'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsGetLeftEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsGetLeftEval
           end
           item
             Name = 'SetTop'
@@ -38,16 +37,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetTopEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetTopEval
           end
           item
             Name = 'GetTop'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsGetTopEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsGetTopEval
           end
           item
             Name = 'SetRight'
@@ -56,16 +55,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetRightEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetRightEval
           end
           item
             Name = 'GetRight'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsGetRightEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsGetRightEval
           end
           item
             Name = 'SetBottom'
@@ -74,16 +73,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetBottomEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetBottomEval
           end
           item
             Name = 'GetBottom'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsGetBottomEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsGetBottomEval
           end
           item
             Name = 'SetBounds'
@@ -104,8 +103,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'ABottom'
                 DataType = 'Integer'
               end>
-            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetBoundsEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlOffsetMethodsSetBoundsEval
           end>
         Properties = <
           item
@@ -155,9 +154,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 DataType = 'integer'
               end>
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTSizeConstraintsMethodsGetConstraintEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTSizeConstraintsMethodsGetConstraintEval
           end
           item
             Name = 'SetConstraint'
@@ -172,9 +171,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTSizeConstraintsMethodsSetConstraintEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTSizeConstraintsMethodsSetConstraintEval
           end>
         Properties = <
           item
@@ -245,9 +244,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetLeft'
             ResultType = 'Integer'
-            OnEval = dwsUnitProjectClassesTControlMethodsGetLeftEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlMethodsGetLeftEval
           end
           item
             Name = 'SetLeft'
@@ -258,16 +257,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProjectClassesTControlMethodsSetLeftEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsSetLeftEval
           end
           item
             Name = 'GetTop'
             ResultType = 'Integer'
-            OnEval = dwsUnitProjectClassesTControlMethodsGetTopEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlMethodsGetTopEval
           end
           item
             Name = 'SetTop'
@@ -278,16 +277,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProjectClassesTControlMethodsSetTopEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsSetTopEval
           end
           item
             Name = 'GetWidth'
             ResultType = 'Integer'
-            OnEval = dwsUnitProjectClassesTControlMethodsGetWidthEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlMethodsGetWidthEval
           end
           item
             Name = 'SetWidth'
@@ -298,16 +297,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProjectClassesTControlMethodsSetWidthEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsSetWidthEval
           end
           item
             Name = 'GetHeight'
             ResultType = 'Integer'
-            OnEval = dwsUnitProjectClassesTControlMethodsGetHeightEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlMethodsGetHeightEval
           end
           item
             Name = 'SetHeight'
@@ -318,16 +317,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProjectClassesTControlMethodsSetHeightEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsSetHeightEval
           end
           item
             Name = 'GetVisible'
             ResultType = 'Boolean'
-            OnEval = dwsUnitProjectClassesTControlMethodsGetVisibleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlMethodsGetVisibleEval
           end
           item
             Name = 'SetVisible'
@@ -338,16 +337,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProjectClassesTControlMethodsSetVisibleEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsSetVisibleEval
           end
           item
             Name = 'GetText'
             ResultType = 'String'
-            OnEval = dwsUnitProjectClassesTControlMethodsGetTextEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlMethodsGetTextEval
           end
           item
             Name = 'SetText'
@@ -358,16 +357,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProjectClassesTControlMethodsSetTextEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsSetTextEval
           end
           item
             Name = 'GetColor'
             ResultType = 'TColor'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetColorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetColorEval
           end
           item
             Name = 'SetColor'
@@ -378,16 +377,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetColorEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetColorEval
           end
           item
             Name = 'GetCursor'
             ResultType = 'Integer'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetCursorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetCursorEval
           end
           item
             Name = 'SetCursor'
@@ -398,16 +397,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetCursorEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetCursorEval
           end
           item
             Name = 'GetParentFont'
             ResultType = 'Boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetParentFontEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetParentFontEval
           end
           item
             Name = 'SetParentFont'
@@ -418,16 +417,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetParentFontEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetParentFontEval
           end
           item
             Name = 'GetHint'
             ResultType = 'String'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetHintEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetHintEval
           end
           item
             Name = 'SetHint'
@@ -438,16 +437,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetHintEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetHintEval
           end
           item
             Name = 'GetParentColor'
             ResultType = 'Boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetParentColorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetParentColorEval
           end
           item
             Name = 'SetParentColor'
@@ -458,16 +457,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetParentColorEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetParentColorEval
           end
           item
             Name = 'GetAutoSize'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetAutoSizeEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetAutoSizeEval
           end
           item
             Name = 'SetAutoSize'
@@ -478,23 +477,23 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetAutoSizeEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetAutoSizeEval
           end
           item
             Name = 'GetConstraints'
             ResultType = 'TSizeConstraints'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetConstraintsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetConstraintsEval
           end
           item
             Name = 'GetAlign'
             ResultType = 'TAlign'
-            OnEval = dwsUnitProjectClassesTControlMethodsGetAlignEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlMethodsGetAlignEval
           end
           item
             Name = 'SetAlign'
@@ -505,16 +504,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProjectClassesTControlMethodsSetAlignEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsSetAlignEval
           end
           item
             Name = 'GetParent'
             ResultType = 'TContainerControl'
-            OnEval = dwsUnitProjectClassesTControlMethodsGetParentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlMethodsGetParentEval
           end
           item
             Name = 'SetParent'
@@ -525,16 +524,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitProjectClassesTControlMethodsSetParentEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsSetParentEval
           end
           item
             Name = 'GetShowHint'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetShowHintEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetShowHintEval
           end
           item
             Name = 'SetShowHint'
@@ -543,16 +542,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetShowHintEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetShowHintEval
           end
           item
             Name = 'GetParentShowHint'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetParentShowHintEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetParentShowHintEval
           end
           item
             Name = 'SetParentShowHint'
@@ -561,16 +560,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetParentShowHintEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetParentShowHintEval
           end
           item
             Name = 'GetEnabled'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetEnabledEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetEnabledEval
           end
           item
             Name = 'SetEnabled'
@@ -579,16 +578,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetEnabledEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetEnabledEval
           end
           item
             Name = 'GetTabStop'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetTabStopEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetTabStopEval
           end
           item
             Name = 'SetTabStop'
@@ -597,9 +596,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetTabStopEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetTabStopEval
           end
           item
             Name = 'SetOnClick'
@@ -608,9 +607,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TControlNotifyEvent'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetOnClickEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetOnClickEval
           end
           item
             Name = 'SetOnDblClick'
@@ -619,9 +618,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TControlNotifyEvent'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetOnDblClickEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetOnDblClickEval
           end
           item
             Name = 'SetOnEnter'
@@ -630,9 +629,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TControlNotifyEvent'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetOnEnterEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetOnEnterEval
           end
           item
             Name = 'SetOnExit'
@@ -641,9 +640,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TControlNotifyEvent'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetOnExitEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetOnExitEval
           end
           item
             Name = 'SetOnKeypress'
@@ -652,16 +651,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TKeypressEvent'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetOnKeypressEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetOnKeypressEval
           end
           item
             Name = 'GetFont'
             ResultType = 'TFont'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetFontEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetFontEval
           end
           item
             Name = 'SetFont'
@@ -670,23 +669,23 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TFont'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetFontEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetFontEval
           end
           item
             Name = 'GetMargins'
             ResultType = 'TControlMargin'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetMarginsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetMarginsEval
           end
           item
             Name = 'GetAlignWithMargins'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetAlignWithMarginsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetAlignWithMarginsEval
           end
           item
             Name = 'SetAlignWithMargins'
@@ -695,16 +694,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetAlignWithMarginsEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetAlignWithMarginsEval
           end
           item
             Name = 'GetAction'
             ResultType = 'TAction'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetActionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetActionEval
           end
           item
             Name = 'SetAction'
@@ -715,16 +714,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetActionEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetActionEval
           end
           item
             Name = 'GetParentBackground'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetParentBackgroundEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetParentBackgroundEval
           end
           item
             Name = 'SetParentBackground'
@@ -735,51 +734,51 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetParentBackgroundEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetParentBackgroundEval
           end
           item
             Name = 'Show'
-            OnEval = dwsUnitProjectClassesTControlMethodsShowEval
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsShowEval
           end
           item
             Name = 'Hide'
-            OnEval = dwsUnitProjectClassesTControlMethodsHideEval
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlMethodsHideEval
           end
           item
             Name = 'Update'
-            OnEval = dwsUnitControlsClassesTControlMethodsUpdateEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsUpdateEval
           end
           item
             Name = 'Repaint'
-            OnEval = dwsUnitControlsClassesTControlMethodsRepaintEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsRepaintEval
           end
           item
             Name = 'Refresh'
-            OnEval = dwsUnitControlsClassesTControlMethodsRefreshEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsRefreshEval
           end
           item
             Name = 'Invalidate'
-            OnEval = dwsUnitControlsClassesTControlMethodsInvalidateEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsInvalidateEval
           end
           item
             Name = 'Click'
-            OnEval = dwsUnitControlsClassesTControlMethodsClickEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsClickEval
           end
           item
             Name = 'GetBoundsRect'
             ResultType = 'TRect'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetBoundsRectEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetBoundsRectEval
           end
           item
             Name = 'SetBoundsRect'
@@ -790,16 +789,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTControlMethodsSetBoundsRectEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTControlMethodsSetBoundsRectEval
           end
           item
             Name = 'GetClientRect'
             ResultType = 'TRect'
-            OnEval = dwsUnitControlsClassesTControlMethodsGetClientRectEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetClientRectEval
           end
           item
             Name = 'ClientToScreen'
@@ -812,8 +811,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
               end>
             ResultType = 'TPoint'
             Overloaded = True
+            Kind = mkFunction
             OnEval = dwsUnitControlsClassesTControlMethodsClientToScreenEval
-            Kind = mkFunction
           end
           item
             Name = 'ClientToScreen'
@@ -826,8 +825,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
               end>
             ResultType = 'TRect'
             Overloaded = True
-            OnEval = dwsUnitControlsClassesTControlMethodsClientToScreenRectEval
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsClientToScreenRectEval
           end
           item
             Name = 'ScreenToClient'
@@ -840,8 +839,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
               end>
             ResultType = 'TPoint'
             Overloaded = True
-            OnEval = dwsUnitControlsClassesTControlMethodsScreenToClientEval
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsScreenToClientEval
           end
           item
             Name = 'ScreenToClient'
@@ -854,15 +853,15 @@ object DataModuleUserInterface: TDataModuleUserInterface
               end>
             ResultType = 'TRect'
             Overloaded = True
-            OnEval = dwsUnitControlsClassesTControlMethodsScreenToClientRectEval
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsScreenToClientRectEval
           end
           item
             Name = 'GetUserInterfaceAutomation'
             ResultType = 'TObject'
             Attributes = [maVirtual]
-            OnEval = dwsUnitControlsClassesTControlMethodsGetUserInterfaceAutomationEval
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTControlMethodsGetUserInterfaceAutomationEval
           end>
         Properties = <
           item
@@ -1071,27 +1070,27 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Methods = <
           item
             Name = 'SetFocus'
-            OnEval = dwsUnitControlsClassesTCustomControlMethodsSetFocusEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomControlMethodsSetFocusEval
           end
           item
             Name = 'CanFocus'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCustomControlMethodsCanFocusEval
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomControlMethodsCanFocusEval
           end
           item
             Name = 'Focused'
             ResultType = 'Boolean'
-            OnEval = dwsUnitControlsClassesTCustomControlMethodsFocusedEval
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomControlMethodsFocusedEval
           end
           item
             Name = 'GetHandle'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTCustomControlMethodsGetHandleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomControlMethodsGetHandleEval
           end
           item
             Name = 'PostMessage'
@@ -1115,9 +1114,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
             ResultType = 'boolean'
             Overloaded = True
             Attributes = [maClassMethod, maStatic]
-            OnEval = dwsUnitControlsClassesTCustomControlMethodsPostMessageEval
             Visibility = cvProtected
             Kind = mkClassMethod
+            OnEval = dwsUnitControlsClassesTCustomControlMethodsPostMessageEval
           end
           item
             Name = 'PostMessage'
@@ -1136,9 +1135,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
               end>
             ResultType = 'boolean'
             Overloaded = True
-            OnEval = dwsUnitControlsClassesTCustomControlMethodsPostMessageSelfEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomControlMethodsPostMessageSelfEval
           end
           item
             Name = 'Perform'
@@ -1174,9 +1173,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetCount'
             ResultType = 'Integer'
-            OnEval = dwsUnitProjectClassesTControlListMethodsGetCountEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlListMethodsGetCountEval
           end
           item
             Name = 'GetItem'
@@ -1187,14 +1186,14 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsWritable = False
               end>
             ResultType = 'TControl'
-            OnEval = dwsUnitProjectClassesTControlListMethodsGetItemEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTControlListMethodsGetItemEval
           end
           item
             Name = 'Clear'
-            OnEval = dwsUnitProjectClassesTControlListMethodsClearEval
             Kind = mkProcedure
+            OnEval = dwsUnitProjectClassesTControlListMethodsClearEval
           end>
         Properties = <
           item
@@ -1224,16 +1223,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetControls'
             ResultType = 'TControlList'
-            OnEval = dwsUnitProjectClassesTContainerControlMethodsGetControlsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTContainerControlMethodsGetControlsEval
           end
           item
             Name = 'GetPadding'
             ResultType = 'TControlPadding'
-            OnEval = dwsUnitControlsClassesTContainerControlMethodsGetPaddingEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTContainerControlMethodsGetPaddingEval
           end>
         Properties = <
           item
@@ -1266,20 +1265,20 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'ShowModal'
             ResultType = 'TModalResult'
-            OnEval = dwsUnitProjectClassesTCustomFormMethodsShowModalEval
             Kind = mkFunction
+            OnEval = dwsUnitProjectClassesTCustomFormMethodsShowModalEval
           end
           item
             Name = 'Close'
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsCloseEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsCloseEval
           end
           item
             Name = 'GetModalResult'
             ResultType = 'TModalResult'
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetModalResultEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetModalResultEval
           end
           item
             Name = 'SetModalResult'
@@ -1288,15 +1287,15 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TModalResult'
               end>
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetModalResultEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetModalResultEval
           end
           item
             Name = 'GetStayOnTop'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetStayOnTopEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetStayOnTopEval
           end
           item
             Name = 'SetStayOnTop'
@@ -1307,23 +1306,23 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetStayOnTopEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetStayOnTopEval
           end
           item
             Name = 'GetActive'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetActiveEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetActiveEval
           end
           item
             Name = 'GetBorderStyle'
             ResultType = 'TFormBorderStyle'
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetBorderStyleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetBorderStyleEval
           end
           item
             Name = 'SetBorderStyle'
@@ -1334,16 +1333,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetBorderStyleEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetBorderStyleEval
           end
           item
             Name = 'GetKeyPreview'
             ResultType = 'Boolean'
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetKeyPreviewEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetKeyPreviewEval
           end
           item
             Name = 'SetKeyPreview'
@@ -1354,16 +1353,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetKeyPreviewEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetKeyPreviewEval
           end
           item
             Name = 'GetWindowState'
             ResultType = 'TWindowState'
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetWindowStateEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetWindowStateEval
           end
           item
             Name = 'SetWindowState'
@@ -1374,16 +1373,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetWindowStateEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetWindowStateEval
           end
           item
             Name = 'GetPosition'
             ResultType = 'TFormPosition'
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetPositionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsGetPositionEval
           end
           item
             Name = 'SetPosition'
@@ -1394,9 +1393,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetPositionEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetPositionEval
           end
           item
             Name = 'SetOnShow'
@@ -1407,26 +1406,22 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetOnShowEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomFormMethodsSetOnShowEval
           end>
         Properties = <
           item
             Name = 'AutoSize'
-            DataType = 'boolean'
           end
           item
             Name = 'OnEnter'
-            DataType = 'TControlNotifyEvent'
           end
           item
             Name = 'OnExit'
-            DataType = 'TControlNotifyEvent'
           end
           item
             Name = 'OnKeypress'
-            DataType = 'TKeypressEvent'
           end
           item
             Name = 'ModalResult'
@@ -1495,9 +1490,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTFormMethodsSetOnAfterShowEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTFormMethodsSetOnAfterShowEval
           end>
         Properties = <
           item
@@ -1532,9 +1527,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetReadOnly'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetReadOnlyEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetReadOnlyEval
           end
           item
             Name = 'SetReadOnly'
@@ -1543,16 +1538,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetReadOnlyEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetReadOnlyEval
           end
           item
             Name = 'GetTextHint'
             ResultType = 'string'
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetTextHintEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetTextHintEval
           end
           item
             Name = 'SetTextHint'
@@ -1563,16 +1558,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetTextHintEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetTextHintEval
           end
           item
             Name = 'GetAlignment'
             ResultType = 'TEditAlignment'
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetAlignmentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetAlignmentEval
           end
           item
             Name = 'SetOnChange'
@@ -1581,9 +1576,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TControlNotifyEvent'
               end>
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetOnChangeEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetOnChangeEval
           end
           item
             Name = 'SetOnChanged'
@@ -1594,16 +1589,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetOnChangedEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetOnChangedEval
           end
           item
             Name = 'GetUseLeftAlignmentOnEditing'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetUseLeftAlignmentOnEditingEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetUseLeftAlignmentOnEditingEval
           end
           item
             Name = 'SetUseLeftAlignmentOnEditing'
@@ -1614,16 +1609,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetUseLeftAlignmentOnEditingEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetUseLeftAlignmentOnEditingEval
           end
           item
             Name = 'GetButtons'
             ResultType = 'TEditButtons'
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetButtonsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsGetButtonsEval
           end
           item
             Name = 'SetOnButtonClick'
@@ -1634,26 +1629,22 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetOnButtonClickEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomEditMethodsSetOnButtonClickEval
           end>
         Properties = <
           item
             Name = 'Text'
-            DataType = 'string'
           end
           item
             Name = 'OnEnter'
-            DataType = 'TControlNotifyEvent'
           end
           item
             Name = 'OnExit'
-            DataType = 'TControlNotifyEvent'
           end
           item
             Name = 'OnKeypress'
-            DataType = 'TKeypressEvent'
           end
           item
             Name = 'OnChange'
@@ -1712,9 +1703,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetDisplayFormat'
             ResultType = 'string'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetDisplayFormatEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetDisplayFormatEval
           end
           item
             Name = 'SetDisplayFormat'
@@ -1725,16 +1716,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetDisplayFormatEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetDisplayFormatEval
           end
           item
             Name = 'GetEditFormat'
             ResultType = 'string'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetEditFormatEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetEditFormatEval
           end
           item
             Name = 'SetEditFormat'
@@ -1745,16 +1736,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetEditFormatEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetEditFormatEval
           end
           item
             Name = 'GetCharCase'
             ResultType = 'TEditCharCase'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetCharCaseEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetCharCaseEval
           end
           item
             Name = 'SetCharCase'
@@ -1765,16 +1756,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetCharCaseEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetCharCaseEval
           end
           item
             Name = 'GetMinValue'
             ResultType = 'Float'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetMinValueEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetMinValueEval
           end
           item
             Name = 'SetMinValue'
@@ -1785,16 +1776,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetMinValueEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetMinValueEval
           end
           item
             Name = 'GetMaxValue'
             ResultType = 'Float'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetMaxValueEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetMaxValueEval
           end
           item
             Name = 'SetMaxValue'
@@ -1805,16 +1796,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetMaxValueEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetMaxValueEval
           end
           item
             Name = 'GetPasswordChar'
             ResultType = 'string'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetPasswordCharEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetPasswordCharEval
           end
           item
             Name = 'SetPasswordChar'
@@ -1825,23 +1816,23 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetPasswordCharEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetPasswordCharEval
           end
           item
             Name = 'GetLookupItems'
             ResultType = 'TStrings'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetLookupItemsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetLookupItemsEval
           end
           item
             Name = 'GetIncrementalSearch'
             ResultType = 'Boolean'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetIncrementalSearchEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetIncrementalSearchEval
           end
           item
             Name = 'SetIncrementalSearch'
@@ -1852,16 +1843,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetIncrementalSearchEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetIncrementalSearchEval
           end
           item
             Name = 'GetLookupItemsSorted'
             ResultType = 'Boolean'
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetLookupItemsSortedEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsGetLookupItemsSortedEval
           end
           item
             Name = 'SetLookupItemsSorted'
@@ -1872,14 +1863,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetLookupItemsSortedEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCustomTextEditMethodsSetLookupItemsSortedEval
           end>
         Properties = <
           item
             Name = 'TabStop'
-            DataType = 'boolean'
           end
           item
             Name = 'DisplayFormat'
@@ -1944,9 +1934,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetHorz'
             ResultType = 'TAlignment'
-            OnEval = dwsUnitControlsClassesTEditAlignmentMethodsGetHorzEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditAlignmentMethodsGetHorzEval
           end
           item
             Name = 'SetHorz'
@@ -1955,16 +1945,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TAlignment'
               end>
-            OnEval = dwsUnitControlsClassesTEditAlignmentMethodsSetHorzEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditAlignmentMethodsSetHorzEval
           end
           item
             Name = 'GetVert'
             ResultType = 'TAlignmentVert'
-            OnEval = dwsUnitControlsClassesTEditAlignmentMethodsGetVertEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditAlignmentMethodsGetVertEval
           end
           item
             Name = 'SetVert'
@@ -1973,9 +1963,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TAlignmentVert'
               end>
-            OnEval = dwsUnitControlsClassesTEditAlignmentMethodsSetVertEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditAlignmentMethodsSetVertEval
           end>
         Properties = <
           item
@@ -2007,7 +1997,6 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Properties = <
           item
             Name = 'TextHint'
-            DataType = 'string'
           end>
       end
       item
@@ -2026,11 +2015,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
         Properties = <
           item
             Name = 'AutoSize'
-            DataType = 'boolean'
           end
           item
             Name = 'ParentBackground'
-            DataType = 'boolean'
           end>
       end
       item
@@ -2050,9 +2037,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetModalResult'
             ResultType = 'TModalResult'
-            OnEval = dwsUnitControlsClassesTButtonMethodsGetModalResultEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonMethodsGetModalResultEval
           end
           item
             Name = 'SetModalResult'
@@ -2061,16 +2048,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TModalResult'
               end>
-            OnEval = dwsUnitControlsClassesTButtonMethodsSetModalResultEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonMethodsSetModalResultEval
           end
           item
             Name = 'GetDescription'
             ResultType = 'string'
-            OnEval = dwsUnitControlsClassesTButtonMethodsGetDescriptionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonMethodsGetDescriptionEval
           end
           item
             Name = 'SetDescription'
@@ -2081,16 +2068,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTButtonMethodsSetDescriptionEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonMethodsSetDescriptionEval
           end
           item
             Name = 'GetKind'
             ResultType = 'TButtonKind'
-            OnEval = dwsUnitControlsClassesTButtonMethodsGetKindEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonMethodsGetKindEval
           end
           item
             Name = 'SetKind'
@@ -2099,16 +2086,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TButtonKind'
               end>
-            OnEval = dwsUnitControlsClassesTButtonMethodsSetKindEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonMethodsSetKindEval
           end
           item
             Name = 'GetTransparent'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTButtonMethodsGetTransparentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonMethodsGetTransparentEval
           end
           item
             Name = 'SetTransparent'
@@ -2117,16 +2104,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTButtonMethodsSetTransparentEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonMethodsSetTransparentEval
           end
           item
             Name = 'GetDefault'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTButtonMethodsGetDefaultEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonMethodsGetDefaultEval
           end
           item
             Name = 'SetDefault'
@@ -2137,16 +2124,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTButtonMethodsSetDefaultEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonMethodsSetDefaultEval
           end
           item
             Name = 'GetCancel'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTButtonMethodsGetCancelEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonMethodsGetCancelEval
           end
           item
             Name = 'SetCancel'
@@ -2157,21 +2144,20 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTButtonMethodsSetCancelEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonMethodsSetCancelEval
           end
           item
             Name = 'GetImageOptions'
             ResultType = 'TButtonImageOptions'
-            OnEval = dwsUnitControlsClassesTButtonMethodsGetImageOptionsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonMethodsGetImageOptionsEval
           end>
         Properties = <
           item
             Name = 'TabStop'
-            DataType = 'boolean'
           end
           item
             Name = 'ModalResult'
@@ -2222,16 +2208,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetGlyph'
             ResultType = 'TSmartImage'
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetGlyphEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetGlyphEval
           end
           item
             Name = 'GetLayout'
             ResultType = 'TButtonLayout'
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetLayoutEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetLayoutEval
           end
           item
             Name = 'SetLayout'
@@ -2242,16 +2228,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetLayoutEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetLayoutEval
           end
           item
             Name = 'GetMargin'
             ResultType = 'Integer'
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetMarginEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetMarginEval
           end
           item
             Name = 'SetMargin'
@@ -2262,16 +2248,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetMarginEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetMarginEval
           end
           item
             Name = 'GetNumGlyphs'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetNumGlyphsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetNumGlyphsEval
           end
           item
             Name = 'SetNumGlyphs'
@@ -2282,16 +2268,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetNumGlyphsEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetNumGlyphsEval
           end
           item
             Name = 'GetSpacing'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetSpacingEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsGetSpacingEval
           end
           item
             Name = 'SetSpacing'
@@ -2302,9 +2288,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetSpacingEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTButtonImageOptionsMethodsSetSpacingEval
           end>
         Properties = <
           item
@@ -2354,9 +2340,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetTransparent'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTLabelMethodsGetTransparentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTLabelMethodsGetTransparentEval
           end
           item
             Name = 'SetTransparent'
@@ -2367,16 +2353,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTLabelMethodsSetTransparentEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTLabelMethodsSetTransparentEval
           end
           item
             Name = 'GetWordWrap'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTLabelMethodsGetWordWrapEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTLabelMethodsGetWordWrapEval
           end
           item
             Name = 'SetWordWrap'
@@ -2387,16 +2373,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTLabelMethodsSetWordWrapEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTLabelMethodsSetWordWrapEval
           end
           item
             Name = 'GetShowEndEllipsis'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTLabelMethodsGetShowEndEllipsisEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTLabelMethodsGetShowEndEllipsisEval
           end
           item
             Name = 'SetShowEndEllipsis'
@@ -2407,16 +2393,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTLabelMethodsSetShowEndEllipsisEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTLabelMethodsSetShowEndEllipsisEval
           end
           item
             Name = 'GetShowAccelChar'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTLabelMethodsGetShowAccelCharEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTLabelMethodsGetShowAccelCharEval
           end
           item
             Name = 'SetShowAccelChar'
@@ -2427,14 +2413,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTLabelMethodsSetShowAccelCharEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTLabelMethodsSetShowAccelCharEval
           end>
         Properties = <
           item
             Name = 'AutoSize'
-            DataType = 'boolean'
           end
           item
             Name = 'Transparent'
@@ -2478,9 +2463,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetChecked'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCheckBoxMethodsGetCheckedEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckBoxMethodsGetCheckedEval
           end
           item
             Name = 'SetChecked'
@@ -2489,14 +2474,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTCheckBoxMethodsSetCheckedEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCheckBoxMethodsSetCheckedEval
           end>
         Properties = <
           item
             Name = 'TabStop'
-            DataType = 'boolean'
           end
           item
             Name = 'Checked'
@@ -2522,9 +2506,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetChecked'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTRadioButtonMethodsGetCheckedEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTRadioButtonMethodsGetCheckedEval
           end
           item
             Name = 'SetChecked'
@@ -2533,16 +2517,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTRadioButtonMethodsSetCheckedEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTRadioButtonMethodsSetCheckedEval
           end
           item
             Name = 'GetGroupIndex'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTRadioButtonMethodsGetGroupIndexEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTRadioButtonMethodsGetGroupIndexEval
           end
           item
             Name = 'SetGroupIndex'
@@ -2553,14 +2537,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTRadioButtonMethodsSetGroupIndexEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTRadioButtonMethodsSetGroupIndexEval
           end>
         Properties = <
           item
             Name = 'TabStop'
-            DataType = 'boolean'
           end
           item
             Name = 'Checked'
@@ -2598,8 +2581,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTImageMethodsLoadFromFileEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTImageMethodsLoadFromFileEval
           end
           item
             Name = 'SaveToFile'
@@ -2610,15 +2593,15 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTImageMethodsSaveToFileEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTImageMethodsSaveToFileEval
           end
           item
             Name = 'GetStretch'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTImageMethodsGetStretchEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTImageMethodsGetStretchEval
           end
           item
             Name = 'SetStretch'
@@ -2627,16 +2610,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTImageMethodsSetStretchEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTImageMethodsSetStretchEval
           end
           item
             Name = 'GetProportional'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTImageMethodsGetProportionalEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTImageMethodsGetProportionalEval
           end
           item
             Name = 'SetProportional'
@@ -2645,16 +2628,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTImageMethodsSetProportionalEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTImageMethodsSetProportionalEval
           end
           item
             Name = 'GetCenter'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTImageMethodsGetCenterEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTImageMethodsGetCenterEval
           end
           item
             Name = 'SetCenter'
@@ -2663,9 +2646,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTImageMethodsSetCenterEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTImageMethodsSetCenterEval
           end
           item
             Name = 'LoadFromStream'
@@ -2674,8 +2657,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Stream'
                 DataType = 'TStream'
               end>
-            OnEval = dwsUnitControlsClassesTImageMethodsLoadFromStreamEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTImageMethodsLoadFromStreamEval
           end
           item
             Name = 'SaveToStream'
@@ -2684,15 +2667,15 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Stream'
                 DataType = 'TStream'
               end>
-            OnEval = dwsUnitControlsClassesTImageMethodsSaveToStreamEval
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTImageMethodsSaveToStreamEval
           end
           item
             Name = 'GetImage'
             ResultType = 'TGraphic'
-            OnEval = dwsUnitControlsClassesTImageMethodsGetImageEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTImageMethodsGetImageEval
           end
           item
             Name = 'SetImage'
@@ -2701,14 +2684,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TGraphic'
               end>
-            OnEval = dwsUnitControlsClassesTImageMethodsSetImageEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTImageMethodsSetImageEval
           end>
         Properties = <
           item
             Name = 'AutoSize'
-            DataType = 'boolean'
           end
           item
             Name = 'Stretch'
@@ -2752,16 +2734,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetItems'
             ResultType = 'TStrings'
-            OnEval = dwsUnitControlsClassesTComboBoxMethodsGetItemsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTComboBoxMethodsGetItemsEval
           end
           item
             Name = 'GetItemIndex'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTComboBoxMethodsGetItemIndexEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTComboBoxMethodsGetItemIndexEval
           end
           item
             Name = 'SetItemIndex'
@@ -2770,16 +2752,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitControlsClassesTComboBoxMethodsSetItemIndexEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTComboBoxMethodsSetItemIndexEval
           end
           item
             Name = 'GetDropDownListStyle'
             ResultType = 'TEditDropDownListStyle'
-            OnEval = dwsUnitControlsClassesTComboBoxMethodsGetDropDownListStyleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTComboBoxMethodsGetDropDownListStyleEval
           end
           item
             Name = 'SetDropDownListStyle'
@@ -2788,16 +2770,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TEditDropDownListStyle'
               end>
-            OnEval = dwsUnitControlsClassesTComboBoxMethodsSetDropDownListStyleEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTComboBoxMethodsSetDropDownListStyleEval
           end
           item
             Name = 'GetSorted'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTComboBoxMethodsGetSortedEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTComboBoxMethodsGetSortedEval
           end
           item
             Name = 'SetSorted'
@@ -2808,14 +2790,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTComboBoxMethodsSetSortedEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTComboBoxMethodsSetSortedEval
           end>
         Properties = <
           item
             Name = 'TextHint'
-            DataType = 'string'
           end
           item
             Name = 'Items'
@@ -2858,16 +2839,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetLines'
             ResultType = 'TStrings'
-            OnEval = dwsUnitControlsClassesTMemoMethodsGetLinesEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTMemoMethodsGetLinesEval
           end
           item
             Name = 'GetWordWrap'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTMemoMethodsGetWordWrapEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTMemoMethodsGetWordWrapEval
           end
           item
             Name = 'SetWordWrap'
@@ -2876,16 +2857,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTMemoMethodsSetWordWrapEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTMemoMethodsSetWordWrapEval
           end
           item
             Name = 'GetWantReturns'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTMemoMethodsGetWantReturnsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTMemoMethodsGetWantReturnsEval
           end
           item
             Name = 'SetWantReturns'
@@ -2894,16 +2875,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTMemoMethodsSetWantReturnsEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTMemoMethodsSetWantReturnsEval
           end
           item
             Name = 'GetWantTabs'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTMemoMethodsGetWantTabsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTMemoMethodsGetWantTabsEval
           end
           item
             Name = 'SetWantTabs'
@@ -2912,9 +2893,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTMemoMethodsSetWantTabsEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTMemoMethodsSetWantTabsEval
           end>
         Properties = <
           item
@@ -2931,6 +2912,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'WantReturns'
             DataType = 'boolean'
+            ReadAccess = 'GetWantReturns'
+            WriteAccess = 'SetWantReturns'
           end
           item
             Name = 'WantTabs'
@@ -2956,9 +2939,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetValue'
             ResultType = 'Float'
-            OnEval = dwsUnitControlsClassesTDateEditMethodsGetValueEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTDateEditMethodsGetValueEval
           end
           item
             Name = 'SetValue'
@@ -2967,14 +2950,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'Float'
               end>
-            OnEval = dwsUnitControlsClassesTDateEditMethodsSetValueEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTDateEditMethodsSetValueEval
           end>
         Properties = <
           item
             Name = 'TextHint'
-            DataType = 'string'
           end
           item
             Name = 'Value'
@@ -3000,9 +2982,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetPrecision'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTCalcEditMethodsGetPrecisionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCalcEditMethodsGetPrecisionEval
           end
           item
             Name = 'SetPrecision'
@@ -3011,14 +2993,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitControlsClassesTCalcEditMethodsSetPrecisionEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCalcEditMethodsSetPrecisionEval
           end>
         Properties = <
           item
             Name = 'TextHint'
-            DataType = 'string'
           end
           item
             Name = 'Precision'
@@ -3044,9 +3025,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetValue'
             ResultType = 'Float'
-            OnEval = dwsUnitControlsClassesTNumberEditMethodsGetValueEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTNumberEditMethodsGetValueEval
           end
           item
             Name = 'SetValue'
@@ -3057,16 +3038,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTNumberEditMethodsSetValueEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTNumberEditMethodsSetValueEval
           end
           item
             Name = 'GetPrecision'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTNumberEditMethodsGetPrecisionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTNumberEditMethodsGetPrecisionEval
           end
           item
             Name = 'SetPrecision'
@@ -3077,16 +3058,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTNumberEditMethodsSetPrecisionEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTNumberEditMethodsSetPrecisionEval
           end
           item
             Name = 'GetUseThousandSeparator'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTNumberEditMethodsGetUseThousandSeparatorEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTNumberEditMethodsGetUseThousandSeparatorEval
           end
           item
             Name = 'SetUseThousandSeparator'
@@ -3097,14 +3078,13 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTNumberEditMethodsSetUseThousandSeparatorEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTNumberEditMethodsSetUseThousandSeparatorEval
           end>
         Properties = <
           item
             Name = 'TextHint'
-            DataType = 'string'
           end
           item
             Name = 'Value'
@@ -3126,11 +3106,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           end
           item
             Name = 'MinValue'
-            DataType = 'Float'
           end
           item
             Name = 'MaxValue'
-            DataType = 'Float'
           end>
       end
       item
@@ -3150,9 +3128,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetValue'
             ResultType = 'Float'
-            OnEval = dwsUnitControlsClassesTSpinEditMethodsGetValueEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTSpinEditMethodsGetValueEval
           end
           item
             Name = 'SetValue'
@@ -3163,16 +3141,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTSpinEditMethodsSetValueEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTSpinEditMethodsSetValueEval
           end
           item
             Name = 'GetIncrement'
             ResultType = 'float'
-            OnEval = dwsUnitControlsClassesTSpinEditMethodsGetIncrementEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTSpinEditMethodsGetIncrementEval
           end
           item
             Name = 'SetIncrement'
@@ -3183,16 +3161,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTSpinEditMethodsSetIncrementEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTSpinEditMethodsSetIncrementEval
           end
           item
             Name = 'GetLargeIncrement'
             ResultType = 'Float'
-            OnEval = dwsUnitControlsClassesTSpinEditMethodsGetLargeIncrementEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTSpinEditMethodsGetLargeIncrementEval
           end
           item
             Name = 'SetLargeIncrement'
@@ -3203,16 +3181,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTSpinEditMethodsSetLargeIncrementEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTSpinEditMethodsSetLargeIncrementEval
           end
           item
             Name = 'GetValueType'
             ResultType = 'TSpinEditValueType'
-            OnEval = dwsUnitControlsClassesTSpinEditMethodsGetValueTypeEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTSpinEditMethodsGetValueTypeEval
           end
           item
             Name = 'SetValueType'
@@ -3223,9 +3201,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTSpinEditMethodsSetValueTypeEval
             Visibility = cvPrivate
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTSpinEditMethodsSetValueTypeEval
           end>
         Properties = <
           item
@@ -3254,11 +3232,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           end
           item
             Name = 'MinValue'
-            DataType = 'Float'
           end
           item
             Name = 'MaxValue'
-            DataType = 'Float'
           end>
       end
       item
@@ -3278,9 +3254,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetAlignment'
             ResultType = 'TCaptionAlignment'
-            OnEval = dwsUnitControlsClassesTGroupBoxMethodsGetAlignmentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTGroupBoxMethodsGetAlignmentEval
           end
           item
             Name = 'SetAlignment'
@@ -3289,9 +3265,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TCaptionAlignment'
               end>
-            OnEval = dwsUnitControlsClassesTGroupBoxMethodsSetAlignmentEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTGroupBoxMethodsSetAlignmentEval
           end>
         Properties = <
           item
@@ -3323,9 +3299,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 DataType = 'integer'
               end>
             ResultType = 'TCheckBoxState'
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetStateEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetStateEval
           end
           item
             Name = 'SetState'
@@ -3338,16 +3314,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'TCheckBoxState'
               end>
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsSetStateEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsSetStateEval
           end
           item
             Name = 'GetAllowGrayed'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetAllowGrayedEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetAllowGrayedEval
           end
           item
             Name = 'SetAllowGrayed'
@@ -3356,16 +3332,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsSetAllowGrayedEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsSetAllowGrayedEval
           end
           item
             Name = 'GetLeftJustify'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetLeftJustifyEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetLeftJustifyEval
           end
           item
             Name = 'SetLeftJustify'
@@ -3374,16 +3350,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsSetLeftJustifyEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsSetLeftJustifyEval
           end
           item
             Name = 'GetItems'
             ResultType = 'TCheckGroupItems'
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetItemsEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetItemsEval
           end
           item
             Name = 'GetChecked'
@@ -3393,9 +3369,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 DataType = 'integer'
               end>
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetCheckedEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsGetCheckedEval
           end
           item
             Name = 'SetChecked'
@@ -3408,9 +3384,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTCheckGroupMethodsSetCheckedEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCheckGroupMethodsSetCheckedEval
           end>
         Properties = <
           item
@@ -3466,15 +3442,15 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 DataType = 'integer'
               end>
             ResultType = 'TCheckGroupItem'
-            OnEval = dwsUnitControlsClassesTCheckGroupItemsMethodsGetItemEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckGroupItemsMethodsGetItemEval
           end
           item
             Name = 'Add'
             ResultType = 'TCheckGroupItem'
-            OnEval = dwsUnitControlsClassesTCheckGroupItemsMethodsAddEval
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckGroupItemsMethodsAddEval
           end>
         Properties = <
           item
@@ -3497,9 +3473,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetCaption'
             ResultType = 'string'
-            OnEval = dwsUnitControlsClassesTCaptionCollectionItemMethodsGetCaptionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCaptionCollectionItemMethodsGetCaptionEval
           end
           item
             Name = 'SetCaption'
@@ -3510,16 +3486,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTCaptionCollectionItemMethodsSetCaptionEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCaptionCollectionItemMethodsSetCaptionEval
           end
           item
             Name = 'GetTag'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTCaptionCollectionItemMethodsGetTagEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCaptionCollectionItemMethodsGetTagEval
           end
           item
             Name = 'SetTag'
@@ -3528,9 +3504,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'integer'
               end>
-            OnEval = dwsUnitControlsClassesTCaptionCollectionItemMethodsSetTagEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCaptionCollectionItemMethodsSetTagEval
           end>
         Properties = <
           item
@@ -3554,9 +3530,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetEnabled'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTCheckGroupItemMethodsGetEnabledEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTCheckGroupItemMethodsGetEnabledEval
           end
           item
             Name = 'SetEnabled'
@@ -3565,9 +3541,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 Name = 'Value'
                 DataType = 'boolean'
               end>
-            OnEval = dwsUnitControlsClassesTCheckGroupItemMethodsSetEnabledEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTCheckGroupItemMethodsSetEnabledEval
           end>
         Properties = <
           item
@@ -3585,8 +3561,8 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'Add'
             ResultType = 'TEditButton'
-            OnEval = dwsUnitControlsClassesTEditButtonsMethodsAddEval
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonsMethodsAddEval
           end
           item
             Name = 'GetItem'
@@ -3596,9 +3572,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 DataType = 'integer'
               end>
             ResultType = 'TEditButton'
-            OnEval = dwsUnitControlsClassesTEditButtonsMethodsGetItemEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonsMethodsGetItemEval
           end>
         Properties = <
           item
@@ -3621,9 +3597,9 @@ object DataModuleUserInterface: TDataModuleUserInterface
           item
             Name = 'GetAction'
             ResultType = 'TAction'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetActionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetActionEval
           end
           item
             Name = 'SetAction'
@@ -3634,16 +3610,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetActionEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetActionEval
           end
           item
             Name = 'GetCaption'
             ResultType = 'string'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetCaptionEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetCaptionEval
           end
           item
             Name = 'SetCaption'
@@ -3654,16 +3630,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetCaptionEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetCaptionEval
           end
           item
             Name = 'GetEnabled'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetEnabledEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetEnabledEval
           end
           item
             Name = 'SetEnabled'
@@ -3674,16 +3650,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetEnabledEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetEnabledEval
           end
           item
             Name = 'GetHint'
             ResultType = 'string'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetHintEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetHintEval
           end
           item
             Name = 'SetHint'
@@ -3694,16 +3670,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetHintEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetHintEval
           end
           item
             Name = 'GetImageIndex'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetImageIndexEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetImageIndexEval
           end
           item
             Name = 'SetImageIndex'
@@ -3714,16 +3690,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetImageIndexEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetImageIndexEval
           end
           item
             Name = 'GetKind'
             ResultType = 'TEditButtonKind'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetKindEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetKindEval
           end
           item
             Name = 'SetKind'
@@ -3734,16 +3710,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetKindEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetKindEval
           end
           item
             Name = 'GetLeftAlignment'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetLeftAlignmentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetLeftAlignmentEval
           end
           item
             Name = 'SetLeftAlignment'
@@ -3754,16 +3730,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetLeftAlignmentEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetLeftAlignmentEval
           end
           item
             Name = 'GetVisible'
             ResultType = 'boolean'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetVisibleEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetVisibleEval
           end
           item
             Name = 'SetVisible'
@@ -3774,16 +3750,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetVisibleEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetVisibleEval
           end
           item
             Name = 'GetWidth'
             ResultType = 'integer'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetWidthEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetWidthEval
           end
           item
             Name = 'SetWidth'
@@ -3794,16 +3770,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetWidthEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetWidthEval
           end
           item
             Name = 'GetTextAlignment'
             ResultType = 'TAlignment'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetTextAlignmentEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetTextAlignmentEval
           end
           item
             Name = 'SetTextAlignment'
@@ -3814,16 +3790,16 @@ object DataModuleUserInterface: TDataModuleUserInterface
                 IsVarParam = True
                 IsWritable = False
               end>
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetTextAlignmentEval
             Visibility = cvProtected
             Kind = mkProcedure
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsSetTextAlignmentEval
           end
           item
             Name = 'GetGlyph'
             ResultType = 'TSmartImage'
-            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetGlyphEval
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitControlsClassesTEditButtonMethodsGetGlyphEval
           end>
         Properties = <
           item

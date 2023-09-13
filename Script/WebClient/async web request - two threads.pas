@@ -26,12 +26,21 @@ begin
     ContentLength2 := Response2.ContentLength;
 
   if (not Response1.Completed) then
-    Msg := Format('1) Downloaded: %.0n bytes (%.1n %%)', [Float(Response1.CurrentContentSize), Response1.CurrentContentSize/ContentLength1*100])+#13
-  else
+  begin
+    if (ContentLength1 <> 0) then
+      Msg := Format('1) Downloaded: %.0n bytes (%.1n %%)', [Float(Response1.CurrentContentSize), Response1.CurrentContentSize/ContentLength1*100])+#13
+    else
+      Msg := '1) ...';
+  end else
     Msg := Format('1) Completed: %.0n bytes', [Float(Response1.CurrentContentSize)])+#13;
+
   if (not Response2.Completed) then
-    Msg := Msg + Format('2) Downloaded: %.0n bytes (%.1n %%)', [Float(Response2.CurrentContentSize), Response2.CurrentContentSize/ContentLength2*100])
-  else
+  begin
+    if (ContentLength1 <> 0) then
+      Msg := Msg + Format('2) Downloaded: %.0n bytes (%.1n %%)', [Float(Response2.CurrentContentSize), Response2.CurrentContentSize/ContentLength2*100])
+    else
+      Msg := Msg + '2) ...';
+  end else
     Msg := Msg + Format('2) Completed: %.0n bytes', [Float(Response2.CurrentContentSize)]);
 
   Progress.Progress(psProgress, Response1.CurrentContentSize+Response2.CurrentContentSize, ContentLength1+ContentLength2, Msg);

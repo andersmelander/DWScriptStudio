@@ -1,3 +1,21 @@
 [submodule "Source/Externals/DWScript"]
 	path = Source/Externals/DWScript
 url=https://bitbucket.org/anders_melander/dwscript.git
+[submodule "Source/Externals/mORMot"]
+	path = Source/Externals/mORMot
+	url = https://github.com/synopse/mORMot
+[submodule "Source/Externals/DEC"]
+	path = Source/Externals/DEC
+	url = https://github.com/MHumm/DelphiEncryptionCompendium.git
+[submodule "SOurce/Externals/DEC"]
+	path = SOurce/Externals/DEC
+	url = https://github.com/MHumm/DelphiEncryptionCompendium.git
+[submodule "Source/Externals/DragDrop"]
+	path = Source/Externals/DragDrop
+	url = https://anders_melander@bitbucket.org/anders_melander/drag-and-drop-component-suite.git
+[submodule "Source/Externals/VirtualTreeView"]
+	path = Source/Externals/VirtualTreeView
+	url = https://github.com/JAM-Software/Virtual-TreeView.git
+[submodule "Source/Externals/SynEdit"]
+	path = Source/Externals/SynEdit
+	url = https://github.com/SynEdit/SynEdit.git
