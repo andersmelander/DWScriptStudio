@@ -1477,17 +1477,18 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
     FForm.SynParameters.Font.Size := FEditor.Font.Size - 1;
 
     FForm.SynCodeCompletion.AddEditor(FEditor);
-    with FForm.SynCodeCompletion.Columns.Add do
-    begin
-      ColumnWidth := -1;
-    end;
-    with FForm.SynCodeCompletion.Columns.Add do
-    begin
-      DefaultFontStyle := [fsBold];
-      ColumnWidth := -1;
-    end;
     FForm.SynCodeCompletion.Font.Name := FEditor.Font.Name;
     FForm.SynCodeCompletion.Font.Size := FEditor.Font.Size - 1;
+    begin
+      var Column := FForm.SynCodeCompletion.Columns.Add;
+      Column.ColumnWidth := -1;//FForm.SynCodeCompletion.Form.Canvas.TextWidth('constructor')+16+8; // 16=Glyph, 8=margin
+
+      Column := FForm.SynCodeCompletion.Columns.Add;
+      begin
+        Column.DefaultFontStyle := [fsBold];
+        Column.ColumnWidth := -1;
+      end;
+    end;
 
     FEditor.OnSpecialLineColors := SynEditorSpecialLineColors;
     FEditor.OnGutterClick := SynEditorGutterClick;
@@ -4471,6 +4472,7 @@ begin
   SynMacroRecorder.PlaybackShortCut := 24656;
 
   SynCodeCompletion := TSynCompletionProposal.Create(Self);
+  SynCodeCompletion.Resizeable := True;
   SynCodeCompletion.Options := [scoLimitToMatchedText, scoUseInsertList, scoUsePrettyText, scoUseBuiltInTimer, scoEndCharCompletion, scoCompleteWithTab, scoCompleteWithEnter];
   SynCodeCompletion.NbLinesInWindow := 6;
   SynCodeCompletion.Width := 400;
@@ -4689,10 +4691,7 @@ begin
   Proposal.ItemList.Clear;
 
   if Assigned(Proposal.Form) then
-  begin
     Proposal.Form.DoubleBuffered := True;
-    Proposal.Resizeable := True;
-  end;
 
   // use this handler only in case the kind is set to ctCode!
   Assert(Kind = ctCode);
