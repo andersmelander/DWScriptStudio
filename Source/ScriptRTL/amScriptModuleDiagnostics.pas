@@ -41,7 +41,7 @@ type
     procedure dwsUnitSystemStopwatchClassesTStopWatchMethodsGetElapsedTicksEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitSystemStopwatchClassesTStopWatchMethodsIsHighResolutionEval(Info: TProgramInfo; ExtObject: TObject);
     procedure dwsUnitSystemStopwatchClassesTStopWatchMethodsFrequencyEval(Info: TProgramInfo; ExtObject: TObject);
-    procedure dwsUnitSystemStopwatchClassesTStopWatchMethodsGetElapsedEval(Info: TProgramInfo; ExtObject: TObject);
+    procedure dwsUnitSystemStopwatchClassesTStopWatchMethodsGetIsRunningEval(Info: TProgramInfo; ExtObject: TObject);
   private
   protected
   public
@@ -82,12 +82,6 @@ begin
   Info.ResultAsInteger := TStopwatch.Frequency;
 end;
 
-procedure TDataModuleScriptDiagnostics.dwsUnitSystemStopwatchClassesTStopWatchMethodsGetElapsedEval(Info: TProgramInfo;
-  ExtObject: TObject);
-begin
-  Info.ResultAsInteger := 0; // TODO
-end;
-
 procedure TDataModuleScriptDiagnostics.dwsUnitSystemStopwatchClassesTStopWatchMethodsGetElapsedMillisecondsEval(Info: TProgramInfo;
   ExtObject: TObject);
 begin
@@ -98,6 +92,12 @@ procedure TDataModuleScriptDiagnostics.dwsUnitSystemStopwatchClassesTStopWatchMe
   ExtObject: TObject);
 begin
   Info.ResultAsInteger := TScriptStopwatch(ExtObject).Stopwatch.ElapsedTicks;
+end;
+
+procedure TDataModuleScriptDiagnostics.dwsUnitSystemStopwatchClassesTStopWatchMethodsGetIsRunningEval(Info: TProgramInfo;
+  ExtObject: TObject);
+begin
+  Info.ResultAsBoolean := TScriptStopwatch(ExtObject).Stopwatch.IsRunning;
 end;
 
 procedure TDataModuleScriptDiagnostics.dwsUnitSystemStopwatchClassesTStopWatchMethodsIsHighResolutionEval(Info: TProgramInfo;

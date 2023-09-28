@@ -19,13 +19,6 @@ object DataModuleScriptDiagnostics: TDataModuleScriptDiagnostics
           end>
         Methods = <
           item
-            Name = 'GetElapsed'
-            ResultType = 'Integer'
-            Visibility = cvProtected
-            Kind = mkFunction
-            OnEval = dwsUnitSystemStopwatchClassesTStopWatchMethodsGetElapsedEval
-          end
-          item
             Name = 'GetElapsedMilliseconds'
             ResultType = 'Integer'
             Visibility = cvProtected
@@ -44,6 +37,7 @@ object DataModuleScriptDiagnostics: TDataModuleScriptDiagnostics
             ResultType = 'boolean'
             Visibility = cvProtected
             Kind = mkFunction
+            OnEval = dwsUnitSystemStopwatchClassesTStopWatchMethodsGetIsRunningEval
           end
           item
             Name = 'Reset'
@@ -78,11 +72,6 @@ object DataModuleScriptDiagnostics: TDataModuleScriptDiagnostics
             OnEval = dwsUnitSystemStopwatchClassesTStopWatchMethodsFrequencyEval
           end>
         Properties = <
-          item
-            Name = 'Elapsed'
-            DataType = 'Integer'
-            ReadAccess = 'GetElapsed'
-          end
           item
             Name = 'ElapsedMilliseconds'
             DataType = 'Integer'
