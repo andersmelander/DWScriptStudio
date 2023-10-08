@@ -54,7 +54,6 @@ const
 type
   TCustomFormSettings = class(TConfigurationSection)
   strict private
-    FForm: TCustomForm;
     FValid: boolean;
     FMaximized: boolean;
     FVisible: boolean;
@@ -349,8 +348,8 @@ end;
 procedure TCustomFormSettings.ResetSettings;
 begin
   Valid := False;
-  FLeft := FForm.ExplicitLeft;
-  FTop := FForm.ExplicitTop;
+  FLeft := -1;
+  FTop := -1;
   FWidth := -1;
   FHeight := -1;
   FMaximized := False;
