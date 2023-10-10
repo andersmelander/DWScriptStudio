@@ -666,6 +666,7 @@ type
     procedure MsgExecReset(var Msg: TMessage); message MSG_EXEC_RESET;
     procedure MsgFormMaximize(var Msg: TMessage); message MSG_FORM_MAXIMIZE;
     procedure DoCreate; override;
+    procedure CreateParams(var Params: TCreateParams); override;
   private
     // Recent files
     procedure LoadRecentFiles;
@@ -2853,6 +2854,14 @@ end;
 procedure TFormScriptDebugger.MsgFormMaximize(var Msg: TMessage);
 begin
   WindowState := wsMaximized;
+end;
+
+procedure TFormScriptDebugger.CreateParams(var Params: TCreateParams);
+begin
+  inherited;
+
+  // See: https://stackoverflow.com/questions/53000291/how-to-smooth-ugly-jitter-flicker-jumping-when-resizing-windows-especially-drag
+  Params.WindowClass.hbrBackground := COLOR_WINDOW+1;
 end;
 
 // -----------------------------------------------------------------------------
