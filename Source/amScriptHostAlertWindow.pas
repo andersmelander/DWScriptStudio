@@ -1,4 +1,4 @@
-unit amScriptHostAlertWindow;
+﻿unit amScriptHostAlertWindow;
 
 (*
  * Copyright © 2012 Anders Melander
@@ -55,7 +55,7 @@ begin
   Result := TScriptAlertWindow.Create(AlertWindow);
   // Save interface reference in Tag
   Intf := Result;
-  AlertWindow.Tag := integer(Intf);
+  AlertWindow.Tag := NativeInt(Intf);
   pointer(Intf) := nil;
 end;
 
