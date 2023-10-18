@@ -35,8 +35,8 @@ type
     // IScriptFileSystemObject
     function GetParent: IScriptFileSystemFolder;
     function GetName: string;
+    function GetPath: string;
   strict protected
-    function Path: string;
     property Parent: IScriptFileSystemFolder read FParent;
     property Name: string read FName;
   public
@@ -117,10 +117,10 @@ begin
   Result := FParent;
 end;
 
-function TScriptFileSystemObject.Path: string;
+function TScriptFileSystemObject.GetPath: string;
 begin
   if (Parent <> nil) then
-    Result := TPath.Combine(TScriptFileSystemObject(Parent).Path, Name)
+    Result := TPath.Combine(TScriptFileSystemObject(Parent).GetPath, Name)
   else
     Result := Name;
 end;
@@ -137,7 +137,7 @@ begin
   begin
     FHasFiles := True;
 
-    var Filenames := TDirectory.GetFiles(Path, '*.pas');
+    var Filenames := TDirectory.GetFiles(GetPath, '*.pas');
     SetLength(FFiles, Length(Filenames));
 
     for var i := 0 to High(Filenames) do
@@ -153,7 +153,7 @@ begin
   begin
     FHasFolders := True;
 
-    var Folders := TDirectory.GetDirectories(Path);
+    var Folders := TDirectory.GetDirectories(GetPath);
     SetLength(FFolders, Length(Folders));
 
     for var i := 0 to High(Folders) do
@@ -170,7 +170,7 @@ end;
 // -----------------------------------------------------------------------------
 function TScriptFileSystemFile.CreateScriptProvider: IScriptProvider;
 begin
-  Result := TFileScriptProvider.Create(Path);
+  Result := TFileScriptProvider.Create(GetPath);
 end;
 
 // -----------------------------------------------------------------------------

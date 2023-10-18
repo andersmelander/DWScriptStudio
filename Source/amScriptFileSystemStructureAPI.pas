@@ -36,6 +36,9 @@ type
 
     function GetName: string;
     property Name: string read GetName;
+
+    function GetPath: string;
+    property Path: string read GetPath;
   end;
 
 

@@ -26,6 +26,7 @@ interface
 
 {.$define LEAK_CHECK}
 
+{$define SHELL_EXPLORER}
 {.$define FEATURE_SCRIPT_BUNDLE}
 {.$define FEATURE_PACKAGE_INSTALLER}
 {.$define FEATURE_COPY_PROTECT}
@@ -47,8 +48,15 @@ uses
   dxDockControl, dxDockPanel, dxSkinsdxStatusBarPainter, dxStatusBar, dxRibbonSkins, dxSkinsdxRibbonPainter, dxRibbon,
   dxRibbonForm,
   dxBarBuiltInMenu, dxRibbonCustomizationForm, dxSkinsForm, dxBarApplicationMenu,
-  dxBarExtItems, cxImageList, cxShellCommon, cxContainer, cxEdit, cxTextEdit, cxMaskEdit, cxDropDownEdit,
-  cxShellComboBox, cxListView, cxShellListView, dxCore,
+  dxBarExtItems, cxImageList, cxContainer,
+  dxCore,
+
+{$ifdef SHELL_EXPLORER}
+  cxDropDownEdit,
+  cxListView,
+  cxEdit, cxTextEdit, cxMaskEdit,
+  cxShellCommon, cxShellComboBox, cxShellListView,
+{$endif SHELL_EXPLORER}
 
   SynEdit, SynEditHighlighter, SynHighlighterDWS, SynEditTypes,
   SynEditKeyCmds, SynEditMiscClasses, SynEditSearch, SynEditPlugins,
@@ -79,7 +87,8 @@ uses
   amScriptDebuggerFrameSymbols,
   amScriptDebuggerFrameStack,
   amScriptDebuggerFrameAST,
-  amScriptDebuggerFrameBreakPoints;
+  amScriptDebuggerFrameBreakPoints,
+  amScriptDebuggerFrameFilesystemStructure;
 
 const
   ecOpenFileUnderCursor = ecUserFirst;
@@ -482,8 +491,6 @@ type
     ActionDebugLiveObjects: TAction;
     BarStaticSpacer: TdxBarStatic;
     DockPanelFileExplorer: TdxDockPanel;
-    ShellListViewFileExplorer: TcxShellListView;
-    ShellComboBoxFileExplorer: TcxShellComboBox;
     dxBarButton27: TdxBarButton;
     ActionViewFileExplorer: TAction;
     dxLayoutDockSite4: TdxLayoutDockSite;
@@ -644,7 +651,6 @@ type
     procedure ActionEditPasteExecute(Sender: TObject);
     procedure ActionViewFileExplorerExecute(Sender: TObject);
     procedure ActionViewFileExplorerUpdate(Sender: TObject);
-    procedure ShellListViewFileExplorerExecuteItem(Sender: TObject; APIDL: PItemIDList; var AHandled: Boolean);
     procedure ButtonToolDocumentBuildClick(Sender: TObject);
     procedure ActionDummyExecute(Sender: TObject);
   private
@@ -820,6 +826,13 @@ type
     FSearchHistory: string;
     FSearchRegularExpression: boolean;
     FSearchAutoWrap: boolean;
+  private
+    // Shell explorer
+{$ifdef SHELL_EXPLORER}
+    FShellListViewFileExplorer: TcxShellListView;
+    FShellComboBoxFileExplorer: TcxShellComboBox;
+    procedure ShellListViewFileExplorerExecuteItem(Sender: TObject; APIDL: PItemIDList; var AHandled: Boolean);
+{$endif SHELL_EXPLORER}
   protected
     // IScriptHostApplicationNotification
     procedure ApplicationNotify(const ScriptHostApplication: IScriptHostApplication; Notification: TScriptHostApplicationNotification);
@@ -2908,7 +2921,22 @@ begin
   OpenFileDialog.DefaultFolder := ScriptSettings.Folders.FolderScript;
   SaveSourceDialog.DefaultFolder := ScriptSettings.Folders.FolderScript;
   SaveProjectDialog.DefaultFolder := ScriptSettings.Folders.FolderScript;
-  ShellComboBoxFileExplorer.Path := ScriptSettings.Folders.FolderScript;
+
+{$ifdef SHELL_EXPLORER}
+  FShellListViewFileExplorer := TcxShellListView.Create(Self);
+  FShellListViewFileExplorer.Align := alClient;
+  FShellListViewFileExplorer.Parent := DockPanelFileExplorer;
+  FShellListViewFileExplorer.ReadOnly := True;
+  FShellListViewFileExplorer.ViewStyle := vsReport;
+  FShellListViewFileExplorer.OnExecuteItem := ShellListViewFileExplorerExecuteItem;
+
+  FShellComboBoxFileExplorer := TcxShellComboBox.Create(Self);
+  FShellComboBoxFileExplorer.Align := alTop;
+  FShellComboBoxFileExplorer.Parent := DockPanelFileExplorer;
+  FShellComboBoxFileExplorer.ShellListView := FShellListViewFileExplorer;
+
+  FShellComboBoxFileExplorer.Path := ScriptSettings.Folders.FolderScript;
+{$endif SHELL_EXPLORER}
 
   if (ScriptHostApplication <> nil) then
     ScriptHostApplication.Subscribe(Self);
@@ -4692,16 +4720,16 @@ begin
 {$endif DISABLED_STUFF}
 end;
 
+{$ifdef SHELL_EXPLORER}
 procedure TFormScriptDebugger.ShellListViewFileExplorerExecuteItem(Sender: TObject; APIDL: PItemIDList; var AHandled: Boolean);
-var
-  Filename: string;
 begin
   AHandled := True;
-  Filename := GetPidlName(APIDL);
+  var Filename := GetPidlName(APIDL);
 
   if (not FileIsOpenInEditor(Filename, True)) then
     EditorPageAddNew(Filename, True, True);
 end;
+{$endif SHELL_EXPLORER}
 
 procedure TFormScriptDebugger.ShowExecutableLines;
 var

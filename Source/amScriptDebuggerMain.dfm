@@ -434,7 +434,9 @@ object FormScriptDebugger: TFormScriptDebugger
       Left = 0
       Top = 0
       Width = 225
-      Height = 584
+      Height = 560
+      HelpType = htKeyword
+      HelpKeyword = 'TScriptDebuggerFileSystemStructureFrame'
       Visible = False
       OnVisibleChanged = DockPanelDebugFrameVisibleChanged
       AllowFloating = True
@@ -446,27 +448,6 @@ object FormScriptDebugger: TFormScriptDebugger
       DockingType = 1
       OriginalWidth = 225
       OriginalHeight = 320
-      object ShellListViewFileExplorer: TcxShellListView
-        Left = 0
-        Top = 23
-        Width = 219
-        Height = 526
-        Align = alClient
-        ReadOnly = True
-        TabOrder = 0
-        ViewStyle = vsReport
-        OnExecuteItem = ShellListViewFileExplorerExecuteItem
-        ExplicitTop = 21
-        ExplicitHeight = 563
-      end
-      object ShellComboBoxFileExplorer: TcxShellComboBox
-        Left = 0
-        Top = 0
-        Align = alTop
-        ShellListView = ShellListViewFileExplorer
-        TabOrder = 1
-        Width = 219
-      end
     end
   end
   object RibbonDebug: TdxRibbon
