@@ -192,10 +192,15 @@ object ScriptDebuggerSymbolsFrame: TScriptDebuggerSymbolsFrame
       OnExecute = ActionSymbolsViewScopeExecute
       OnUpdate = ActionSymbolsViewScopeUpdate
     end
-    object ActionSymbolsViewSource: TAction
+    object ActionSymbolsViewDeclaration: TAction
+      Caption = 'View declaration'
+      OnExecute = ActionSymbolsViewDeclarationExecute
+      OnUpdate = ActionSymbolsViewDeclarationUpdate
+    end
+    object ActionSymbolsViewImplementation: TAction
       Caption = 'View implementation'
-      OnExecute = ActionSymbolsViewSourceExecute
-      OnUpdate = ActionSymbolsViewSourceUpdate
+      OnExecute = ActionSymbolsViewImplementationExecute
+      OnUpdate = ActionSymbolsViewImplementationUpdate
     end
   end
   object BarManagerSymbols: TdxBarManager
@@ -257,8 +262,12 @@ object ScriptDebuggerSymbolsFrame: TScriptDebuggerSymbolsFrame
       Hint = 'Members'
       Visible = ivNever
     end
-    object BarButtonSymbolsViewSource: TdxBarButton
-      Action = ActionSymbolsViewSource
+    object BarButtonSymbolsViewDeclaration: TdxBarButton
+      Action = ActionSymbolsViewDeclaration
+      Category = 0
+    end
+    object BarButtonSymbolsViewImplementation: TdxBarButton
+      Action = ActionSymbolsViewImplementation
       Category = 0
     end
   end
@@ -267,7 +276,11 @@ object ScriptDebuggerSymbolsFrame: TScriptDebuggerSymbolsFrame
     ItemLinks = <
       item
         Visible = True
-        ItemName = 'BarButtonSymbolsViewSource'
+        ItemName = 'BarButtonSymbolsViewDeclaration'
+      end
+      item
+        Visible = True
+        ItemName = 'BarButtonSymbolsViewImplementation'
       end
       item
         Visible = True

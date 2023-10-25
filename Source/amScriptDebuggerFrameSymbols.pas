@@ -46,8 +46,8 @@ type
     MenuItemSymbolsScopePrivate: TdxBarButton;
     BarSeparatorSymbols2: TdxBarSeparator;
     BarPopupMenuSymbols: TdxBarPopupMenu;
-    ActionSymbolsViewSource: TAction;
-    BarButtonSymbolsViewSource: TdxBarButton;
+    ActionSymbolsViewDeclaration: TAction;
+    BarButtonSymbolsViewDeclaration: TdxBarButton;
     LayoutControlGroup_Root: TdxLayoutGroup;
     LayoutControl: TdxLayoutControl;
     LayoutItemTreeView: TdxLayoutItem;
@@ -55,11 +55,15 @@ type
     LayoutLookAndFeelStandard: TdxLayoutStandardLookAndFeel;
     LayoutGroupWarning: TdxLayoutGroup;
     LayoutLabeledItemWarning: TdxLayoutLabeledItem;
+    ActionSymbolsViewImplementation: TAction;
+    BarButtonSymbolsViewImplementation: TdxBarButton;
     procedure ActionSymbolsViewScopeExecute(Sender: TObject);
     procedure ActionSymbolsViewScopeUpdate(Sender: TObject);
     procedure ActionListSymbolsUpdate(Action: TBasicAction; var Handled: Boolean);
-    procedure ActionSymbolsViewSourceExecute(Sender: TObject);
-    procedure ActionSymbolsViewSourceUpdate(Sender: TObject);
+    procedure ActionSymbolsViewDeclarationExecute(Sender: TObject);
+    procedure ActionSymbolsViewDeclarationUpdate(Sender: TObject);
+    procedure ActionSymbolsViewImplementationExecute(Sender: TObject);
+    procedure ActionSymbolsViewImplementationUpdate(Sender: TObject);
   private type
     TSymbolTreeNodeData = record
      Symbol: TSymbol;
@@ -504,42 +508,49 @@ begin
   TAction(Sender).Checked := (TdwsVisibility(TAction(Sender).Tag) in FVisibilities);
 end;
 
-procedure TScriptDebuggerSymbolsFrame.ActionSymbolsViewSourceExecute(Sender: TObject);
-var
-  NodeData: PSymbolTreeNodeData;
-  ScriptPos: TScriptPos;
+procedure TScriptDebuggerSymbolsFrame.ActionSymbolsViewDeclarationExecute(Sender: TObject);
 begin
-  if (FTreeView.FocusedNode = nil) then
-    exit;
+  var NodeData: PSymbolTreeNodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
 
-  NodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
-  if (NodeData = nil) or (NodeData.Symbol = nil) then
-    exit;
-
-  if (not(NodeData.Symbol is TFuncSymbol)) then
-    exit;
-
-  ScriptPos := TFuncSymbol(NodeData.Symbol).DeclarationPosition;
-  if (not ScriptPos.Defined) then
-    ScriptPos := TFuncSymbol(NodeData.Symbol).ImplementationPosition;
-
+  var ScriptPos := TFuncSymbol(NodeData.Symbol).DeclarationPosition;
   ScriptPos.Col := 0;
 
   Debugger.ViewScriptPos(ScriptPos);
 end;
 
-procedure TScriptDebuggerSymbolsFrame.ActionSymbolsViewSourceUpdate(Sender: TObject);
-var
-  NodeData: PSymbolTreeNodeData;
-  Enabled: boolean;
+procedure TScriptDebuggerSymbolsFrame.ActionSymbolsViewDeclarationUpdate(Sender: TObject);
 begin
-  Enabled := (FTreeView.FocusedNode <> nil);
+  var Enabled := (FTreeView.FocusedNode <> nil);
 
   if (Enabled) then
   begin
-    NodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
+    var NodeData: PSymbolTreeNodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
     Enabled := (NodeData <> nil) and (NodeData.Symbol <> nil) and (NodeData.Symbol is TFuncSymbol) and
-      ((TFuncSymbol(NodeData.Symbol).DeclarationPosition.Defined) or (TFuncSymbol(NodeData.Symbol).ImplementationPosition.Defined));
+      (TFuncSymbol(NodeData.Symbol).DeclarationPosition.Defined);
+  end;
+
+  TAction(Sender).Enabled := Enabled;
+end;
+
+procedure TScriptDebuggerSymbolsFrame.ActionSymbolsViewImplementationExecute(Sender: TObject);
+begin
+  var NodeData: PSymbolTreeNodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
+
+  var ScriptPos := TFuncSymbol(NodeData.Symbol).ImplementationPosition;
+  ScriptPos.Col := 0;
+
+  Debugger.ViewScriptPos(ScriptPos);
+end;
+
+procedure TScriptDebuggerSymbolsFrame.ActionSymbolsViewImplementationUpdate(Sender: TObject);
+begin
+  var Enabled := (FTreeView.FocusedNode <> nil);
+
+  if (Enabled) then
+  begin
+    var NodeData: PSymbolTreeNodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
+    Enabled := (NodeData <> nil) and (NodeData.Symbol <> nil) and (NodeData.Symbol is TFuncSymbol) and
+      (TFuncSymbol(NodeData.Symbol).ImplementationPosition.Defined);
   end;
 
   TAction(Sender).Enabled := Enabled;
@@ -651,7 +662,8 @@ end;
 
 procedure TScriptDebuggerSymbolsFrame.TreeViewOnNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
 begin
-  ActionSymbolsViewSource.Execute;
+  if (not ActionSymbolsViewDeclaration.Execute) then
+    ActionSymbolsViewImplementation.Execute
 end;
 
 procedure TScriptDebuggerSymbolsFrame.UpdateInfo;
