@@ -5877,6 +5877,10 @@ end;
 
 function TFormScriptDebugger.GetEditorCurrentPageIndex: Integer;
 begin
+  if (csDestroying in PageControlEditor.ComponentState) then
+    // If form is destroying, then PageControlEditor.ActivePageIndex will cause AV
+    Exit(-1);
+
   Result := PageControlEditor.ActivePageIndex;
   if (Result >= FPages.Count) then
     Result := -1;
