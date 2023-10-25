@@ -370,7 +370,7 @@ TdwsSuggestionCategory = (scUnknown,
 
 
   FuncSymbol := Symbol.AsFuncSymbol;
-  if (FuncSymbol <> nil) and (FuncSymbol.DeclarationPosition.SourceFile <> nil) then
+  if (FuncSymbol <> nil) and ((FuncSymbol.DeclarationPosition.Defined) or (FuncSymbol.ImplementationPosition.Defined)) then
   begin
     NodeData.Symbol := FuncSymbol;
     NodeData.StateIndex := 1;
@@ -520,6 +520,9 @@ begin
     exit;
 
   ScriptPos := TFuncSymbol(NodeData.Symbol).DeclarationPosition;
+  if (not ScriptPos.Defined) then
+    ScriptPos := TFuncSymbol(NodeData.Symbol).ImplementationPosition;
+
   ScriptPos.Col := 0;
 
   Debugger.ViewScriptPos(ScriptPos);
@@ -535,7 +538,8 @@ begin
   if (Enabled) then
   begin
     NodeData := FTreeView.GetNodeData(FTreeView.FocusedNode);
-    Enabled := (NodeData <> nil) and (NodeData.Symbol <> nil) and (NodeData.Symbol is TFuncSymbol);
+    Enabled := (NodeData <> nil) and (NodeData.Symbol <> nil) and (NodeData.Symbol is TFuncSymbol) and
+      ((TFuncSymbol(NodeData.Symbol).DeclarationPosition.Defined) or (TFuncSymbol(NodeData.Symbol).ImplementationPosition.Defined));
   end;
 
   TAction(Sender).Enabled := Enabled;
