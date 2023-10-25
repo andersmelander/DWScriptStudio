@@ -903,6 +903,17 @@ const
   sScriptHelpRtlFilenameDownload = '%Documents%\%AppName%\Help\'+sScriptHelpRtlFilename;
 
 
+const
+  ImageIndexExecutableLine = 13;
+  ImageIndexForwardArrow = 16;
+  ImageIndexCurrentLineBreakpoint = 15;
+  ImageIndexBreakpoint = 12;
+  ImageIndexBreakpointDisabled = 14;
+  ImageIndex_ProjectSourceFile = 28;
+  ImageIndexFileScript = 6;
+  ImageIndexFileFolder = 71;
+  ImageIndex_IncludeFile = 29;
+
 implementation
 
 {$R *.dfm}
@@ -981,16 +992,6 @@ const //resourcestring
 
 
 const
-  CImageIndexExecutableLine = 13;
-  CImageIndexForwardArrow = 16;
-  CImageIndexCurrentLineBreakpoint = 15;
-  CImageIndexBreakpoint = 12;
-  CImageIndexBreakpointDisabled = 14;
-  CImageIndex_ProjectSourceFile = 28;
-  CImageIndex_Script = 26;
-  CImageIndex_NonScript = 6;
-  CImageIndex_IncludeFile = 29;
-
   CMargin = 4;
   CSlantMargin = 10;
   CCloseButtonSize = 12;
@@ -2130,25 +2131,25 @@ begin
   if ALine = FCurrentLine then
   begin
     if GetBreakpointStatus(ALine) <> bpsNone then
-      ImgIndex := CImageIndexCurrentLineBreakpoint
+      ImgIndex := ImageIndexCurrentLineBreakpoint
     else
       if FForm.Debugger.State = dsDebugSuspended then
-        ImgIndex := CImageIndexForwardArrow
+        ImgIndex := ImageIndexForwardArrow
       else
-        ImgIndex := CImageIndexExecutableLine
+        ImgIndex := ImageIndexExecutableLine
   end
   else
     case GetBreakpointStatus(ALine) of
       bpsBreakpoint :
         if IsExecutableLine(ALine) then
-          ImgIndex := CImageIndexBreakpoint
+          ImgIndex := ImageIndexBreakpoint
          else
-          ImgIndex := CImageIndexBreakpointDisabled;
+          ImgIndex := ImageIndexBreakpointDisabled;
       bpsBreakpointDisabled :
-        ImgIndex := CImageIndexBreakpointDisabled;
+        ImgIndex := ImageIndexBreakpointDisabled;
      else
        if IsExecutableLine(ALine) then
-         ImgIndex := CImageIndexExecutableLine
+         ImgIndex := ImageIndexExecutableLine
         else
          ImgIndex := -1;
     end;
