@@ -19,7 +19,6 @@ uses
   cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore,
   cxContainer, cxEdit, cxCustomData, cxStyles, cxTL, cxTextEdit, cxTLdxBarBuiltInMenu, cxInplaceContainer,
   cxClasses, cxTLData, dxSkinsdxBarPainter, dxBar,
-  cxDataControllerConditionalFormattingRulesManagerDialog,
 
   dwsUtils,
   dwsExprs,
@@ -129,6 +128,8 @@ procedure TScriptDebuggerStackFrame.Initialize(const ADebugger: IScriptDebugger;
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
   TreeListStack.Images := AImageListSymbols;
+
+  UpdateInfo;
 end;
 
 procedure TScriptDebuggerStackFrame.LoadNode(Node: TcxTreeListNode);

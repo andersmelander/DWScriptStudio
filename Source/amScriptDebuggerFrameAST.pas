@@ -68,6 +68,11 @@ procedure TScriptDebuggerASTFrame.Initialize(const ADebugger: IScriptDebugger; A
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
   TreeListAST.Images := AImageListSymbols;
+
+  UpdateInfo;
+
+  if (Debugger.GetDebugger.State = dsDebugSuspended) then
+    UpdateInfo(Debugger.GetDebugger.CurrentExpression);
 end;
 
 function ExpressionToSomethingNice(Expression: TExprBase): string;

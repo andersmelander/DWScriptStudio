@@ -152,6 +152,8 @@ procedure TScriptDebuggerLocalVariablesFrame.Initialize(const ADebugger: IScript
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
   TreeListVariables.Images := AImageListSymbols;
+
+  UpdateInfo;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.LoadNode(Node: TcxTreeListNode);

@@ -61,6 +61,8 @@ uses
 procedure TScriptDebuggerCallStackFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
+
+  UpdateInfo;
 end;
 
 procedure TScriptDebuggerCallStackFrame.ListViewCallStackDblClick(Sender: TObject);

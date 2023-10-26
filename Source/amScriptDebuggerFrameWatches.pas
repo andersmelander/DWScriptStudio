@@ -150,6 +150,8 @@ end;
 procedure TScriptDebuggerWatchesFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
+
+  UpdateInfo;
 end;
 
 procedure TScriptDebuggerWatchesFrame.lvWatchesDblClick(Sender: TObject);

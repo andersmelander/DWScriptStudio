@@ -6587,11 +6587,7 @@ begin
   DebuggerWindow.Initialize(Self, SmallImages, ImageListSymbols);
 
   if (FProgram <> nil) then
-  begin
     Update;
-    DebuggerWindow.DebuggerStateChanged(dnCompiling);
-    DebuggerWindow.DebuggerStateChanged(dnCompiled);
-  end;
 end;
 
 // -----------------------------------------------------------------------------
