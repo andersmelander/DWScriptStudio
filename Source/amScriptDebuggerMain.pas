@@ -6545,6 +6545,7 @@ begin
 
   DebuggerWindow.Finalize;
   FDebuggerFrames.Remove(DebuggerWindow);
+  DebuggerWindow := nil;
 
   FreeAndNil(DebuggerFrame);
 end;
