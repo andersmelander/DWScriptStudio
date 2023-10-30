@@ -671,7 +671,15 @@ begin
   else
   // Have we already evaluated that variable (can happen due to the global scope option)?
   if (FRefreshedNodes.Contains(Node)) then
+  begin
+    // If we have a context now, but didn't before, we refresh the node with the context.
+    // This happens when the node is initially added from the inner scope (without a context)
+    // and then later updated from the outermost scope with a context.
+    if (AContextSymbol <> nil) and (Node.Texts[3] = '') then
+      Node.Texts[3] := AContextSymbol.Name;
+
     exit;
+  end;
   try
     FRefreshedNodes.Add(Node);
 
