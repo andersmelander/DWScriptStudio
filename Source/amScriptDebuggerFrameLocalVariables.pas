@@ -30,7 +30,7 @@ uses
   dwsScriptSource,
 {$endif OLD_DWSCRIPT}
 
-  amScriptDebuggerAPI;
+  amScriptDebuggerAPI, cxFilter, dxScrollbarAnnotations;
 
 type
   TFrame = TScriptDebuggerFrame;
@@ -67,6 +67,9 @@ type
     ActionViewScopePublic: TAction;
     ActionViewScopeProtected: TAction;
     ActionViewScopePrivate: TAction;
+    TreeListVariablesColumnScope: TcxTreeListColumn;
+    ActionViewScopeGlobal: TAction;
+    dxBarButton1: TdxBarButton;
     procedure TreeListVariablesDeletion(Sender: TcxCustomTreeList; ANode: TcxTreeListNode);
     procedure TreeListVariablesExpanding(Sender: TcxCustomTreeList; ANode: TcxTreeListNode; var Allow: Boolean);
     procedure TreeListVariablesDblClick(Sender: TObject);
@@ -84,6 +87,7 @@ type
     procedure ActionViewMemberInheritedUpdate(Sender: TObject);
     procedure ActionViewScopeExecute(Sender: TObject);
     procedure ActionViewScopeUpdate(Sender: TObject);
+    procedure ActionViewScopeGlobalExecute(Sender: TObject);
   private
     FRefreshedNodes: TList<TcxTreeListNode>;
     FVisibilities: TdwsVisibilities;
@@ -95,8 +99,8 @@ type
     procedure LoadNode(Node: TcxTreeListNode); overload;
     procedure LoadNode(Node: TcxTreeListNode; const Info: IInfo; TypeSym: TSymbol = nil); overload;
     procedure LoadMemberNodes(Node: TcxTreeListNode; const Info: IInfo; TypeSym: TCompositeTypeSymbol);
-    procedure EvaluateLocal(const AExpression: string; scriptPos: PScriptPos = nil; ImageIndex: integer = -1);
-    function FindNode(const AName: string; ParentNode: TcxTreeListNode): TcxTreeListNode;
+    procedure EvaluateLocal(AParentNode: TcxTreeListNode; const AExpression: string; scriptPos: PScriptPos = nil; ImageIndex: integer = -1; AContextSymbol: TSymbol = nil);
+    function FindNode(ParentNode: TcxTreeListNode; const AName: string): TcxTreeListNode;
     function GetDisplayValue(const Info: IInfo; TypeSym: TSymbol): string;
 
     procedure UpdateInfo;
@@ -134,7 +138,7 @@ begin
   inherited;
 end;
 
-function TScriptDebuggerLocalVariablesFrame.FindNode(const AName: string; ParentNode: TcxTreeListNode): TcxTreeListNode;
+function TScriptDebuggerLocalVariablesFrame.FindNode(ParentNode: TcxTreeListNode; const AName: string): TcxTreeListNode;
 begin
   if (ParentNode = nil) then
     ParentNode := TreeListVariables.Root;
@@ -213,7 +217,7 @@ var
             continue;
         end;
 
-        MemberNode := FindNode(Symbol.Name, Node);
+        MemberNode := FindNode(Node, Symbol.Name);
         if (MemberNode = nil) then
           MemberNode := Node.AddChild;
         RefreshedNodes.Add(MemberNode);
@@ -605,6 +609,12 @@ begin
   UpdateInfo;
 end;
 
+procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeGlobalExecute(Sender: TObject);
+begin
+  UpdateInfo;
+  TreeListVariablesColumnScope.Visible := TAction(Sender).Checked;
+end;
+
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeUpdate(Sender: TObject);
 begin
   TAction(Sender).Checked := (TdwsVisibility(TAction(Sender).Tag) in FVisibilities);
@@ -643,7 +653,8 @@ begin
   inherited;
 end;
 
-procedure TScriptDebuggerLocalVariablesFrame.EvaluateLocal(const AExpression: string; scriptPos: PScriptPos; ImageIndex: integer);
+procedure TScriptDebuggerLocalVariablesFrame.EvaluateLocal(AParentNode: TcxTreeListNode; const AExpression: string;
+  ScriptPos: PScriptPos; ImageIndex: integer; AContextSymbol: TSymbol);
 var
   Node: TcxTreeListNode;
   Evaluator: IdwsEvaluateExpr;
@@ -652,9 +663,15 @@ var
   Data: TData;
   s: string;
 begin
-  Node := FindNode(AExpression, nil);
+  Node := FindNode(nil, AExpression);
+
+  // Is it a new variable?
   if (Node = nil) then
-    Node := TreeListVariables.Add;
+    Node := TreeListVariables.AddChild(AParentNode)
+  else
+  // Have we already evaluated that variable (can happen due to the global scope option)?
+  if (FRefreshedNodes.Contains(Node)) then
+    exit;
   try
     FRefreshedNodes.Add(Node);
 
@@ -662,6 +679,9 @@ begin
     try
       Node.Texts[0] := AExpression;
       Node.ImageIndex := ImageIndex;
+
+      if (AContextSymbol <> nil) then
+        Node.Texts[3] := AContextSymbol.Name;
 
 
       TypedExpr := Evaluator.Expression;
@@ -683,7 +703,8 @@ begin
         Node.Texts[2] := TypedExpr.Typ.Name;
         Node.OverlayIndex := DebuggerSymbolImageIndexOverlayWarning;
         exit;
-      end;
+      end else
+        Node.OverlayIndex := -1;
 
       SetLength(Data, 1);
       Evaluator.Expression.EvalAsVariant(Debugger.GetDebugger.Execution.ExecutionObject, Data[0]);
@@ -710,106 +731,155 @@ end;
 
 procedure TScriptDebuggerLocalVariablesFrame.UpdateInfo;
 
-  procedure AppendSymbol( const AName : string; SymType: TTypeSymbol = nil; scriptPos : PScriptPos = nil; ImageIndex: integer = -1);
+  procedure AppendSymbol(AScopeNode: TcxTreeListNode; const AName : string; SymType: TTypeSymbol = nil; ScriptPos : PScriptPos = nil;
+    ImageIndex: integer = -1; ContextSymbol: TSymbol = nil);
   begin
     if (AName = '') then
       exit;
 
-    EvaluateLocal(AName, ScriptPos, ImageIndex);
+    EvaluateLocal(AScopeNode, AName, ScriptPos, ImageIndex, ContextSymbol);
   end;
 
-  procedure AppendSymbolsToDisplay( ATable : TSymbolTable; AExec : TdwsProgramExecution; scriptPos : PScriptPos = nil );
-  var
-    I   : integer;
-    Sym : TSymbol;
+  procedure AppendSymbolsToDisplay(AScopeNode: TcxTreeListNode; ATable: TSymbolTable; ScriptPos: PScriptPos = nil; AContext: TdwsSourceContext = nil);
   begin
-    for I := 0 to ATable.Count-1 do
-    begin
-      Sym := ATable[I];
-      if Sym is TDataSymbol then
-        AppendSymbol(Sym.Name, Sym.Typ, scriptPos, Ord(scVariable));
-    end
+    var ContextSymbol: TSymbol := nil;
+    var HasContext := (AContext = nil);
+
+    for var Symbol in ATable do
+      if (Symbol is TDataSymbol) then
+      begin
+        if (not HasContext) then
+        begin
+          HasContext := True;
+          while (AContext <> nil) and (ContextSymbol = nil) do
+          begin
+            ContextSymbol := AContext.ParentSym;
+            AContext := AContext.Parent;
+          end;
+        end;
+
+        AppendSymbol(AScopeNode, Symbol.Name, Symbol.Typ, ScriptPos, Ord(scVariable), ContextSymbol);
+      end;
   end;
 
-  procedure AppendParamsToDisplay( AProc : TdwsProcedure; AExec : TdwsProgramExecution );
-  var
-    I   : integer;
-    Sym : TSymbol;
+  procedure AppendParamsToDisplay(AScopeNode: TcxTreeListNode; AProc: TdwsProcedure);
   begin
-    for I := 0 to AProc.Func.Params.Count-1 do
-    begin
-      Sym := AProc.Func.Params[I];
-      if Sym is TDataSymbol then
-        AppendSymbol(Sym.Name, Sym.Typ, nil, Ord(scParameter));
-    end;
+    for var Symbol in AProc.Func.Params do
+      if (Symbol is TDataSymbol) then
+        AppendSymbol(AScopeNode, Symbol.Name, Symbol.Typ, nil, Ord(scParameter));
 
     // If it is a function, get the function result
-    Sym := AProc.Func.Result;
-    if Assigned( Sym ) then
-      AppendSymbol(Sym.Name, Sym.Typ, nil, Ord(scParameter));
+    var Symbol := AProc.Func.Result;
+    if (Symbol <> nil) then
+      AppendSymbol(AScopeNode, Symbol.Name, Symbol.Typ, nil, Ord(scParameter));
   end;
 
-var
-  ProgramExecution : TdwsProgramExecution;
-  Context: TdwsSourceContext;
-  ScriptPos: TScriptPos;
-  MethodSymbol: TMethodSymbol;
-  Node, NextNode: TcxTreeListNode;
+  function FetchVariables(AScope: TdwsProgram): TcxTreeListNode;
+  begin
+    (* This was an attempt to display variables in scope. Like this:
+
+      + (main)
+        - global1
+        - global2
+        + function()
+          - local1
+          - local2
+          + etc()...
+
+      However, it didn't work out as the outermost level (main) will include
+      the variables from the inner levels due to the use of SourceContextMap.FindContext.
+
+      Instead I'm displaying the context alongside the variables.
+
+    var ParentScopeNode: TcxTreeListNode := nil;
+    if (AScope.Parent <> nil) then
+      ParentScopeNode := FetchVariables(AScope.Parent);
+
+    if (ParentScopeNode <> nil) then
+      Result := TreeListVariables.AddChild(ParentScopeNode)
+    else
+      Result := TreeListVariables.Add;
+
+    FRefreshedNodes.Add(Result);
+    *)
+    Result := nil;
+
+    if (AScope is TdwsProcedure) then
+    begin
+      (*
+      Result.Texts[0] := TdwsProcedure(AScope).Func.Caption;
+      *)
+
+      var MethodSymbol := TdwsProcedure(AScope).ContextMethodSymbol;
+
+      if (MethodSymbol <> nil) and (MethodSymbol.SelfSym <> nil) then
+        AppendSymbol(Result, MethodSymbol.SelfSym.Name, MethodSymbol.SelfSym.Typ);
+
+      AppendParamsToDisplay(Result, TdwsProcedure(AScope));
+    end;
+
+
+    if (AScope is TdwsMainProgram) then
+    begin
+      (*
+      Result.Texts[0] := '(main)';
+      *)
+
+      var ScriptPos := Debugger.GetDebugger.CurrentScriptPos;
+      var Context := TdwsMainProgram(AScope).SourceContextMap.FindContext(ScriptPos);
+
+      while (Context <> nil) do
+      begin
+        if (Context.LocalTable <> nil) then
+          AppendSymbolsToDisplay(Result, Context.LocalTable, @ScriptPos, Context);
+
+        Context := Context.Parent;
+      end;
+    end;
+
+    AppendSymbolsToDisplay(Result, AScope.Table);
+  end;
+
 begin
   FRefreshedNodes.Clear;
 
   TreeListVariables.BeginUpdate;
   try
-//    TreeListVariables.Clear;
 
-    ProgramExecution := TdwsProgramExecution( Debugger.GetDebugger.Execution );
+    var ProgramExecution := TdwsProgramExecution(Debugger.GetDebugger.Execution);
+
     if (ProgramExecution = nil) or (ProgramExecution.Debugger = nil)  then
     begin
       TreeListVariables.Clear;
       exit;
     end;
 
-    if ProgramExecution.CurrentProg is TdwsProcedure then
-    begin
-      MethodSymbol := TdwsProcedure(ProgramExecution.CurrentProg).ContextMethodSymbol;
-      if (MethodSymbol <> nil) and (MethodSymbol.SelfSym <> nil) then
-        AppendSymbol(MethodSymbol.SelfSym.Name, MethodSymbol.SelfSym.Typ);
+    var Scope := ProgramExecution.CurrentProg;
 
-      AppendParamsToDisplay( TdwsProcedure( ProgramExecution.CurrentProg ), ProgramExecution );
+    while (Scope <> nil) do
+    begin
+      FetchVariables(Scope);
+
+      if (not ActionViewScopeGlobal.Checked) then
+        break;
+      Scope := Scope.Parent;
     end;
 
 
-    if ProgramExecution.CurrentProg is TdwsMainProgram then
-    begin
-      Context := TdwsMainProgram(ProgramExecution.CurrentProg).SourceContextMap.FindContext(Debugger.GetDebugger.CurrentScriptPos);
-      while (Context <> nil) do
-      begin
-        while (Context <> nil) and (Context.LocalTable = nil) do
-          Context := Context.Parent;
-        if (Context <> nil) then
-        begin
-          if (Context.LocalTable <> nil) then
-          begin
-            ScriptPos := Debugger.GetDebugger.CurrentScriptPos;
-            AppendSymbolsToDisplay(Context.LocalTable, ProgramExecution, @ScriptPos );
-          end;
-
-          Context := Context.Parent;
-        end;
-      end;
-    end;
-
-    AppendSymbolsToDisplay(ProgramExecution.CurrentProg.Table, ProgramExecution);
-
-    Node := TreeListVariables.Root.getFirstChild;
+    // Remove all nodes that didn't get referenced during the update; They're all out of scope.
+    var Node := TreeListVariables.Root.getFirstChild;
     while (Node <> nil) do
     begin
-      NextNode := Node.getNextSibling;
+      var NextNode := Node.getNextSibling;
+
       if (not FRefreshedNodes.Contains(Node)) then
         Node.Free;
+
       Node := NextNode;
     end;
+
     FRefreshedNodes.Clear;
+
   finally
     TreeListVariables.EndUpdate;
   end;

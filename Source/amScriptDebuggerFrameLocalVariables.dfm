@@ -19,7 +19,9 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
     OptionsBehavior.CellHints = True
     OptionsCustomizing.ColumnCustomizing = False
     OptionsCustomizing.ColumnMoving = False
+    OptionsCustomizing.ColumnsQuickCustomization = True
     OptionsCustomizing.ColumnVertSizing = False
+    OptionsCustomizing.StackedColumns = False
     OptionsData.Editing = False
     OptionsData.Deleting = False
     OptionsSelection.CellSelect = False
@@ -28,6 +30,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
     OptionsView.DynamicIndent = True
     OptionsView.TreeLineStyle = tllsNone
     PopupMenu = dxBarPopupMenu1
+    ScrollbarAnnotations.CustomAnnotations = <>
     Styles.Background = StyleBackground
     TabOrder = 0
     OnDblClick = TreeListVariablesDblClick
@@ -35,7 +38,6 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
     OnExpanding = TreeListVariablesExpanding
     object cxTreeList1Column1: TcxTreeListColumn
       Caption.Text = 'Variable'
-      DataBinding.ValueType = 'String'
       Width = 100
       Position.ColIndex = 0
       Position.RowIndex = 0
@@ -45,7 +47,6 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
     end
     object cxTreeList1Column2: TcxTreeListColumn
       Caption.Text = 'Value'
-      DataBinding.ValueType = 'String'
       Width = 100
       Position.ColIndex = 1
       Position.RowIndex = 0
@@ -55,9 +56,17 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
     end
     object cxTreeList1Column3: TcxTreeListColumn
       Caption.Text = 'Type'
-      DataBinding.ValueType = 'String'
       Width = 100
       Position.ColIndex = 2
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
+    end
+    object TreeListVariablesColumnScope: TcxTreeListColumn
+      Visible = False
+      Caption.Text = 'Context'
+      Position.ColIndex = 3
       Position.RowIndex = 0
       Position.BandIndex = 0
       Summary.FooterSummaryItems = <>
@@ -103,6 +112,11 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       item
         Visible = True
         ItemName = 'MenuItemScopePrivate'
+      end
+      item
+        BeginGroup = True
+        Visible = True
+        ItemName = 'dxBarButton1'
       end
       item
         Visible = True
@@ -213,6 +227,11 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       Action = ActionItemModify
       Category = 0
     end
+    object dxBarButton1: TdxBarButton
+      Action = ActionViewScopeGlobal
+      Category = 0
+      ButtonStyle = bsChecked
+    end
   end
   object ActionList1: TActionList
     Left = 188
@@ -292,6 +311,12 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       Caption = 'Private'
       OnExecute = ActionViewScopeExecute
       OnUpdate = ActionViewScopeUpdate
+    end
+    object ActionViewScopeGlobal: TAction
+      Category = 'Scope'
+      AutoCheck = True
+      Caption = 'View global scope'
+      OnExecute = ActionViewScopeGlobalExecute
     end
   end
 end

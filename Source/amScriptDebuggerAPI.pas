@@ -236,7 +236,7 @@ type
 
 
 const
-  SuggestionCategoryNames : array[TdwsSuggestionCategory] of string = (
+  SuggestionCategoryNames: array[TdwsSuggestionCategory] of string = (
     'Unknown',
     'Unit',
     'Type',
@@ -258,8 +258,33 @@ const
 {$endif OLD_DWSCRIPT}
     'Variable',
     'Const',
-    'ReservedWord',
-    'SpecialFunction' );
+    'Reserved',
+    'Special'
+    );
+
+  SuggestionCategoryShortNames: array[TdwsSuggestionCategory] of string = (
+    'unknown',
+    'unit',
+    'type',
+    'class',
+    'record',
+    'interface',
+    'delegate',
+    'function',
+    'procedure',
+    'method',
+    'constructor',
+    'destructor',
+    'property',
+    'enum',
+    'element',
+    'param',
+    'field',
+    'var',
+    'const',
+    'reserved',
+    'special'
+  );
 
 
   sScriptDebuggerBrandName = 'DWScriptStudio';
@@ -269,33 +294,59 @@ const
   sDwsIdeProjectFileExt         = '.dwsproj'; // ext of the project file (like Delphi dproj)
 
 
-  DebuggerSymbolImageIndexUnknown = Ord(scUnknown);
-  DebuggerSymbolImageIndexUnit = Ord(scUnit);
-  DebuggerSymbolImageIndexType = Ord(scType);
-  DebuggerSymbolImageIndexClass = Ord(scClass);
-  DebuggerSymbolImageIndexRecord = Ord(scRecord);
-  DebuggerSymbolImageIndexInterface = Ord(scInterface);
-  DebuggerSymbolImageIndexDelegate = Ord(scDelegate);
-  DebuggerSymbolImageIndexFunction = Ord(scFunction);
-  DebuggerSymbolImageIndexProcedure = Ord(scProcedure);
-  DebuggerSymbolImageIndexMethod = Ord(scMethod);
-  DebuggerSymbolImageIndexConstructor = Ord(scConstructor);
-  DebuggerSymbolImageIndexDestructor = Ord(scDestructor);
-  DebuggerSymbolImageIndexProperty = Ord(scProperty);
-  DebuggerSymbolImageIndexEnum = Ord(scEnum);
-  DebuggerSymbolImageIndexElement = Ord(scElement);
-  DebuggerSymbolImageIndexParameter = Ord(scParameter);
-  DebuggerSymbolImageIndexVariable = Ord(scVariable);
-  DebuggerSymbolImageIndexConst = Ord(scConst);
-  DebuggerSymbolImageIndexReservedWord = Ord(scReservedWord);
-  DebuggerSymbolImageIndexSpecialFunction = Ord(scSpecialFunction);
-  DebuggerSymbolImageIndexMeta = Ord(scSpecialFunction)+1;
-  DebuggerSymbolImageIndexArray = DebuggerSymbolImageIndexMeta+1;
-  DebuggerSymbolImageIndexSet = DebuggerSymbolImageIndexArray+1;
-  DebuggerSymbolImageIndexOperator = DebuggerSymbolImageIndexSet+1;
-  DebuggerSymbolImageIndexOverlayAdd = DebuggerSymbolImageIndexOperator+1;
-  DebuggerSymbolImageIndexOverlayChanged = DebuggerSymbolImageIndexOverlayAdd+1;
-  DebuggerSymbolImageIndexOverlayWarning = DebuggerSymbolImageIndexOverlayChanged+1;
+  DebuggerSymbolImageIndexUnknown       = 0;
+  DebuggerSymbolImageIndexUnit          = 1;
+  DebuggerSymbolImageIndexType          = 2;
+  DebuggerSymbolImageIndexClass         = 3;
+  DebuggerSymbolImageIndexRecord        = 4;
+  DebuggerSymbolImageIndexInterface     = 5;
+  DebuggerSymbolImageIndexDelegate      = 6;
+  DebuggerSymbolImageIndexFunction      = 7;
+  DebuggerSymbolImageIndexProcedure     = 8;
+  DebuggerSymbolImageIndexMethod        = 9;
+  DebuggerSymbolImageIndexConstructor   = 10;
+  DebuggerSymbolImageIndexDestructor    = 11;
+  DebuggerSymbolImageIndexProperty      = 12;
+  DebuggerSymbolImageIndexEnum          = 13;
+  DebuggerSymbolImageIndexElement       = 14;
+  DebuggerSymbolImageIndexParameter     = 15;
+  DebuggerSymbolImageIndexField         = -1;
+  DebuggerSymbolImageIndexVariable      = 16;
+  DebuggerSymbolImageIndexConst         = 17;
+  DebuggerSymbolImageIndexReservedWord  = 18;
+  DebuggerSymbolImageIndexSpecialFunction = 19;
+  DebuggerSymbolImageIndexMeta          = 20;
+  DebuggerSymbolImageIndexArray         = 21;
+  DebuggerSymbolImageIndexSet           = 22;
+  DebuggerSymbolImageIndexOperator      = 23;
+
+  DebuggerSymbolImageIndexOverlayAdd    = 24;
+  DebuggerSymbolImageIndexOverlayChanged = 25;
+  DebuggerSymbolImageIndexOverlayWarning = 26;
+
+  DebuggerSuggestionCategoryImageIndexMap: array[TdwsSuggestionCategory] of integer = (
+    DebuggerSymbolImageIndexUnknown,
+    DebuggerSymbolImageIndexUnit,
+    DebuggerSymbolImageIndexType,
+    DebuggerSymbolImageIndexClass,
+    DebuggerSymbolImageIndexRecord,
+    DebuggerSymbolImageIndexInterface,
+    DebuggerSymbolImageIndexDelegate,
+    DebuggerSymbolImageIndexFunction,
+    DebuggerSymbolImageIndexProcedure,
+    DebuggerSymbolImageIndexMethod,
+    DebuggerSymbolImageIndexConstructor,
+    DebuggerSymbolImageIndexDestructor,
+    DebuggerSymbolImageIndexProperty,
+    DebuggerSymbolImageIndexEnum,
+    DebuggerSymbolImageIndexElement,
+    DebuggerSymbolImageIndexParameter,
+    DebuggerSymbolImageIndexField,
+    DebuggerSymbolImageIndexVariable,
+    DebuggerSymbolImageIndexConst,
+    DebuggerSymbolImageIndexReservedWord,
+    DebuggerSymbolImageIndexSpecialFunction
+  );
 
 
   // Utility routines

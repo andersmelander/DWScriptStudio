@@ -4725,49 +4725,12 @@ begin
 
     SuggestionCategory := Suggestions.Category[SuggestionIndex];
 
-    Item := '\image{' + IntToStr(Ord(SuggestionCategory)) + '}';
+    Item := '\image{' + IntToStr(DebuggerSuggestionCategoryImageIndexMap[SuggestionCategory]) + '}';
 
     with CurrentEditor.Highlighter.KeywordAttribute do
       Item := Item + '\color{' + ColorToString(Foreground) + '}';
 
-    case SuggestionCategory of
-      scUnit:
-        Item := Item + 'unit';
-      scType:
-        Item := Item + 'type';
-      scClass:
-        Item := Item + 'class';
-      scRecord:
-        Item := Item + 'record';
-      scInterface:
-        Item := Item + 'interface';
-      scFunction:
-        Item := Item + 'function';
-      scProcedure:
-        Item := Item + 'procedure';
-      scMethod:
-        Item := Item + 'method';
-      scConstructor:
-        Item := Item + 'constructor';
-      scDestructor:
-        Item := Item + 'destructor';
-      scProperty:
-        Item := Item + 'property';
-      scEnum:
-        Item := Item + 'enum';
-      scElement:
-        Item := Item + 'element';
-      scParameter:
-        Item := Item + 'param';
-      scVariable:
-        Item := Item + 'var';
-      scConst:
-        Item := Item + 'const';
-      scReservedWord:
-        Item := Item + 'reserved';
-      scDelegate:
-        Item := Item + 'delegate';
-    end;
+    Item := Item + SuggestionCategoryShortNames[SuggestionCategory];
 
     Item := Item + ' \column{}';
     s := Suggestions.Code[SuggestionIndex];
@@ -4795,8 +4758,9 @@ begin
       Insert('[]', AddOn, n+18);
 
     Item := Item + '\style{-B}' + AddOn;
-    Proposal.ItemList.AddObject(Item, TObject(pointer(Ord(SuggestionCategory))));
-    Proposal.InsertList.AddObject(s, TObject(pointer(Ord(SuggestionCategory))));
+
+    Proposal.ItemList.AddObject(Item, pointer(DebuggerSuggestionCategoryImageIndexMap[SuggestionCategory]));
+    Proposal.InsertList.AddObject(s, pointer(DebuggerSuggestionCategoryImageIndexMap[SuggestionCategory]));
   end;
 
   CanExecute := True;
