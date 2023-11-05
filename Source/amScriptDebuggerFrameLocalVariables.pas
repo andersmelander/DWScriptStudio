@@ -32,6 +32,15 @@ uses
 
   amScriptDebuggerAPI, cxFilter, dxScrollbarAnnotations;
 
+// -----------------------------------------------------------------------------
+//
+// TScriptDebuggerLocalVariablesFrame
+//
+// -----------------------------------------------------------------------------
+// Displays variables in current context (i.e. local) and, optionally, variables
+// from parent contexts.
+// Both simple and complex types are supported.
+// -----------------------------------------------------------------------------
 type
   TFrame = TScriptDebuggerFrame;
 
@@ -88,23 +97,27 @@ type
     procedure ActionViewScopeExecute(Sender: TObject);
     procedure ActionViewScopeUpdate(Sender: TObject);
     procedure ActionViewScopeGlobalExecute(Sender: TObject);
+    procedure ActionViewScopeGlobalUpdate(Sender: TObject);
+  private type
+    TInspectOptions = set of (ioShowInherited, ioShowFields, ioShowProperties, ioAllowPropertySideEffects, ioShowGlobal);
   private
     FRefreshedNodes: TList<TcxTreeListNode>;
     FVisibilities: TdwsVisibilities;
-    FShowMembersInherited: boolean;
-    FShowMembersProperty: boolean;
-    FShowMembersPropertySideEffects: boolean;
-    FShowMembersField: boolean;
+    FInspectOptions: TInspectOptions;
   protected
-    procedure LoadNode(Node: TcxTreeListNode); overload;
-    procedure LoadNode(Node: TcxTreeListNode; const Info: IInfo; TypeSym: TSymbol = nil); overload;
-    procedure LoadMemberNodes(Node: TcxTreeListNode; const Info: IInfo; TypeSym: TCompositeTypeSymbol);
-    procedure EvaluateLocal(AParentNode: TcxTreeListNode; const AExpression: string; scriptPos: PScriptPos = nil; ImageIndex: integer = -1; AContextSymbol: TSymbol = nil);
     function FindNode(ParentNode: TcxTreeListNode; const AName: string): TcxTreeListNode;
-    function GetDisplayValue(const Info: IInfo; TypeSym: TSymbol): string;
+
+    procedure LoadNode(Node: TcxTreeListNode); overload;
+    procedure LoadNode(Node: TcxTreeListNode; const Info: IInfo); overload;
+    procedure LoadMemberNodes(Node: TcxTreeListNode; const Info: IInfo);
+
+    procedure EvaluateLocal(AParentNode: TcxTreeListNode; const AExpression: string; scriptPos: PScriptPos = nil; ImageIndex: integer = -1; AContextSymbol: TSymbol = nil);
+    function GetDisplayValue(const Info: IInfo): string;
 
     procedure UpdateInfo;
 
+  protected
+    // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
     procedure Finalize; override;
     procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
@@ -131,12 +144,62 @@ uses
   dwsSuggestions;
 
 
-{ TDwsIdeLocalVariablesFrame }
+// -----------------------------------------------------------------------------
+//
+// TScriptDebuggerLocalVariablesFrame
+//
+// -----------------------------------------------------------------------------
+constructor TScriptDebuggerLocalVariablesFrame.Create(AOwner: TComponent);
+begin
+  inherited;
+
+  FRefreshedNodes := TList<TcxTreeListNode>.Create;
+
+  FVisibilities := [cvPublic, cvPublished, cvProtected];
+
+  // Properties can have side effects due to getter. Do not show by default
+  FInspectOptions := [ioShowFields];
+end;
+
+destructor TScriptDebuggerLocalVariablesFrame.Destroy;
+begin
+  FRefreshedNodes.Free;
+  inherited;
+end;
+
+// -----------------------------------------------------------------------------
+
+procedure TScriptDebuggerLocalVariablesFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
+begin
+  inherited Initialize(ADebugger, AImageList, AImageListSymbols);
+  TreeListVariables.Images := AImageListSymbols;
+
+  UpdateInfo;
+end;
 
 procedure TScriptDebuggerLocalVariablesFrame.Finalize;
 begin
   inherited;
 end;
+
+procedure TScriptDebuggerLocalVariablesFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
+begin
+  case State of
+    dnDebugSuspended:
+      // Debugger has paused on single-step; Update view
+      UpdateInfo;
+
+    dnIdle,
+    dnDebugDone:
+      // Debugger is stopped; Clear view
+      begin
+        FRefreshedNodes.Clear;
+        TreeListVariables.Clear;
+      end
+  end;
+end;
+
+// -----------------------------------------------------------------------------
 
 function TScriptDebuggerLocalVariablesFrame.FindNode(ParentNode: TcxTreeListNode; const AName: string): TcxTreeListNode;
 begin
@@ -152,13 +215,7 @@ begin
   end;
 end;
 
-procedure TScriptDebuggerLocalVariablesFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
-begin
-  inherited Initialize(ADebugger, AImageList, AImageListSymbols);
-  TreeListVariables.Images := AImageListSymbols;
-
-  UpdateInfo;
-end;
+// -----------------------------------------------------------------------------
 
 procedure TScriptDebuggerLocalVariablesFrame.LoadNode(Node: TcxTreeListNode);
 var
@@ -168,12 +225,73 @@ begin
     exit;
 
   pointer(Info) := Node.Data;
+  //  Mark the node as handled (i.e. we don't need to load it again)
   Node.Data := nil;
 
   LoadNode(Node, Info);
 end;
 
-procedure TScriptDebuggerLocalVariablesFrame.LoadMemberNodes(Node: TcxTreeListNode; const Info: IInfo; TypeSym: TCompositeTypeSymbol);
+procedure TScriptDebuggerLocalVariablesFrame.LoadNode(Node: TcxTreeListNode; const Info: IInfo);
+var
+  s: string;
+begin
+  var TypeSym := Info.TypeSym;
+
+  s := GetDisplayValue(Info);
+
+  if (Node.StateIndex = -1) then
+  begin
+    Node.OverlayIndex := DebuggerSymbolImageIndexOverlayAdd;
+    Node.StateIndex := 0;
+  end else
+  begin
+    if (Node.Texts[1] <> s) then
+      Node.OverlayIndex := DebuggerSymbolImageIndexOverlayChanged
+    else
+      Node.OverlayIndex := -1;
+  end;
+
+  Node.Texts[1] := s;
+
+  s := TypeSym.Name;
+  if (s = '') then
+    s := TypeSym.Typ.Name;
+  if (TypeSym is TArraySymbol) then
+    Node.Texts[2] := TypeSym.Description
+  else
+  if (TypeSym is TAssociativeArraySymbol) then
+    Node.Texts[2] := 'array['+TAssociativeArraySymbol(TypeSym).KeyType.Name+'] of '+s
+(*
+  else
+  if (TypeSym is TArraySymbol) then
+    Node.Texts[2] := 'array['+TArraySymbol(TypeSym).IndexType.Name+'] of '+s
+*)
+  else
+    Node.Texts[2] := s;
+//Node.Texts[2] := TypeSym.Description;
+
+  if (TypeSym is TCompositeTypeSymbol) then
+  begin
+    Node.ImageIndex := Debugger.SymbolToImageIndex(TypeSym);
+
+    if (Info is TInfoClassObj) and (Info.ValueIsEmpty) then
+    begin
+      if (Node.HasChildren) then
+        Node.DeleteChildren;
+      exit;
+    end;
+
+    LoadMemberNodes(Node, Info);
+  end else
+  begin
+    if (Node.HasChildren) then
+      Node.DeleteChildren;
+  end;
+end;
+
+// -----------------------------------------------------------------------------
+
+procedure TScriptDebuggerLocalVariablesFrame.LoadMemberNodes(Node: TcxTreeListNode; const Info: IInfo);
 var
   RefreshedNodes: TList<TcxTreeListNode>;
 
@@ -185,7 +303,7 @@ var
     MemberNode: TcxTreeListNode;
     Data: TData;
   begin
-    if (FShowMembersInherited) and (TypeSym.Parent <> nil) then
+    if (ioShowInherited in FInspectOptions) and (TypeSym.Parent <> nil) then
     begin
 (*
       MemberNode := Node.AddChild;
@@ -205,13 +323,13 @@ var
       begin
         if (Symbol is TPropertySymbol) then
         begin
-          if (not FShowMembersProperty) then
+          if (not (ioShowProperties in FInspectOptions)) then
             continue;
           if (not (TPropertySymbol(Symbol).Visibility in FVisibilities)) then
             continue;
         end else
         begin
-          if (not FShowMembersField) then
+          if (not (ioShowFields in FInspectOptions)) then
             continue;
           if (not (TFieldSymbol(Symbol).Visibility in FVisibilities)) then
             continue;
@@ -260,7 +378,7 @@ var
               MemberNode.OverlayIndex := DebuggerSymbolImageIndexOverlayWarning;
               continue;
             end else
-            if (TPropertySymbol(Symbol).ReadSym is TFuncSymbol) and (not FShowMembersPropertySideEffects) then
+            if (TPropertySymbol(Symbol).ReadSym is TFuncSymbol) and (not (ioAllowPropertySideEffects in FInspectOptions)) then
             begin
               MemberNode.Texts[1] := '(getter is method)';
               MemberNode.Texts[2] := Symbol.Typ.Name;
@@ -296,7 +414,7 @@ var
         CreateInfoOnSymbol(NewInfo, Debugger.GetDebugger.Execution.Info, Symbol.Typ, Data, 0);
 
         if (Node.Expanded) then
-          LoadNode(MemberNode, NewInfo, Symbol.Typ)
+          LoadNode(MemberNode, NewInfo)
         else
         begin
           if (MemberNode.Count > 0) then
@@ -315,6 +433,7 @@ var
 begin
   RefreshedNodes := TList<TcxTreeListNode>.Create;
   try
+    var TypeSym := Info.TypeSym as TCompositeTypeSymbol;
     DoLoadMemberNodes(Node, TypeSym);
 
     MemberNode := Node.getFirstChild;
@@ -332,12 +451,16 @@ begin
   end;
 end;
 
-function TScriptDebuggerLocalVariablesFrame.GetDisplayValue(const Info: IInfo; TypeSym: TSymbol): string;
+// -----------------------------------------------------------------------------
+
+function TScriptDebuggerLocalVariablesFrame.GetDisplayValue(const Info: IInfo): string;
 var
   ElementSymbol: TElementSymbol;
   BaseType: TTypeSymbol;
   n, i: integer;
 begin
+  var TypeSym := Info.TypeSym;
+
   if (TypeSym is TEnumerationSymbol) then
   begin
     ElementSymbol := TEnumerationSymbol(TypeSym).ElementByValue(Info.ValueAsInteger);
@@ -404,66 +527,6 @@ begin
   end;
 end;
 
-procedure TScriptDebuggerLocalVariablesFrame.LoadNode(Node: TcxTreeListNode; const Info: IInfo; TypeSym: TSymbol);
-var
-  s: string;
-begin
-  // Note: The TypeSym parameter isn't really necessary. This works just as well without it (i.e. using Info.TypeSym).
-  if (TypeSym = nil) then
-    TypeSym := Info.TypeSym;
-
-  s := GetDisplayValue(Info, TypeSym);
-
-  if (Node.StateIndex = -1) then
-  begin
-    Node.OverlayIndex := DebuggerSymbolImageIndexOverlayAdd;
-    Node.StateIndex := 0;
-  end else
-  begin
-    if (Node.Texts[1] <> s) then
-      Node.OverlayIndex := DebuggerSymbolImageIndexOverlayChanged
-    else
-      Node.OverlayIndex := -1;
-  end;
-
-  Node.Texts[1] := s;
-
-  s := TypeSym.Name;
-  if (s = '') then
-    s := TypeSym.Typ.Name;
-  if (TypeSym is TArraySymbol) then
-    Node.Texts[2] := TypeSym.Description
-  else
-  if (TypeSym is TAssociativeArraySymbol) then
-    Node.Texts[2] := 'array['+TAssociativeArraySymbol(TypeSym).KeyType.Name+'] of '+s
-(*
-  else
-  if (TypeSym is TArraySymbol) then
-    Node.Texts[2] := 'array['+TArraySymbol(TypeSym).IndexType.Name+'] of '+s
-*)
-  else
-    Node.Texts[2] := s;
-//Node.Texts[2] := TypeSym.Description;
-
-  if (TypeSym is TCompositeTypeSymbol) then
-  begin
-    Node.ImageIndex := Debugger.SymbolToImageIndex(TypeSym);
-
-    if (Info is TInfoClassObj) and (Info.ValueIsEmpty) then
-    begin
-      if (Node.HasChildren) then
-        Node.DeleteChildren;
-      exit;
-    end;
-
-    LoadMemberNodes(Node, Info, TCompositeTypeSymbol(TypeSym));
-  end else
-  begin
-    if (Node.HasChildren) then
-      Node.DeleteChildren;
-  end;
-end;
-
 procedure TScriptDebuggerLocalVariablesFrame.TreeListVariablesDblClick(Sender: TObject);
 begin
   ActionItemModify.Execute;
@@ -524,16 +587,14 @@ begin
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionItemWatchExecute(Sender: TObject);
-var
-  Expression: string;
-  Node: TcxTreeListNode;
 begin
-  if (TreeListVariables.FocusedNode = nil) then
+  var Node := TreeListVariables.FocusedNode;
+
+  if (Node = nil) then
     exit;
 
-  Node := TreeListVariables.FocusedNode;
-
-  Expression := '';
+  // Build expression from focused node
+  var Expression := '';
   while (Node <> nil) and (Node.Parent <> nil) do
   begin
     if (Expression = '') then
@@ -553,47 +614,74 @@ end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberFieldsExecute(Sender: TObject);
 begin
-  FShowMembersField := TAction(Sender).Checked;
+  if (TAction(Sender).Checked) then
+    Include(FInspectOptions, ioShowFields)
+  else
+    Exclude(FInspectOptions, ioShowFields);
   UpdateInfo;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberFieldsUpdate(Sender: TObject);
 begin
-  TAction(Sender).Checked := FShowMembersField;
+  TAction(Sender).Checked := (ioShowFields in FInspectOptions);
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberInheritedExecute(Sender: TObject);
 begin
-  FShowMembersInherited := TAction(Sender).Checked;
+  if (TAction(Sender).Checked) then
+    Include(FInspectOptions, ioShowInherited)
+  else
+    Exclude(FInspectOptions, ioShowInherited);
   UpdateInfo;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberInheritedUpdate(Sender: TObject);
 begin
-  TAction(Sender).Checked := FShowMembersInherited;
+  TAction(Sender).Checked := (ioShowInherited in FInspectOptions);
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberPropertiesExecute(Sender: TObject);
 begin
-  FShowMembersProperty := TAction(Sender).Checked;
+  if (TAction(Sender).Checked) then
+    Include(FInspectOptions, ioShowProperties)
+  else
+    Exclude(FInspectOptions, ioShowProperties);
   UpdateInfo;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberPropertiesUpdate(Sender: TObject);
 begin
-  TAction(Sender).Checked := FShowMembersProperty;
+  TAction(Sender).Checked := (ioShowProperties in FInspectOptions);
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberPropertySideEffectsExecute(Sender: TObject);
 begin
-  FShowMembersPropertySideEffects := TAction(Sender).Checked;
+  if (TAction(Sender).Checked) then
+    Include(FInspectOptions, ioAllowPropertySideEffects)
+  else
+    Exclude(FInspectOptions, ioAllowPropertySideEffects);
   UpdateInfo;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberPropertySideEffectsUpdate(Sender: TObject);
 begin
-  TAction(Sender).Checked := FShowMembersPropertySideEffects;
-  TAction(Sender).Enabled := FShowMembersProperty;
+  TAction(Sender).Checked := (ioAllowPropertySideEffects in FInspectOptions);
+  TAction(Sender).Enabled := (ioShowProperties in FInspectOptions);
+end;
+
+procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeGlobalExecute(Sender: TObject);
+begin
+  if (TAction(Sender).Checked) then
+    Include(FInspectOptions, ioShowGlobal)
+  else
+    Exclude(FInspectOptions, ioShowGlobal);
+  UpdateInfo;
+  TreeListVariablesColumnScope.Visible := (ioShowGlobal in FInspectOptions);
+end;
+
+procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeGlobalUpdate(Sender: TObject);
+begin
+  TAction(Sender).Checked := (ioShowGlobal in FInspectOptions);
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeExecute(Sender: TObject);
@@ -609,49 +697,12 @@ begin
   UpdateInfo;
 end;
 
-procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeGlobalExecute(Sender: TObject);
-begin
-  UpdateInfo;
-  TreeListVariablesColumnScope.Visible := TAction(Sender).Checked;
-end;
-
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeUpdate(Sender: TObject);
 begin
   TAction(Sender).Checked := (TdwsVisibility(TAction(Sender).Tag) in FVisibilities);
 end;
 
-constructor TScriptDebuggerLocalVariablesFrame.Create(AOwner: TComponent);
-begin
-  inherited;
-  FRefreshedNodes := TList<TcxTreeListNode>.Create;
-
-  FVisibilities := [cvPublic, cvPublished, cvProtected];
-  FShowMembersInherited := False;
-  FShowMembersProperty := False; // Properties can have side effects due to getter. Do not show by default
-  FShowMembersPropertySideEffects := False;
-  FShowMembersField := True;
-end;
-
-procedure TScriptDebuggerLocalVariablesFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-  case State of
-    dnDebugSuspended:
-      UpdateInfo;
-
-    dnIdle,
-    dnDebugDone:
-      begin
-        FRefreshedNodes.Clear;
-        TreeListVariables.Clear;
-      end
-  end;
-end;
-
-destructor TScriptDebuggerLocalVariablesFrame.Destroy;
-begin
-  FRefreshedNodes.Free;
-  inherited;
-end;
+// -----------------------------------------------------------------------------
 
 procedure TScriptDebuggerLocalVariablesFrame.EvaluateLocal(AParentNode: TcxTreeListNode; const AExpression: string;
   ScriptPos: PScriptPos; ImageIndex: integer; AContextSymbol: TSymbol);
@@ -737,6 +788,8 @@ begin
   end;
 end;
 
+// -----------------------------------------------------------------------------
+
 procedure TScriptDebuggerLocalVariablesFrame.UpdateInfo;
 
   procedure AppendSymbol(AScopeNode: TcxTreeListNode; const AName : string; SymType: TTypeSymbol = nil; ScriptPos : PScriptPos = nil;
@@ -820,9 +873,11 @@ procedure TScriptDebuggerLocalVariablesFrame.UpdateInfo;
 
       var MethodSymbol := TdwsProcedure(AScope).ContextMethodSymbol;
 
+      // If scope is a function then display the return value
       if (MethodSymbol <> nil) and (MethodSymbol.SelfSym <> nil) then
         AppendSymbol(Result, MethodSymbol.SelfSym.Name, MethodSymbol.SelfSym.Typ);
 
+      // Display any parameter values
       AppendParamsToDisplay(Result, TdwsProcedure(AScope));
     end;
 
@@ -868,7 +923,7 @@ begin
     begin
       FetchVariables(Scope);
 
-      if (not ActionViewScopeGlobal.Checked) then
+      if (not (ioShowGlobal in FInspectOptions)) then
         break;
       Scope := Scope.Parent;
     end;
@@ -892,6 +947,8 @@ begin
     TreeListVariables.EndUpdate;
   end;
 end;
+
+// -----------------------------------------------------------------------------
 
 initialization
   RegisterClass(TScriptDebuggerLocalVariablesFrame);

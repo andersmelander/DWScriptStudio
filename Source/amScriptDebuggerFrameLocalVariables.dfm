@@ -317,6 +317,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       AutoCheck = True
       Caption = 'View global scope'
       OnExecute = ActionViewScopeGlobalExecute
+      OnUpdate = ActionViewScopeGlobalUpdate
     end
   end
 end
