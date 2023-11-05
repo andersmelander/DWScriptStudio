@@ -353,7 +353,7 @@ var
           if (TPropertySymbol(Symbol).ArrayIndices <> nil) and (TPropertySymbol(Symbol).ArrayIndices.Count > 0) then
           begin
             MemberNode.Texts[1] := '[...]';
-            MemberNode.Texts[2] := Symbol.Typ.Name;
+            MemberNode.Texts[2] := 'array of '+Symbol.Typ.Name;
             MemberNode.ImageIndex := DebuggerSymbolImageIndexArray;
             continue;
           end;
@@ -520,6 +520,13 @@ begin
     else
       Result := '(object)';
   end else
+  if (TypeSym is TFuncSymbol) then
+  begin
+    if (Info.ValueIsEmpty) then
+      Result := 'nil'
+    else
+      Result := '(delegate)';
+  end else
   begin
     Result := Info.ValueAsString; // Conversion error is handled by caller
     if (TypeSym is TBaseStringSymbol) then
@@ -527,10 +534,14 @@ begin
   end;
 end;
 
+// -----------------------------------------------------------------------------
+
 procedure TScriptDebuggerLocalVariablesFrame.TreeListVariablesDblClick(Sender: TObject);
 begin
   ActionItemModify.Execute;
 end;
+
+// -----------------------------------------------------------------------------
 
 procedure TScriptDebuggerLocalVariablesFrame.TreeListVariablesDeletion(Sender: TcxCustomTreeList; ANode: TcxTreeListNode);
 var
@@ -539,11 +550,15 @@ begin
   if (ANode.Data = nil) then
     exit;
 
+  // Get the interface pointer from the node
   pointer(Info) := ANode.Data;
   ANode.Data := nil;
 
+  // Release then interface
   Info := nil;
 end;
+
+// -----------------------------------------------------------------------------
 
 procedure TScriptDebuggerLocalVariablesFrame.TreeListVariablesExpanding(Sender: TcxCustomTreeList; ANode: TcxTreeListNode; var Allow: Boolean);
 var
@@ -552,23 +567,26 @@ begin
   ChildNode := ANode.getFirstChild;
   while (ChildNode <> nil) do
   begin
+    // If Node.Data <> nil then the node has not been expanded before and we
+    // need to populate its children (grand-children actually)
     if (ChildNode.Data <> nil) then
       LoadNode(ChildNode);
+
     ChildNode := ChildNode.getNextSibling;
   end;
 end;
 
+// -----------------------------------------------------------------------------
+
 procedure TScriptDebuggerLocalVariablesFrame.ActionItemModifyExecute(Sender: TObject);
-var
-  Expression: string;
-  Node: TcxTreeListNode;
 begin
-  if (TreeListVariables.FocusedNode = nil) then
+  var Node := TreeListVariables.FocusedNode;
+
+  if (Node = nil) then
     exit;
 
-  Node := TreeListVariables.FocusedNode;
-
-  Expression := '';
+  // Build expression from focused node
+  var Expression := '';
   while (Node <> nil) and (Node.Parent <> nil) do
   begin
     if (Expression = '') then
