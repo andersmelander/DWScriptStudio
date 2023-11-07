@@ -2,36 +2,78 @@ object ScriptDebuggerWatchesFrame: TScriptDebuggerWatchesFrame
   Left = 0
   Top = 0
   Width = 451
-  Height = 304
+  Height = 286
   Align = alClient
   TabOrder = 0
-  object lvWatches: TcxListView
+  object TreeListWatches: TcxTreeList
     Left = 0
     Top = 0
     Width = 451
-    Height = 304
+    Height = 286
+    BorderStyle = cxcbsNone
     Align = alClient
-    ColumnClick = False
-    Columns = <
+    Bands = <
       item
-        Caption = 'Expression'
-        Width = 80
-      end
-      item
-        AutoSize = True
-        Caption = 'Value'
       end>
+    Navigator.Buttons.CustomButtons = <>
+    OptionsBehavior.CellHints = True
+    OptionsCustomizing.ColumnCustomizing = False
+    OptionsCustomizing.ColumnMoving = False
+    OptionsCustomizing.ColumnsQuickCustomization = True
+    OptionsCustomizing.ColumnVertSizing = False
+    OptionsCustomizing.StackedColumns = False
+    OptionsData.Editing = False
+    OptionsData.Deleting = False
+    OptionsSelection.CellSelect = False
+    OptionsView.CellEndEllipsis = True
+    OptionsView.ColumnAutoWidth = True
+    OptionsView.DynamicIndent = True
+    OptionsView.TreeLineStyle = tllsNone
     PopupMenu = WatchWindowPopupMenu
-    ReadOnly = True
-    RowSelect = True
-    Style.BorderStyle = cbsNone
-    StyleFocused.BorderStyle = cbsNone
-    StyleHot.BorderStyle = cbsNone
+    ScrollbarAnnotations.CustomAnnotations = <>
     TabOrder = 0
-    ViewStyle = vsReport
-    OnDblClick = lvWatchesDblClick
-    OnEnter = lvWatchesEnter
-    OnExit = lvWatchesExit
+    OnDblClick = TreeListWatchesDblClick
+    OnEnter = TreeListWatchesEnter
+    OnExit = TreeListWatchesExit
+    OnExpanding = TreeListWatchesExpanding
+    ExplicitLeft = 3
+    ExplicitTop = 68
+    object TreeListWatchesColumnExpression: TcxTreeListColumn
+      Caption.Text = 'Expression'
+      Width = 100
+      Position.ColIndex = 0
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
+    end
+    object TreeListWatchesColumnValue: TcxTreeListColumn
+      Caption.Text = 'Value'
+      Width = 100
+      Position.ColIndex = 1
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
+    end
+    object TreeListWatchesColumnType: TcxTreeListColumn
+      Caption.Text = 'Type'
+      Width = 100
+      Position.ColIndex = 2
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
+    end
+    object TreeListWatchesColumnScope: TcxTreeListColumn
+      Visible = False
+      Caption.Text = 'Context'
+      Position.ColIndex = 3
+      Position.RowIndex = 0
+      Position.BandIndex = 0
+      Summary.FooterSummaryItems = <>
+      Summary.GroupFooterSummaryItems = <>
+    end
   end
   object ActionList: TActionList
     State = asSuspended

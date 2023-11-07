@@ -15,10 +15,13 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, Menus, ActnList, ImgList, System.Actions,
 
-  cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore,
-  cxContainer, cxEdit, cxListView,
+  cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxFilter, cxCustomData,
+  cxStyles, dxScrollbarAnnotations, cxTL, cxTextEdit, cxTLdxBarBuiltInMenu, cxInplaceContainer,
 
-  amScriptDebuggerAPI;
+  dwsSymbols,
+
+  amScriptDebuggerAPI,
+  amScriptDebuggerInfoEvaluationBuilder;
 
 type
   TFrame = TScriptDebuggerFrame;
@@ -28,20 +31,28 @@ type
     actDeleteWatch: TAction;
     actEditWatch: TAction;
     ActionList: TActionList;
-    lvWatches: TcxListView;
     MenuItemAddWatch: TMenuItem;
     MenuItemDeleteWatch: TMenuItem;
     MenuItemEditWatch: TMenuItem;
     WatchWindowPopupMenu: TPopupMenu;
+    TreeListWatches: TcxTreeList;
+    TreeListWatchesColumnExpression: TcxTreeListColumn;
+    TreeListWatchesColumnValue: TcxTreeListColumn;
+    TreeListWatchesColumnType: TcxTreeListColumn;
+    TreeListWatchesColumnScope: TcxTreeListColumn;
     procedure actDeleteWatchExecute(Sender: TObject);
     procedure actDeleteWatchUpdate(Sender: TObject);
     procedure actAddWatchExecute(Sender: TObject);
     procedure actEditWatchExecute(Sender: TObject);
     procedure actEditWatchUpdate(Sender: TObject);
-    procedure lvWatchesDblClick(Sender: TObject);
-    procedure lvWatchesEnter(Sender: TObject);
-    procedure lvWatchesExit(Sender: TObject);
+    procedure TreeListWatchesExpanding(Sender: TcxCustomTreeList; ANode: TcxTreeListNode; var Allow: Boolean);
+    procedure TreeListWatchesDblClick(Sender: TObject);
+    procedure TreeListWatchesEnter(Sender: TObject);
+    procedure TreeListWatchesExit(Sender: TObject);
   private
+    FEvaluationBuilder: TInfoEvaluationBuilder;
+    FVisibilities: TdwsVisibilities;
+    FInspectOptions: TInspectOptions;
   protected
     function  CurrentWatchIndex : integer;
 
@@ -49,6 +60,9 @@ type
     procedure Finalize; override;
     procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
   public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
     procedure UpdateInfo;
   end;
 
@@ -58,13 +72,30 @@ implementation
 
 uses
   dwsUtils,
-  dwsSymbols,
   dwsExprs,
   dwsDebugger,
   amInputQueryDialog;
 
 
 { TfrmDwsIdeWatchesFrame }
+
+constructor TScriptDebuggerWatchesFrame.Create(AOwner: TComponent);
+begin
+  inherited;
+
+  FEvaluationBuilder := TInfoEvaluationBuilder.Create(TreeListWatches);
+
+  FEvaluationBuilder.InspectOptions := FEvaluationBuilder.InspectOptions + [ioShowFields, ioShowProperties];
+
+  FVisibilities := FEvaluationBuilder.Visibilities;
+  FInspectOptions := FEvaluationBuilder.InspectOptions;
+end;
+
+destructor TScriptDebuggerWatchesFrame.Destroy;
+begin
+  FEvaluationBuilder.Free;
+  inherited;
+end;
 
 procedure TScriptDebuggerWatchesFrame.actAddWatchExecute(Sender: TObject);
 var
@@ -95,8 +126,7 @@ end;
 
 procedure TScriptDebuggerWatchesFrame.actDeleteWatchUpdate(Sender: TObject);
 begin
-  with Sender as TAction do
-    Enabled := CurrentWatchIndex >= 0;
+  TAction(Sender).Enabled := (TreeListWatches.FocusedNode <> nil);
 end;
 
 procedure TScriptDebuggerWatchesFrame.actEditWatchExecute(Sender: TObject);
@@ -118,14 +148,13 @@ end;
 
 procedure TScriptDebuggerWatchesFrame.actEditWatchUpdate(Sender: TObject);
 begin
-  with Sender as TAction do
-    Enabled := CurrentWatchIndex >= 0;
+  TAction(Sender).Enabled := (TreeListWatches.FocusedNode <> nil);
 end;
 
 function TScriptDebuggerWatchesFrame.CurrentWatchIndex: integer;
 begin
-  if lvWatches.ItemFocused <> nil then
-    Result := lvWatches.ItemFocused.Index
+  if (TreeListWatches.FocusedNode <> nil) then
+    Result := TreeListWatches.FocusedNode.Index
   else
     Result := -1;
 end;
@@ -151,63 +180,63 @@ procedure TScriptDebuggerWatchesFrame.Initialize(const ADebugger: IScriptDebugge
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
 
+  FEvaluationBuilder.Initialize(ADebugger);
+
+  TreeListWatches.Images := AImageListSymbols;
+
   UpdateInfo;
 end;
 
-procedure TScriptDebuggerWatchesFrame.lvWatchesDblClick(Sender: TObject);
+procedure TScriptDebuggerWatchesFrame.TreeListWatchesDblClick(Sender: TObject);
 begin
   actEditWatch.Execute;
 end;
 
-procedure TScriptDebuggerWatchesFrame.lvWatchesEnter(Sender: TObject);
+procedure TScriptDebuggerWatchesFrame.TreeListWatchesEnter(Sender: TObject);
 begin
   ActionList.State := asNormal;
 end;
 
-procedure TScriptDebuggerWatchesFrame.lvWatchesExit(Sender: TObject);
+procedure TScriptDebuggerWatchesFrame.TreeListWatchesExit(Sender: TObject);
 begin
   ActionList.State := asSuspended;
 end;
 
-procedure TScriptDebuggerWatchesFrame.UpdateInfo;
-var
-  I : integer;
-  S : string;
-  V : variant;
-  Item : TListItem;
-  Watch : TdwsDebuggerWatch;
+procedure TScriptDebuggerWatchesFrame.TreeListWatchesExpanding(Sender: TcxCustomTreeList; ANode: TcxTreeListNode;
+  var Allow: Boolean);
 begin
-  lvWatches.Items.BeginUpdate;
+  FEvaluationBuilder.PopulateNode(ANode);
+end;
+
+procedure TScriptDebuggerWatchesFrame.UpdateInfo;
+begin
+  var Watches := Debugger.GetDebugger.Watches;
+
+  Watches.Update;
+
+  FEvaluationBuilder.BeginUpdate;
   try
-    lvWatches.Items.Clear;
-
-    Debugger.GetDebugger.Watches.Update;
-
-    for I  := 0 to Debugger.GetDebugger.Watches.Count-1 do
+    for var i  := 0 to Watches.Count-1 do
     begin
-      Watch := Debugger.GetDebugger.Watches[I];
-      if Watch.ValueInfo = nil then
-        S := '[Process not accessible]'
-      else
-      begin
-        V := Watch.ValueInfo.Value;
-        if (not VarIsType(V, varUnknown)) then
-        begin
-          S := VarToStr( V );
-          if VarIsStr( V ) then
-             S := '''' + S + '''';
-        end else
-          S := '(unknown)';
+      var Watch := Watches[i];
+
+      var ErrorText := '';
+      case Watch.EvaluationError of
+        dweeCompile:
+          ErrorText := '(compilation error)';
+
+        dweeEvaluation:
+          ErrorText := '(evaluation error)';
       end;
 
-      Item := lvWatches.Items.Add;
-      Item.Caption := Watch.ExpressionText;
-      Item.SubItems.Add( S );
+      FEvaluationBuilder.EvaluateExpression(Watch.Evaluator, Watch.ValueInfo, Watch.ExpressionText);
 
       Watch.ClearEvaluator;
     end;
+
+    FEvaluationBuilder.PurgeUnusedNodes;
   finally
-    lvWatches.Items.EndUpdate;
+    FEvaluationBuilder.EndUpdate;
   end;
 end;
 

@@ -36,7 +36,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
     OnDblClick = TreeListVariablesDblClick
     OnDeletion = TreeListVariablesDeletion
     OnExpanding = TreeListVariablesExpanding
-    object cxTreeList1Column1: TcxTreeListColumn
+    object TreeListVariablesColumnVariable: TcxTreeListColumn
       Caption.Text = 'Variable'
       Width = 100
       Position.ColIndex = 0
@@ -45,7 +45,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       Summary.FooterSummaryItems = <>
       Summary.GroupFooterSummaryItems = <>
     end
-    object cxTreeList1Column2: TcxTreeListColumn
+    object TreeListVariablesColumnValue: TcxTreeListColumn
       Caption.Text = 'Value'
       Width = 100
       Position.ColIndex = 1
@@ -54,7 +54,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       Summary.FooterSummaryItems = <>
       Summary.GroupFooterSummaryItems = <>
     end
-    object cxTreeList1Column3: TcxTreeListColumn
+    object TreeListVariablesColumnType: TcxTreeListColumn
       Caption.Text = 'Type'
       Width = 100
       Position.ColIndex = 2
