@@ -47,10 +47,10 @@ type
     TreeListVariablesColumnVariable: TcxTreeListColumn;
     TreeListVariablesColumnValue: TcxTreeListColumn;
     TreeListVariablesColumnType: TcxTreeListColumn;
-    cxStyleRepository1: TcxStyleRepository;
+    StyleRepository: TcxStyleRepository;
     StyleBackground: TcxStyle;
-    dxBarPopupMenu1: TdxBarPopupMenu;
-    dxBarManager1: TdxBarManager;
+    PopupMenu: TdxBarPopupMenu;
+    BarManager: TdxBarManager;
     dxBarSeparator1: TdxBarSeparator;
     MenuItemScopePublished: TdxBarButton;
     MenuItemScopePublic: TdxBarButton;
@@ -62,7 +62,7 @@ type
     MenuItemMembersFields: TdxBarButton;
     MenuItemItemWatch: TdxBarButton;
     MenuItemItemModify: TdxBarButton;
-    ActionList1: TActionList;
+    ActionList: TActionList;
     ActionItemWatch: TAction;
     ActionItemModify: TAction;
     MenuItemMembersPropertyGetters: TdxBarButton;
@@ -247,6 +247,8 @@ begin
   TAction(Sender).Enabled := (TreeListVariables.FocusedNode <> nil);
 end;
 
+// -----------------------------------------------------------------------------
+
 procedure TScriptDebuggerLocalVariablesFrame.ActionItemWatchExecute(Sender: TObject);
 begin
   var Node := TreeListVariables.FocusedNode;
@@ -273,6 +275,8 @@ begin
   TAction(Sender).Enabled := (TreeListVariables.FocusedNode <> nil);
 end;
 
+// -----------------------------------------------------------------------------
+
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberFieldsExecute(Sender: TObject);
 begin
   if (TAction(Sender).Checked) then
@@ -294,8 +298,14 @@ begin
     Include(FInspectOptions, ioShowInherited)
   else
     Exclude(FInspectOptions, ioShowInherited);
-  FEvaluationBuilder.InspectOptions := FInspectOptions;
-  UpdateInfo;
+
+  FEvaluationBuilder.BeginUpdate;
+  try
+    FEvaluationBuilder.InspectOptions := FInspectOptions;
+    UpdateInfo;
+  finally
+    FEvaluationBuilder.EndUpdate;
+  end;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberInheritedUpdate(Sender: TObject);
@@ -309,8 +319,14 @@ begin
     Include(FInspectOptions, ioShowProperties)
   else
     Exclude(FInspectOptions, ioShowProperties);
-  FEvaluationBuilder.InspectOptions := FInspectOptions;
-  UpdateInfo;
+
+  FEvaluationBuilder.BeginUpdate;
+  try
+    FEvaluationBuilder.InspectOptions := FInspectOptions;
+    UpdateInfo;
+  finally
+    FEvaluationBuilder.EndUpdate;
+  end;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberPropertiesUpdate(Sender: TObject);
@@ -324,8 +340,14 @@ begin
     Include(FInspectOptions, ioAllowPropertySideEffects)
   else
     Exclude(FInspectOptions, ioAllowPropertySideEffects);
-  FEvaluationBuilder.InspectOptions := FInspectOptions;
-  UpdateInfo;
+
+  FEvaluationBuilder.BeginUpdate;
+  try
+    FEvaluationBuilder.InspectOptions := FInspectOptions;
+    UpdateInfo;
+  finally
+    FEvaluationBuilder.EndUpdate;
+  end;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewMemberPropertySideEffectsUpdate(Sender: TObject);
@@ -340,9 +362,14 @@ begin
     Include(FInspectOptions, ioShowGlobal)
   else
     Exclude(FInspectOptions, ioShowGlobal);
-  FEvaluationBuilder.InspectOptions := FInspectOptions;
-  UpdateInfo;
-  TreeListVariablesColumnScope.Visible := (ioShowGlobal in FInspectOptions);
+
+  FEvaluationBuilder.BeginUpdate;
+  try
+    FEvaluationBuilder.InspectOptions := FInspectOptions;
+    UpdateInfo;
+  finally
+    FEvaluationBuilder.EndUpdate;
+  end;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeGlobalUpdate(Sender: TObject);
@@ -359,9 +386,14 @@ begin
     Include(FVisibilities, Visibility)
   else
     Exclude(FVisibilities, Visibility);
-  FEvaluationBuilder.Visibilities := FVisibilities;
 
-  UpdateInfo;
+  FEvaluationBuilder.BeginUpdate;
+  try
+    FEvaluationBuilder.Visibilities := FVisibilities;
+    UpdateInfo;
+  finally
+    FEvaluationBuilder.EndUpdate;
+  end;
 end;
 
 procedure TScriptDebuggerLocalVariablesFrame.ActionViewScopeUpdate(Sender: TObject);

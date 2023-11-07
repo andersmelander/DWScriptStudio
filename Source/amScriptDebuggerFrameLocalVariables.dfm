@@ -29,7 +29,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
     OptionsView.ColumnAutoWidth = True
     OptionsView.DynamicIndent = True
     OptionsView.TreeLineStyle = tllsNone
-    PopupMenu = dxBarPopupMenu1
+    PopupMenu = PopupMenu
     ScrollbarAnnotations.CustomAnnotations = <>
     Styles.Background = StyleBackground
     TabOrder = 0
@@ -73,7 +73,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       Summary.GroupFooterSummaryItems = <>
     end
   end
-  object cxStyleRepository1: TcxStyleRepository
+  object StyleRepository: TcxStyleRepository
     Left = 40
     Top = 28
     PixelsPerInch = 96
@@ -82,8 +82,8 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       Color = clWhite
     end
   end
-  object dxBarPopupMenu1: TdxBarPopupMenu
-    BarManager = dxBarManager1
+  object PopupMenu: TdxBarPopupMenu
+    BarManager = BarManager
     ItemLinks = <
       item
         Visible = True
@@ -144,7 +144,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
     Top = 72
     PixelsPerInch = 96
   end
-  object dxBarManager1: TdxBarManager
+  object BarManager: TdxBarManager
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
@@ -233,7 +233,7 @@ object ScriptDebuggerLocalVariablesFrame: TScriptDebuggerLocalVariablesFrame
       ButtonStyle = bsChecked
     end
   end
-  object ActionList1: TActionList
+  object ActionList: TActionList
     Left = 188
     Top = 132
     object ActionItemWatch: TAction
