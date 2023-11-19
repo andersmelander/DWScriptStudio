@@ -324,7 +324,7 @@ type
     MenuItemFileSaveAs: TdxBarButton;
     MenuItemFileSaveProjectAs: TdxBarButton;
     MenuItemFileCloseAll: TdxBarButton;
-    MenuItemFileExit: TdxBarButton;
+    MenuItemFileExit: TdxBarLargeButton;
     MenuItemEditCut: TdxBarButton;
     MenuItemEditCopy: TdxBarButton;
     MenuItemEditPaste: TdxBarButton;
