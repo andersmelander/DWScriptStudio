@@ -125,6 +125,10 @@ type
 // -----------------------------------------------------------------------------
   TEditorPage = class(TObject, IUnknown, IScriptDebugEditPage)
   private
+    const EditorGutterWidth = 64;
+    const EditorFontName = 'Courier New';
+    const EditorFontSize = 10;
+  private
     FEditor: TSynEdit;
     FPage: TcxTabSheet;
     FForm: TFormScriptDebugger;
@@ -187,6 +191,8 @@ type
   public
     constructor Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet); reintroduce;
     destructor Destroy; override;
+
+    procedure SetupDPIAware;
 
     procedure LoadFromFile(const AFilename: string);
     procedure LoadFromStream(Stream: TStream);
@@ -663,6 +669,7 @@ type
 
   protected
     procedure WMWindowPosChanged(var Msg: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
+    procedure WMDpiChanged(var Message: TWMDpi); message WM_DPICHANGED;
     procedure MsgExecReset(var Msg: TMessage); message MSG_EXEC_RESET;
     procedure MsgFormMaximize(var Msg: TMessage); message MSG_FORM_MAXIMIZE;
     procedure DoCreate; override;
@@ -672,6 +679,11 @@ type
     procedure LoadRecentFiles;
     procedure SaveRecentFiles;
     procedure AddRecentFile(const Filename: string);
+  private
+    // HighDPI
+    FDPIScale: Double;
+  public
+    function DPIAware(Value: Integer): Integer;
   private
     // Layout
     FLayoutName: string; // Currently selected layout
@@ -1391,7 +1403,7 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
     FEditor.Parent  := FPage;
     FEditor.Align   := alClient;
     FEditor.BorderStyle := bsNone;
-    FEditor.Gutter.Width := 64;
+    FEditor.Gutter.Width := EditorGutterWidth;
     FEditor.PopupMenu := AOwner.EditorPagePopupMenu;
     FEditor.WantTabs := True;
     FEditor.FontSmoothing := fsmClearType;
@@ -1414,8 +1426,8 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
       FEditor.Font.Size := ScriptSettings.Editor.FontSize;
     end else
     begin
-      FEditor.Font.Name := 'Courier New';
-      FEditor.Font.Size := 10;
+      FEditor.Font.Name := EditorFontName;
+      FEditor.Font.Size := EditorFontSize;
     end;
 
     FEditor.Options := [
@@ -1476,11 +1488,9 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
 
     FForm.SynParameters.AddEditor(FEditor);
     FForm.SynParameters.Font.Name := FEditor.Font.Name;
-    FForm.SynParameters.Font.Size := FEditor.Font.Size - 1;
 
     FForm.SynCodeCompletion.AddEditor(FEditor);
     FForm.SynCodeCompletion.Font.Name := FEditor.Font.Name;
-    FForm.SynCodeCompletion.Font.Size := FEditor.Font.Size - 1;
     begin
       var Column := FForm.SynCodeCompletion.Columns.Add;
       Column.ColumnWidth := -1;//FForm.SynCodeCompletion.Form.Canvas.TextWidth('constructor')+16+8; // 16=Glyph, 8=margin
@@ -1504,6 +1514,8 @@ constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
     FEditor.OnStatusChange := SynEditorStatusChange;
 
     TEditorPageSynEditPlugin.Create(Self);
+
+    SetupDPIAware;
   end;
 
 begin
@@ -1938,6 +1950,18 @@ begin
   end;
 end;
 
+procedure TEditorPage.SetupDPIAware;
+begin
+  var FontSize: integer;
+  if (ScriptSettings.Editor.FontName <> '') then
+    FontSize := ScriptSettings.Editor.FontSize
+  else
+    FontSize := EditorFontSize;
+
+  FForm.SynParameters.Font.Size := FForm.DPIAware(FontSize-1);
+  FForm.SynCodeCompletion.Font.Size := FForm.DPIAware(FontSize-1);
+end;
+
 // SetCurrentLine
 //
 function TEditorPage.Save: boolean;
@@ -2101,25 +2125,23 @@ end;
 
 // SynEditGutterPaint
 //
-procedure TEditorPage.SynEditGutterPaint(Sender: TObject; aLine, X,
-  Y: Integer);
+procedure TEditorPage.SynEditGutterPaint(Sender: TObject; aLine, X, Y: Integer);
 var
   GutterWidth: Integer;
   ImgIndex: Integer;
   R: TRect;
   LineNumText: string;
   LineNumTextRect: TRect;
-  Wdth: Integer;
 label
   DrawGutter;
 begin
-  GutterWidth := FEditor.Gutter.Width - 5;
+  GutterWidth := FForm.DPIAware(EditorGutterWidth - 5);
 
   // Ruler background
   if Y = 0 then
   begin
     FEditor.Canvas.Brush.Color := Lighten(clBtnFace, 6);
-    R := Rect(24, 0, GutterWidth, FEditor.Height);
+    R := Rect(FForm.DPIAware(24), 0, GutterWidth, FEditor.Height);
     FEditor.Canvas.FillRect(R);
   end;
 
@@ -2163,28 +2185,30 @@ begin
     csOriginal: goto DrawGutter;
   end;
 
-  R := Rect(GutterWidth - 3, y, GutterWidth, y + FEditor.LineHeight);
+  R := Rect(FForm.DPIAware(EditorGutterWidth - 5 - 3), y, GutterWidth, y + FEditor.LineHeight);
   FEditor.Canvas.FillRect(R);
   FEditor.Canvas.Brush.Style := bsClear;
 
 DrawGutter:
-  Dec(GutterWidth, 4);
+  GutterWidth := FForm.DPIAware(EditorGutterWidth - 5 - 4);
+
   if (ALine = 1) or (aLine = FEditor.CaretY) or (ALine mod 10 = 0) then
   begin
+
     LineNumText := IntToStr(aLine);
     LineNumTextRect := Rect(x, y, GutterWidth, y + FEditor.LineHeight);
-    FEditor.Canvas.TextRect(LineNumTextRect, LineNumText, [tfVerticalCenter,
-      tfSingleLine, tfRight]);
+    FEditor.Canvas.TextRect(LineNumTextRect, LineNumText, [tfVerticalCenter, tfSingleLine, tfRight]);
   end
   else
   begin
     FEditor.Canvas.Pen.Color := FEditor.Gutter.Font.Color;
+    var GutterFrom: integer;
     if (aLine mod 5) = 0 then
-      Wdth := 5
+      GutterFrom := FForm.DPIAware(EditorGutterWidth - 5 - 4 - 5)
     else
-      Wdth := 2;
+      GutterFrom := FForm.DPIAware(EditorGutterWidth - 5 - 4 - 2);
     Inc(y, FEditor.LineHeight div 2);
-    FEditor.Canvas.MoveTo(GutterWidth - Wdth, y);
+    FEditor.Canvas.MoveTo(GutterFrom, y);
     FEditor.Canvas.LineTo(GutterWidth, y);
   end;
 end;
@@ -3025,6 +3049,16 @@ begin
     CurrentEditor.InvalidateGutterLine(AScriptPos.Line);
     CurrentEditor.InvalidateLine(AScriptPos.Line);
   end;
+end;
+
+procedure TFormScriptDebugger.WMDpiChanged(var Message: TWMDpi);
+begin
+  inherited;
+
+  FDPIScale := Monitor.PixelsPerInch / 96;
+
+  for var EditorPage in FPages do
+    EditorPage.SetupDPIAware;
 end;
 
 procedure TFormScriptDebugger.WMWindowPosChanged(var Msg: TWMWindowPosChanged);
@@ -4175,6 +4209,14 @@ begin
     Editor.BlockBegin := Editor.BlockEnd;
 
   Editor.CaretXY := Editor.BlockBegin;
+end;
+
+function TFormScriptDebugger.DPIAware(Value: Integer): Integer;
+begin
+  if (FDPIScale = 0.0) then
+    FDPIScale := Monitor.PixelsPerInch / 96;
+
+  Result := Round(Value * FDPIScale);
 end;
 
 procedure TFormScriptDebugger.DropFileTarget1Drop(Sender: TObject; ShiftState: TShiftState; APoint: TPoint; var Effect: Integer);

@@ -8,10 +8,9 @@ object FormScriptDebugger: TFormScriptDebugger
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
   Font.Style = []
-  OldCreateOrder = False
   Position = poMainFormCenter
   ShowHint = True
   OnClose = FormClose
@@ -156,11 +155,8 @@ object FormScriptDebugger: TFormScriptDebugger
                     end>
                   PaintStyle = stpsUseLookAndFeel
                   SizeGrip = False
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -11
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
+                  ParentFont = True
+                  ExplicitTop = 448
                 end
               end
             end
@@ -4282,7 +4278,7 @@ object FormScriptDebugger: TFormScriptDebugger
     NotDocking = [dsNone]
     PopupMenuLinks = <>
     ShowShortCutInHint = True
-    UseSystemFont = True
+    UseSystemFont = False
     Left = 444
     Top = 260
     PixelsPerInch = 96
@@ -5427,8 +5423,8 @@ object FormScriptDebugger: TFormScriptDebugger
     DockStyle = dsVS2005
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
     Font.Style = []
     Images = SmallImages
     LookAndFeel.SkinName = 'VisualStudio2013Blue'

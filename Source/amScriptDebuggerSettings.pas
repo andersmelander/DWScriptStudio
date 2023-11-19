@@ -57,6 +57,7 @@ type
     FValid: boolean;
     FMaximized: boolean;
     FVisible: boolean;
+    FPixelsPerInch: integer;
     FLeft: integer;
     FHeight: integer;
     FWidth: integer;
@@ -66,6 +67,7 @@ type
     property Height: integer read FHeight write FHeight default -1;
     property Width: integer read FWidth write FWidth default -1;
     property Maximized: boolean read FMaximized write FMaximized default False;
+  private
   protected
     procedure ReadSection(const Key: string); override;
     procedure WriteSection(const Key: string); override;
@@ -75,6 +77,7 @@ type
     procedure ResetSettings;
   published
     property Valid: boolean read FValid write FValid default False;
+    property PixelsPerInch: integer read FPixelsPerInch write FPixelsPerInch;
     property Top: integer read FTop write FTop;
     property Left: integer read FLeft write FLeft;
   end;
@@ -262,11 +265,19 @@ var
   Monitor: TMonitor;
   WorkareaRect: TRect;
   NewTop, NewLeft, NewWidth, NewHeight: integer;
+  DPIRatio: Double;
+
+  function DPIScale(Value: integer): integer;
+  begin
+    Result := Round(Value * DPIRatio);
+  end;
+
 begin
   Result := Valid;
 
   if (not Result) then
     exit;
+
 
   TFormCracker(Form).SetDesigning(True, False); // To avoid RecreateWnd
   try
@@ -282,14 +293,24 @@ begin
   // If the point is outside available monitors then the nearest monitor is used.
   Monitor := Screen.MonitorFromPoint(Point(Left, Top), mdNearest);
 
+  // The VCL assumes that the form size/position is specified in the Form.PixelsPerInch
+  // scale and will automatically scale the form to the current PixelsPerInch after it
+  // has been created. In order to not have the form scaled twice, we need to restore
+  // the form size/position to the design PixelsPerInch and then let the VCL do its thing.
+  if (PixelsPerInch > 0) then
+    DPIRatio := Form.PixelsPerInch / PixelsPerInch
+  else
+    DPIRatio := 1.0;
+
   WorkareaRect := Monitor.WorkareaRect;
 
   if (Height <> -1) then
-    NewHeight := Min(Height, WorkareaRect.Height)
+    NewHeight := Min(DPIScale(Height), WorkareaRect.Height)
   else
     NewHeight := TFormCracker(Form).Height;
+
   if (Width <> -1) then
-    NewWidth := Min(Width, WorkareaRect.Width)
+    NewWidth := Min(DPIScale(Width), WorkareaRect.Width)
   else
     NewWidth := TFormCracker(Form).Width;
 
@@ -328,6 +349,7 @@ begin
   Width := wp.rcNormalPosition.Right-Left;
   Maximized := (Form.WindowState = wsMaximized);
   Visible := Form.Visible;
+  PixelsPerInch := Form.Monitor.PixelsPerInch;
 
   Result := True;
 end;
@@ -353,6 +375,7 @@ begin
   FWidth := -1;
   FHeight := -1;
   FMaximized := False;
+  FPixelsPerInch := 0;
 end;
 
 //------------------------------------------------------------------------------
