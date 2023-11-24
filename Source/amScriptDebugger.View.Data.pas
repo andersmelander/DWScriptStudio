@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.ImageList, Vcl.ImgList, Vcl.Controls,
-  cxImageList, cxGraphics;
+  cxImageList, cxGraphics, dxSkinsCore, dxCore, cxClasses, cxLookAndFeels, dxSkinsForm;
 
 type
   TDataModuleDebuggerViewData = class(TDataModule)
@@ -12,6 +12,8 @@ type
     ImagesLarge: TcxImageList;
     SmallImages: TcxImageList;
     ImageListMessage: TcxImageList;
+    SkinController: TdxSkinController;
+    LookAndFeelController: TcxLookAndFeelController;
   private
     class destructor Destroy;
   public
@@ -43,6 +45,9 @@ implementation
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
 {$R *.dfm}
+
+uses
+  dxSkinTheBezier;
 
 var
   FDebuggerViewData: TDataModuleDebuggerViewData;

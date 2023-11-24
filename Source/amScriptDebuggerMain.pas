@@ -48,7 +48,7 @@ uses
   dxRibbonForm,
   dxBarBuiltInMenu, dxRibbonCustomizationForm, dxSkinsForm, dxBarApplicationMenu,
   dxBarExtItems, cxImageList, cxShellCommon, cxContainer, cxEdit, cxTextEdit, cxMaskEdit, cxDropDownEdit,
-  cxShellComboBox, cxListView, cxShellListView,
+  cxShellComboBox, cxListView, cxShellListView, dxCore,
 
   SynEdit, SynEditHighlighter, SynHighlighterDWS, SynEditTypes,
   SynEditKeyCmds, SynEditMiscClasses, SynEditSearch, SynEditPlugins,
@@ -79,7 +79,7 @@ uses
   amScriptDebuggerFrameSymbols,
   amScriptDebuggerFrameStack,
   amScriptDebuggerFrameAST,
-  amScriptDebuggerFrameBreakPoints, dxCore;
+  amScriptDebuggerFrameBreakPoints;
 
 const
   ecOpenFileUnderCursor = ecUserFirst;
@@ -314,7 +314,7 @@ type
     SaveSourceDialog: TFileSaveDialog;
     UpdateTimer: TTimer;
     ActionExit: TAction;
-    dxBarManager1: TdxBarManager;
+    BarManager: TdxBarManager;
     MenuItemFileNewProject: TdxBarButton;
     MenuItemFileNewUnit: TdxBarButton;
     MenuItemFileNewInclude: TdxBarButton;
@@ -5155,7 +5155,7 @@ const
 begin
   Page := TcxTabSheet.Create(Self);
 
-  MenuLink := dxBarManager1.PopupMenuLinks.Add;
+  MenuLink := BarManager.PopupMenuLinks.Add;
   MenuLink.Control := Page;
   MenuLink.PopupMenu := PopupMenuEditorTabs;
 

@@ -7602,4 +7602,17 @@ object DataModuleDebuggerViewData: TDataModuleDebuggerViewData
           0000}
       end>
   end
+  object SkinController: TdxSkinController
+    ScrollbarMode = sbmClassic
+    SkinName = 'TheBezier'
+    SkinPaletteName = 'Plastic Space'
+    Left = 228
+    Top = 32
+  end
+  object LookAndFeelController: TcxLookAndFeelController
+    ScrollbarMode = sbmClassic
+    SkinName = 'TheBezier'
+    Left = 228
+    Top = 92
+  end
 end

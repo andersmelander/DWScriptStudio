@@ -21,21 +21,21 @@ object FormScriptDebugger: TFormScriptDebugger
   TextHeight = 15
   object DockSiteMain: TdxDockSite
     Left = 0
-    Top = 157
+    Top = 154
     Width = 1117
-    Height = 581
+    Height = 584
     AllowDockClients = [dtClient, dtLeft, dtRight, dtBottom]
     Align = alClient
     ExplicitTop = 124
     ExplicitHeight = 614
     DockingType = 5
     OriginalWidth = 1117
-    OriginalHeight = 581
+    OriginalHeight = 584
     object dxLayoutDockSite5: TdxLayoutDockSite
       Left = 225
       Top = 0
       Width = 892
-      Height = 581
+      Height = 584
       ParentShowHint = False
       ShowHint = False
       ExplicitHeight = 614
@@ -46,7 +46,7 @@ object FormScriptDebugger: TFormScriptDebugger
         Left = 0
         Top = 0
         Width = 667
-        Height = 581
+        Height = 584
         ParentShowHint = False
         ShowHint = False
         DockingType = 0
@@ -56,7 +56,7 @@ object FormScriptDebugger: TFormScriptDebugger
           Left = 0
           Top = 0
           Width = 667
-          Height = 441
+          Height = 444
           ParentShowHint = False
           ShowHint = False
           ExplicitHeight = 474
@@ -67,7 +67,7 @@ object FormScriptDebugger: TFormScriptDebugger
             Left = 169
             Top = 0
             Width = 498
-            Height = 441
+            Height = 444
             ParentShowHint = False
             ShowHint = False
             DockingType = 0
@@ -77,7 +77,7 @@ object FormScriptDebugger: TFormScriptDebugger
               Left = 0
               Top = 0
               Width = 228
-              Height = 441
+              Height = 444
               ParentShowHint = False
               ShowHint = False
               ExplicitHeight = 474
@@ -88,7 +88,7 @@ object FormScriptDebugger: TFormScriptDebugger
                 Left = 0
                 Top = 0
                 Width = 228
-                Height = 441
+                Height = 444
                 ParentShowHint = False
                 ShowHint = False
                 DockingType = 0
@@ -99,7 +99,7 @@ object FormScriptDebugger: TFormScriptDebugger
                 Left = 0
                 Top = 0
                 Width = 228
-                Height = 441
+                Height = 444
                 AllowDockClients = []
                 AllowFloating = False
                 AutoHide = False
@@ -114,7 +114,7 @@ object FormScriptDebugger: TFormScriptDebugger
                   Left = 0
                   Top = 0
                   Width = 222
-                  Height = 415
+                  Height = 418
                   Align = alClient
                   PopupMenu = PopupMenuEditorTabs
                   TabOrder = 0
@@ -132,13 +132,13 @@ object FormScriptDebugger: TFormScriptDebugger
                   OnMouseDown = PageControlEditorMouseDown
                   OnNewTabButtonClick = PageControlEditorNewTabButtonClick
                   ExplicitHeight = 448
-                  ClientRectBottom = 415
+                  ClientRectBottom = 418
                   ClientRectRight = 222
                   ClientRectTop = 0
                 end
                 object StatusBar: TdxStatusBar
                   Left = 0
-                  Top = 415
+                  Top = 418
                   Width = 222
                   Height = 20
                   Panels = <
@@ -169,7 +169,7 @@ object FormScriptDebugger: TFormScriptDebugger
               Left = 228
               Top = 0
               Width = 270
-              Height = 441
+              Height = 444
               ParentShowHint = False
               ShowHint = False
               ActiveChildIndex = -1
@@ -185,7 +185,7 @@ object FormScriptDebugger: TFormScriptDebugger
                 Left = 0
                 Top = 0
                 Width = 270
-                Height = 142
+                Height = 143
                 HelpKeyword = 'TScriptDebuggerCallStackFrame'
                 OnVisibleChanged = DockPanelDebugFrameVisibleChanged
                 AllowFloating = True
@@ -202,9 +202,9 @@ object FormScriptDebugger: TFormScriptDebugger
               end
               object DockPanelLocalVars: TdxDockPanel
                 Left = 0
-                Top = 142
+                Top = 143
                 Width = 270
-                Height = 186
+                Height = 187
                 HelpKeyword = 'TScriptDebuggerLocalVariablesFrame'
                 OnVisibleChanged = DockPanelDebugFrameVisibleChanged
                 AllowFloating = True
@@ -221,9 +221,9 @@ object FormScriptDebugger: TFormScriptDebugger
               end
               object DockPanelWatches: TdxDockPanel
                 Left = 0
-                Top = 328
+                Top = 330
                 Width = 270
-                Height = 113
+                Height = 114
                 HelpKeyword = 'TScriptDebuggerWatchesFrame'
                 OnVisibleChanged = DockPanelDebugFrameVisibleChanged
                 AllowFloating = True
@@ -244,7 +244,7 @@ object FormScriptDebugger: TFormScriptDebugger
             Left = 0
             Top = 0
             Width = 169
-            Height = 441
+            Height = 444
             HelpKeyword = 'TScriptDebuggerSymbolsFrame'
             OnVisibleChanged = DockPanelDebugFrameVisibleChanged
             AllowFloating = True
@@ -262,7 +262,7 @@ object FormScriptDebugger: TFormScriptDebugger
         end
         object TabContainerDockSiteBottom: TdxTabContainerDockSite
           Left = 0
-          Top = 441
+          Top = 444
           Width = 667
           Height = 140
           ParentShowHint = False
@@ -272,7 +272,6 @@ object FormScriptDebugger: TFormScriptDebugger
           AutoHide = False
           CustomCaptionButtons.Buttons = <>
           TabsProperties.CustomButtons.Buttons = <>
-          ExplicitTop = 474
           DockingType = 4
           OriginalWidth = 185
           OriginalHeight = 140
@@ -280,7 +279,7 @@ object FormScriptDebugger: TFormScriptDebugger
             Left = 0
             Top = 0
             Width = 661
-            Height = 80
+            Height = 74
             OnVisibleChanged = DockPanelDebugOtherVisibleChanged
             AllowFloating = True
             AutoHide = False
@@ -289,6 +288,7 @@ object FormScriptDebugger: TFormScriptDebugger
             CustomCaptionButtons.Buttons = <>
             ImageIndex = 56
             TabsProperties.CustomButtons.Buttons = <>
+            ExplicitHeight = 80
             DockingType = 0
             OriginalWidth = 892
             OriginalHeight = 140
@@ -296,7 +296,7 @@ object FormScriptDebugger: TFormScriptDebugger
               Left = 0
               Top = 0
               Width = 661
-              Height = 80
+              Height = 74
               Align = alClient
               BorderStyle = bsNone
               Columns = <
@@ -314,13 +314,14 @@ object FormScriptDebugger: TFormScriptDebugger
               OnDblClick = ListViewMessagesDblClick
               OnDeletion = ListViewMessagesDeletion
               OnKeyDown = ListViewMessagesKeyDown
+              ExplicitHeight = 80
             end
           end
           object DockPanelOutput: TdxDockPanel
             Left = 0
             Top = 0
             Width = 661
-            Height = 80
+            Height = 74
             OnVisibleChanged = DockPanelDebugOtherVisibleChanged
             AllowFloating = True
             AutoHide = False
@@ -329,6 +330,7 @@ object FormScriptDebugger: TFormScriptDebugger
             CustomCaptionButtons.Buttons = <>
             ImageIndex = 57
             TabsProperties.CustomButtons.Buttons = <>
+            ExplicitHeight = 80
             DockingType = 0
             OriginalWidth = 892
             OriginalHeight = 140
@@ -336,7 +338,7 @@ object FormScriptDebugger: TFormScriptDebugger
               Left = 0
               Top = 0
               Width = 661
-              Height = 80
+              Height = 74
               Align = alClient
               BorderStyle = bsNone
               Ctl3D = False
@@ -345,13 +347,14 @@ object FormScriptDebugger: TFormScriptDebugger
               ParentCtl3D = False
               ReadOnly = True
               TabOrder = 0
+              ExplicitHeight = 80
             end
           end
           object DockPanelBreakPoints: TdxDockPanel
             Left = 0
             Top = 0
             Width = 661
-            Height = 80
+            Height = 74
             HelpType = htKeyword
             HelpKeyword = 'TScriptDebuggerBreakPointsFrame'
             OnVisibleChanged = DockPanelDebugFrameVisibleChanged
@@ -363,6 +366,7 @@ object FormScriptDebugger: TFormScriptDebugger
             ImageIndex = 55
             TabsProperties.CustomButtons.Buttons = <>
             OnClose = DockPanelDebugFrameClose
+            ExplicitHeight = 80
             DockingType = 0
             OriginalWidth = 892
             OriginalHeight = 140
@@ -373,7 +377,7 @@ object FormScriptDebugger: TFormScriptDebugger
         Left = 667
         Top = 0
         Width = 225
-        Height = 581
+        Height = 584
         ParentShowHint = False
         ShowHint = False
         ActiveChildIndex = 0
@@ -388,7 +392,7 @@ object FormScriptDebugger: TFormScriptDebugger
           Left = 0
           Top = 0
           Width = 219
-          Height = 521
+          Height = 518
           HelpKeyword = 'TScriptDebuggerStackFrame'
           OnVisibleChanged = DockPanelDebugFrameVisibleChanged
           AllowFloating = True
@@ -408,7 +412,7 @@ object FormScriptDebugger: TFormScriptDebugger
           Left = 0
           Top = 0
           Width = 219
-          Height = 521
+          Height = 518
           HelpKeyword = 'TScriptDebuggerASTFrame'
           OnVisibleChanged = DockPanelDebugFrameVisibleChanged
           AllowFloating = True
@@ -430,7 +434,7 @@ object FormScriptDebugger: TFormScriptDebugger
       Left = 0
       Top = 0
       Width = 225
-      Height = 581
+      Height = 584
       Visible = False
       OnVisibleChanged = DockPanelDebugFrameVisibleChanged
       AllowFloating = True
@@ -439,7 +443,6 @@ object FormScriptDebugger: TFormScriptDebugger
       CustomCaptionButtons.Buttons = <>
       TabsProperties.CustomButtons.Buttons = <>
       OnClose = DockPanelDebugFrameClose
-      ExplicitHeight = 614
       DockingType = 1
       OriginalWidth = 225
       OriginalHeight = 320
@@ -447,7 +450,7 @@ object FormScriptDebugger: TFormScriptDebugger
         Left = 0
         Top = 23
         Width = 219
-        Height = 528
+        Height = 526
         Align = alClient
         ReadOnly = True
         TabOrder = 0
@@ -470,14 +473,13 @@ object FormScriptDebugger: TFormScriptDebugger
     Left = 0
     Top = 0
     Width = 1117
-    Height = 157
+    Height = 154
     ApplicationButton.KeyTip = 'F'
     ApplicationButton.Menu = BarApplicationMenu
     ApplicationButton.Text = 'File'
-    BarManager = dxBarManager1
+    BarManager = BarManager
     Style = rs2016
-    ColorSchemeAccent = rcsaOrange
-    ColorSchemeName = 'VisualStudio2013Blue'
+    ColorSchemeName = 'TheBezier'
     EnableTabAero = False
     QuickAccessToolbar.Toolbar = BarManagerBarQuickAccess
     SupportNonClientDrawing = True
@@ -1300,7 +1302,7 @@ object FormScriptDebugger: TFormScriptDebugger
       Action = ActionEditToggleReadOnly
     end
   end
-  object dxBarManager1: TdxBarManager
+  object BarManager: TdxBarManager
     AllowReset = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -1348,11 +1350,11 @@ object FormScriptDebugger: TFormScriptDebugger
     ImageOptions.StretchGlyphs = False
     ImageOptions.UseLargeImagesForLargeIcons = True
     ImageOptions.UseLeftBottomPixelAsTransparent = False
-    LookAndFeel.SkinName = 'VisualStudio2013Blue'
     MenusShowRecentItemsFirst = False
     NotDocking = [dsNone]
     PopupMenuLinks = <>
     ShowShortCutInHint = True
+    Style = bmsUseLookAndFeel
     UseSystemFont = False
     Left = 444
     Top = 260
@@ -1562,7 +1564,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object dxBarManager1Bar10: TdxBar
       Caption = 'Custom 7'
       CaptionButtons = <>
-      DockedLeft = 312
+      DockedLeft = 310
       DockedTop = 0
       FloatLeft = 1065
       FloatTop = 8
@@ -1628,7 +1630,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object dxBarManager1Bar12: TdxBar
       Caption = 'Custom 9'
       CaptionButtons = <>
-      DockedLeft = 399
+      DockedLeft = 395
       DockedTop = 0
       FloatLeft = 1065
       FloatTop = 8
@@ -2369,7 +2371,6 @@ object FormScriptDebugger: TFormScriptDebugger
     Font.Name = 'Segoe UI'
     Font.Style = []
     Images = DataModuleDebuggerViewData.SmallImages
-    LookAndFeel.SkinName = 'VisualStudio2013Blue'
     Options = [doActivateAfterDocking, doDblClickDocking, doFloatingOnTop, doTabContainerHasCaption, doTabContainerCanAutoHide, doSideContainerCanAutoHide, doTabContainerCanInSideContainer, doRedrawOnResize, doUseCaptionAreaToClientDocking]
     ResizeStyle = drsUpdate
     OnLayoutChanged = DockingManagerLayoutChanged
@@ -2392,14 +2393,14 @@ object FormScriptDebugger: TFormScriptDebugger
     Top = 160
   end
   object PopupMenuMessages: TPopupMenu
-    Left = 48
-    Top = 648
+    Left = 60
+    Top = 556
     object Clear1: TMenuItem
       Action = ActionMessagesClear
     end
   end
   object PopupMenuEditorTabs: TdxRibbonPopupMenu
-    BarManager = dxBarManager1
+    BarManager = BarManager
     ItemLinks = <
       item
         Visible = True
@@ -2431,7 +2432,7 @@ object FormScriptDebugger: TFormScriptDebugger
     PixelsPerInch = 96
   end
   object BarApplicationMenu: TdxBarApplicationMenu
-    BarManager = dxBarManager1
+    BarManager = BarManager
     Buttons = <
       item
         Item = MenuItemFileExit
