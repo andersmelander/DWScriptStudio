@@ -224,6 +224,7 @@ uses
   amDialogs,
   amVersionInfo,
 
+  amScript.Editor.API,
   amScriptFileSystemAPI,
   amScriptFileSystem,
   amScriptHostFileSystem,
@@ -1051,7 +1052,7 @@ function TDataModuleScriptService.DoDebug(const ADocument: IScriptHostDocument; 
 var
   ScriptDebuggerSetup: IScriptDebuggerSetup;
   Environment: IdwsEnvironment;
-  EditPage: IScriptDebugEditPage;
+  Editor: IScriptEditor;
 begin
   if (ScriptProvider <> nil) and (ScriptProvider.Protected) then
   begin
@@ -1084,17 +1085,17 @@ begin
     DelphiWebScript.Config.RuntimeFileSystem := FDebuggerFileSystems.RuntimeFileSystem;
     DelphiWebScript.Config.CompileFileSystem := FDebuggerFileSystems.CompilerFileSystem;
 
-    EditPage := FDebugger.EditorPageAddNew(ScriptProvider);
+    Editor := FDebugger.CreateEditor(ScriptProvider);
   end else
   begin
     if (not Supports(FDebugger, IScriptDebuggerSetup, ScriptDebuggerSetup)) then
       raise Exception.Create('Required interface not supported by script debugger: IScriptDebuggerSetup');
 
     if (ScriptProvider <> nil) then
-      EditPage := FDebugger.EditorPageAddNew(ScriptProvider);
+      Editor := FDebugger.CreateEditor(ScriptProvider);
   end;
 
-  //EditPage.CanClose := False;
+  //Editor.CanClose := False;
 
   if (AExecution <> nil) then
   begin

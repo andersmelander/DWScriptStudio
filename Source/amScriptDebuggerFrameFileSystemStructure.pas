@@ -171,7 +171,7 @@ begin
   var FileObject := IScriptFileSystemFile(ListViewFiles.Selected.Data);
   var ScriptProvider := FileObject.CreateScriptProvider;
 
-  Debugger.EditorPageAddNew(ScriptProvider);
+  Debugger.CreateEditor(ScriptProvider);
 end;
 
 procedure TScriptDebuggerFileSystemStructureFrame.SetFolder(const Value: IScriptFileSystemFolder);

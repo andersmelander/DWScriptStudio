@@ -32,7 +32,8 @@ uses
   SynEditHighlighter,
   SynHighlighterDWS,
 
-  amScriptProviderAPI;
+  amScriptProviderAPI,
+  amScript.Editor.API;
 
 // -----------------------------------------------------------------------------
 //
@@ -86,53 +87,12 @@ type
 
 // -----------------------------------------------------------------------------
 //
-// IScriptDebugEditPage
-//
-// -----------------------------------------------------------------------------
-type
-  IScriptDebugEditPage = interface
-    procedure LoadFromFile(const AFilename: string);
-    procedure LoadFromStream(Stream: TStream);
-    procedure LoadFromString(const AScript: string);
-
-    function GetHasProvider: boolean;
-    property HasProvider: boolean read GetHasProvider;
-
-    function GetScript: string;
-    procedure SetScript(const Value: string);
-    property Script: string read GetScript write SetScript;
-
-    function GetModified: boolean;
-    property Modified: boolean read GetModified;
-    procedure ClearModified;
-
-    function GetCanClose: boolean;
-    procedure SetCanClose(const Value: boolean);
-    property CanClose: boolean read GetCanClose write SetCanClose;
-
-    function GetCaption: string;
-    procedure SetCaption(const Value: string);
-    property Caption: string read GetCaption write SetCaption;
-
-    function  GetFilename: TFileName;
-    procedure SetFileName(const Value: TFileName);
-    property FileName: TFileName read GetFilename write SetFileName;
-
-    function GetIsReadOnly: Boolean;
-    procedure SetIsReadOnly(const Value: Boolean);
-    property IsReadOnly: Boolean read GetIsReadOnly write SetIsReadOnly;
-
-    function GetIndex: integer;
-    property Index: integer read GetIndex;
-  end;
-
-
-// -----------------------------------------------------------------------------
-//
 // IScriptDebugger
 //
 // -----------------------------------------------------------------------------
 type
+  TLineNumbers = TArray<Integer>;
+
   IScriptDebugger = interface
     ['{A8C3BEBB-C732-46BF-9936-5E53519AF2A2}']
     function GetDebugger: TdwsDebugger;
@@ -143,7 +103,9 @@ type
     function UnitNameFromScriptPos(const ScriptPos: TScriptPos): string;
     function UnitNameFromInternalName(const Name: string): string;
 
-    function EditorPageAddNew(const ScriptProvider: IScriptProvider = nil): IScriptDebugEditPage;
+    function CreateEditor(const ScriptProvider: IScriptProvider = nil): IScriptEditor;
+
+    function  GetExecutableLines(const AUnitName: string): TLineNumbers;
 
     function FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
     procedure AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean = True);

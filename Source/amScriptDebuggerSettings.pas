@@ -202,8 +202,6 @@ type
     FFontSize: integer;
     FHighlighterClass: string;
     FFontName: string;
-    FHomePositionFileIdentifier: string;
-    FHomePositionFileName: string;
   protected
     procedure ApplyDefault; override;
   public
@@ -213,10 +211,6 @@ type
     property HighlighterClass: string read FHighlighterClass write FHighlighterClass;
     property FontName: string read FFontName write FFontName;
     property FontSize: integer read FFontSize write FFontSize;
-
-    // TODO : Get rid of this
-    property HomePositionFileName: string read FHomePositionFileName write FHomePositionFileName;
-    property HomePositionFileIdentifier: string read FHomePositionFileIdentifier write FHomePositionFileIdentifier;
   end;
 
 type

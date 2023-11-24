@@ -16,7 +16,6 @@ object FormScriptDebugger: TFormScriptDebugger
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnShow = FormShow
   TextHeight = 15
   object DockSiteMain: TdxDockSite
@@ -560,15 +559,6 @@ object FormScriptDebugger: TFormScriptDebugger
       Caption = 'New Project'
       ImageIndex = 6
       Visible = False
-      OnExecute = ActionFileNewProjectExecute
-    end
-    object ActionGotoHomePosition: TAction
-      Category = 'View'
-      AutoCheck = True
-      Caption = 'Goto Home Position'
-      Hint = 'Go to the file and line number at which the IDE opened'
-      OnExecute = ActionGotoHomePositionExecute
-      OnUpdate = ActionGotoHomePositionUpdate
     end
     object ActionFileNewUnit: TAction
       Category = 'File'
@@ -599,7 +589,6 @@ object FormScriptDebugger: TFormScriptDebugger
       ImageIndex = 10
       ShortCut = 16506
       Visible = False
-      OnExecute = ActionFileOpenProjectExecute
     end
     object ActionFileSave: TAction
       Category = 'File'
@@ -615,7 +604,6 @@ object FormScriptDebugger: TFormScriptDebugger
       Category = 'View'
       Caption = 'View Project Source'
       ImageIndex = 9
-      OnExecute = ActionViewProjectSourceExecute
       OnUpdate = ActionViewProjectSourceUpdate
     end
     object ActionFileSaveAsFile: TAction
@@ -635,7 +623,6 @@ object FormScriptDebugger: TFormScriptDebugger
       Category = 'File'
       Caption = 'Save Project As...'
       ImageIndex = 4
-      OnExecute = ActionFileSaveProjectAsExecute
     end
     object ActionClosePage: TAction
       Category = 'File'
@@ -2206,10 +2193,6 @@ object FormScriptDebugger: TFormScriptDebugger
       Category = 4
       ButtonStyle = bsChecked
     end
-    object ButtonGotoHomePosition: TdxBarButton
-      Action = ActionGotoHomePosition
-      Category = 4
-    end
     object BarSubItemGoto: TdxBarSubItem
       Caption = 'Goto...'
       Category = 4
@@ -2223,11 +2206,6 @@ object FormScriptDebugger: TFormScriptDebugger
         item
           Visible = True
           ItemName = 'ButtonGotoImplementation'
-        end
-        item
-          BeginGroup = True
-          Visible = True
-          ItemName = 'ButtonGotoHomePosition'
         end>
     end
     object ButtonGotoDeclaration: TdxBarButton

@@ -1,4 +1,4 @@
-unit amScriptDebuggerDialogSearch;
+﻿unit amScriptDebuggerDialogSearch;
 
 (*
  * Copyright © 2019 Anders Melander
@@ -18,7 +18,7 @@ uses
   dxSkinsCore, cxCheckBox, cxGroupBox, cxTextEdit, cxMaskEdit, cxDropDownEdit, cxLabel, cxButtons, cxRadioGroup,
   cxMRUEdit,
 
-  SynEditTypes;
+  amScript.Editor.API;
 
 type
   TFormScriptDebuggerSearch = class(TForm)
@@ -41,22 +41,19 @@ type
     procedure ActionCancelExecute(Sender: TObject);
     procedure ActionOKUpdate(Sender: TObject);
   private
-    function GetOptions: TSynSearchOptions;
+    function GetOptions: TSearchReplaceOptions;
     function GetSearchText: string;
     procedure SetSearchText(const Value: string);
-    function GetRegularExpression: boolean;
     function GetHistory: string;
     procedure SetHistory(const Value: string);
-    procedure SetOptions(const Value: TSynSearchOptions);
-    procedure SetRegularExpression(const Value: boolean);
+    procedure SetOptions(const Value: TSearchReplaceOptions);
     function GetAutoWrap: boolean;
     procedure SetAutoWrap(const Value: boolean);
   public
     function Execute: boolean;
     property SearchText: string read GetSearchText write SetSearchText;
-    property Options: TSynSearchOptions read GetOptions write SetOptions;
+    property Options: TSearchReplaceOptions read GetOptions write SetOptions;
     property History: string read GetHistory write SetHistory;
-    property RegularExpression: boolean read GetRegularExpression write SetRegularExpression;
     property AutoWrap: boolean read GetAutoWrap write SetAutoWrap;
   end;
 
@@ -99,24 +96,21 @@ begin
   Result := EditSearchText.Properties.LookupItems.Text;
 end;
 
-function TFormScriptDebuggerSearch.GetOptions: TSynSearchOptions;
+function TFormScriptDebuggerSearch.GetOptions: TSearchReplaceOptions;
 begin
   Result := [];
+  if (CheckBoxOptionRegularExpression.Checked) then
+    Include(Result, srRegEx);
   if (CheckBoxOptionCaseSensitive.Checked) then
-    Include(Result, ssoMatchCase);
+    Include(Result, srMatchCase);
   if (CheckBoxOptionWholeWords.Checked) then
-    Include(Result, ssoWholeWord);
+    Include(Result, srWholeWord);
   if (CheckBoxOptionSelectedOnly.Checked) then
-    Include(Result, ssoSelectedOnly);
+    Include(Result, srSelectedOnly);
   if (boolean(RadioGroupScope.EditValue)) then
-    Include(Result, ssoEntireScope);
+    Include(Result, srEntireScope);
   if (boolean(RadioGroupDirection.EditValue)) then
-    Include(Result, ssoBackwards);
-end;
-
-function TFormScriptDebuggerSearch.GetRegularExpression: boolean;
-begin
-  Result := (CheckBoxOptionRegularExpression.Checked);
+    Include(Result, srBackwards);
 end;
 
 function TFormScriptDebuggerSearch.GetSearchText: string;
@@ -134,18 +128,14 @@ begin
   EditSearchText.Properties.LookupItems.Text := Value;
 end;
 
-procedure TFormScriptDebuggerSearch.SetOptions(const Value: TSynSearchOptions);
+procedure TFormScriptDebuggerSearch.SetOptions(const Value: TSearchReplaceOptions);
 begin
-  CheckBoxOptionCaseSensitive.Checked := (ssoMatchCase in Value);
-  CheckBoxOptionWholeWords.Checked := (ssoWholeWord in Value);
-  CheckBoxOptionSelectedOnly.Checked := (ssoSelectedOnly in Value);
-  RadioGroupScope.EditValue := (ssoEntireScope in Value);
-  RadioGroupDirection.EditValue := (ssoBackwards in Options);
-end;
-
-procedure TFormScriptDebuggerSearch.SetRegularExpression(const Value: boolean);
-begin
-  CheckBoxOptionRegularExpression.Checked := Value;
+  CheckBoxOptionRegularExpression.Checked := (srRegEx in Value);
+  CheckBoxOptionCaseSensitive.Checked := (srMatchCase in Value);
+  CheckBoxOptionWholeWords.Checked := (srWholeWord in Value);
+  CheckBoxOptionSelectedOnly.Checked := (srSelectedOnly in Value);
+  RadioGroupScope.EditValue := (srEntireScope in Value);
+  RadioGroupDirection.EditValue := (srBackwards in Options);
 end;
 
 procedure TFormScriptDebuggerSearch.SetSearchText(const Value: string);

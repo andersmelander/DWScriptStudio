@@ -58,10 +58,12 @@ uses
   cxShellCommon, cxShellComboBox, cxShellListView,
 {$endif SHELL_EXPLORER}
 
-  SynEdit, SynEditHighlighter, SynHighlighterDWS, SynEditTypes,
-  SynEditKeyCmds, SynEditMiscClasses, SynEditSearch, SynEditPlugins,
-  SynMacroRecorder, SynCompletionProposal, SynEditAutoComplete,
-  SynEditRegexSearch,
+  SynEdit,
+  SynEditTypes,
+  SynEditHighlighter, SynHighlighterDWS,
+  SynEditKeyCmds, SynEditPlugins,
+  SynMacroRecorder, SynCompletionProposal,
+  SynEditSearch, SynEditRegexSearch,
 
   DragDrop, DropTarget, DragDropFile,
 
@@ -76,6 +78,7 @@ uses
   // UDwsIdeConfig,
   amScriptAPI,
   amScriptDebuggerAPI,
+  amScript.Editor.API,
   amScriptHostAPI,
   amScriptModule,
   amScriptProviderAPI,
@@ -91,169 +94,10 @@ uses
   amScriptDebuggerFrameFilesystemStructure;
 
 const
-  ecOpenFileUnderCursor = ecUserFirst;
-  ecToggleDeclImpl = ecUserFirst + 1;
-  ecRepeatSearch = ecUserFirst + 2;
-  ecToggleBreakPoint = ecUserFirst + 3;
-  ecAutoCompletionPropose = ecUserFirst + 4;
-  ecInsertGUID = ecUserFirst + 5;
-  ecSelectNextTab = ecUserFirst + 6;
-  ecSelectPrevTab = ecUserFirst + 7;
-
-// -----------------------------------------------------------------------------
-//
-// TSynAutoComplete
-//
-// -----------------------------------------------------------------------------
-// Redirection of SynEditAutoComplete.TSynAutoComplete
-// -----------------------------------------------------------------------------
-type
-  TSynAutoComplete = class(SynEditAutoComplete.TSynAutoComplete)
-  private
-    procedure SetOptions(const Value: TSynCompletionOptions);
-    procedure SetShortCut(const Value: TShortCut);
-  published
-    property ShortCut: TShortCut write SetShortCut;
-    property Options: TSynCompletionOptions write SetOptions;
-  end;
-
-const
   MSG_EXEC_RESET = WM_USER;
   MSG_FORM_MAXIMIZE = WM_USER+1;
 
 type
-  TFormScriptDebugger  = class;
-
-  TLineChangedState = (csOriginal, csModified, csSaved);
-  TLineNumbers = array of Integer;
-
-// -----------------------------------------------------------------------------
-//
-// TEditorPage
-//
-// -----------------------------------------------------------------------------
-  TEditorPage = class(TObject, IUnknown, IScriptDebugEditPage)
-  private
-    const EditorGutterWidth = 64;
-    const EditorFontName = 'Courier New';
-    const EditorFontSize = 10;
-  private
-    FEditor: TSynEdit;
-    FPage: TcxTabSheet;
-    FForm: TFormScriptDebugger;
-    FExecutableLines: TBits;
-    FLineChangedState: array of TLineChangedState;
-    FCurrentLine: Integer;
-    FUnderLine: Integer;
-    FFilename: string;
-    FCaption: string;
-    FScriptProvider: IScriptProvider;
-    FImages: TCustomImageList;
-
-    function  GetFilename: TFileName;
-    procedure SetFileName(const Value: TFileName);
-
-    procedure SetCurrentLine(ALine: Integer; ACol: Integer = 1; MoveCurrent: boolean = True);
-    procedure SynEditGutterPaint(Sender: TObject; aLine, X, Y: Integer);
-    procedure SynEditorKeyDown(Sender: TObject; var Key: Word;  Shift: TShiftState);
-    procedure SynEditorSpecialLineColors(Sender: TObject; Line: Integer; var Special: Boolean; var FG, BG: TColor);
-    procedure SynEditorGutterClick(Sender: TObject; Button: TMouseButton; X, Y, Line: Integer; Mark: TSynEditMark);
-    procedure SynEditorMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure SynEditorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure SynEditorProcessCommand(Sender: TObject; var Command: TSynEditorCommand; var AChar: Char; Data: pointer);
-    procedure SynEditorCommandProcessed(Sender: TObject; var Command: TSynEditorCommand; var AChar: Char; Data: Pointer);
-    procedure SynEditorStatusChange(Sender: TObject; Changes: TSynStatusChanges);
-    function GetIsReadOnly: Boolean;
-    procedure SetIsReadOnly(const Value: Boolean);
-    procedure DoOnEditorChange(ASender: TObject);
-{$ifdef DISABLED_STUFF}
-    function GetIsProjectSourcefile: Boolean;
-{$endif DISABLED_STUFF}
-
-    procedure AddBreakpoint(ALineNum: Integer; AEnabled: Boolean);
-    procedure ClearBreakpoint(ALineNum: Integer);
-    function GetBreakpointStatus(ALine: Integer): TBreakpointStatus;
-
-    procedure ClearExecutableLines;
-    procedure InitExecutableLines;
-    function IsExecutableLine(ALine: Integer): Boolean; inline;
-
-    procedure ClearLineChangeStates;
-    procedure InitLineChangeStates;
-    function GetLineChangeState(ALine: Integer): TLineChangedState; inline;
-    function GetScript: string;
-    procedure SetScript(const Value: string);
-    function GetModified: boolean;
-    function GetCanClose: boolean;
-    procedure SetCanClose(const Value: boolean);
-    function GetCaption: string;
-    procedure SetCaption(const Value: string);
-    function GetIndex: integer;
-    procedure SetScriptProvider(const Value: IScriptProvider);
-    function GetIsMainUnit: boolean;
-
-    procedure FindDeclaration(CursorPos: TBufferCoord; SymbolUsage: TSymbolUsage);
-  protected
-    // IUnknown
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
-  public
-    constructor Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet); reintroduce;
-    destructor Destroy; override;
-
-    procedure SetupDPIAware;
-
-    procedure LoadFromFile(const AFilename: string);
-    procedure LoadFromStream(Stream: TStream);
-    procedure LoadFromString(const AScript: string);
-
-    function _SaveToFile(APromptOverwrite: Boolean): boolean; overload;
-    function _SaveToFile(const AFilename: string; APromptOverwrite: Boolean): boolean; overload;
-    function SaveToStream(Stream: TStream): boolean;
-
-    procedure _SaveIfModified(APromptOverwrite: Boolean);
-    function _SaveAs: boolean;
-    function Save: boolean;
-
-    function GetHasProvider: boolean;
-    property HasProvider: boolean read GetHasProvider;
-
-    property Script: string read GetScript write SetScript;
-    property ScriptProvider: IScriptProvider read FScriptProvider write SetScriptProvider;
-
-    procedure ToggleDeclImpl;
-    procedure GotoLineNumber;
-    procedure OpenFileUnderCursor;
-
-    procedure PerformContextHelp;
-
-    function GotoIdentifier(const AIdentifier: string): Boolean;
-    procedure ShowExecutableLines;
-    procedure ToggleLineChangedStates;
-
-    function UnitName: string;
-    function InternalUnitName: string;
-
-    function CloseQuery: boolean;
-
-    property Editor: TSynEdit read FEditor;
-    property Images: TCustomImageList read FImages write FImages;
-    property FileName: TFileName read GetFilename write SetFileName;
-    property IsReadOnly: Boolean read GetIsReadOnly write SetIsReadOnly;
-{$ifdef DISABLED_STUFF}
-    property IsProjectSourcefile: Boolean read GetIsProjectSourcefile;
-{$endif DISABLED_STUFF}
-    property Modified: boolean read GetModified;
-    procedure ClearModified;
-    procedure MarkModified(Line: integer = -1);
-    property CanClose: boolean read GetCanClose write SetCanClose;
-    property Caption: string read GetCaption write SetCaption;
-    property Index: integer read GetIndex;
-    property IsMainUnit: boolean read GetIsMainUnit;
-  end;
-
-
   TMessageKind = (mkNone, mkInfo, mkWarning, mkError);
 
   TDebuggerExecutionEvent = procedure(const Execution: IdwsProgramExecution) of object;
@@ -263,8 +107,15 @@ type
 //              TFormScriptDebugger
 //
 // -----------------------------------------------------------------------------
-  TFormScriptDebugger = class(TdxRibbonForm, IScriptDebugger, IScriptDebuggerSetup,
-    IScriptHostApplicationNotification, IScriptHostApplicationCloseNotification)
+  TFormScriptDebugger = class(TdxRibbonForm,
+    IScriptDebugger,
+    IScriptDebuggerSetup,
+    IScriptHostApplicationNotification,
+    IScriptHostApplicationCloseNotification,
+    IScriptEditorHost,
+    IScriptEditorNotification,
+    IScriptEditorActionHandler)
+
     ActionBuild: TAction;
     ActionClearAllBreakpoints: TAction;
     ActionCloseAllOtherPages: TAction;
@@ -285,7 +136,6 @@ type
     ActionFileSave: TAction;
     ActionFileSaveAsFile: TAction;
     ActionFileSaveProjectAs: TAction;
-    ActionGotoHomePosition: TAction;
     ActionGotoLineNumber: TAction;
     ActionList: TActionList;
     ActionOpenFile: TAction;
@@ -346,7 +196,6 @@ type
     MenuItemSearchReplace: TdxBarButton;
     MenuItemViewProjectSource: TdxBarButton;
     MenuItemViewSymbols: TdxBarButton;
-    ButtonGotoHomePosition: TdxBarButton;
     MenuItemProjectBuild: TdxBarButton;
     MenuItemRunStart: TdxBarButton;
     MenuItemRunStepOver: TdxBarButton;
@@ -499,7 +348,6 @@ type
     ActionJIT: TAction;
     dxBarButton7: TdxBarButton;
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -513,23 +361,18 @@ type
     procedure ActionClosePageUpdate(Sender: TObject);
     procedure ActionFileCloseAllExecute(Sender: TObject);
     procedure ActionFileNewIncludeFileExecute(Sender: TObject);
-    procedure ActionFileNewProjectExecute(Sender: TObject);
     procedure ActionFileNewUnitExecute(Sender: TObject);
     procedure ActionFileSaveAsFileExecute(Sender: TObject);
     procedure ActionFileSaveAsFileUpdate(Sender: TObject);
     procedure ActionFileSaveExecute(Sender: TObject);
     procedure ActionFileSaveUpdate(Sender: TObject);
-    procedure ActionGotoHomePositionExecute(Sender: TObject);
-    procedure ActionGotoHomePositionUpdate(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
-    procedure ActionFileOpenProjectExecute(Sender: TObject);
     procedure ActionProgramResetExecute(Sender: TObject);
     procedure ActionProgramResetUpdate(Sender: TObject);
     procedure ActionRunExecute(Sender: TObject);
     procedure ActionRunUpdate(Sender: TObject);
     procedure ActionRunWithoutDebuggingExecute(Sender: TObject);
     procedure ActionRunWithoutDebuggingUpdate(Sender: TObject);
-    procedure ActionFileSaveProjectAsExecute(Sender: TObject);
     procedure ActionShowExecutionPointExecute(Sender: TObject);
     procedure ActionShowExecutionPointUpdate(Sender: TObject);
     procedure ActionStepOverExecute(Sender: TObject);
@@ -538,16 +381,11 @@ type
     procedure ActionEditToggleReadOnlyUpdate(Sender: TObject);
     procedure ActionTraceIntoExecute(Sender: TObject);
     procedure ActionTraceIntoUpdate(Sender: TObject);
-    procedure ActionViewProjectSourceExecute(Sender: TObject);
     procedure ActionViewProjectSourceUpdate(Sender: TObject);
     procedure ActionViewSymbolsExecute(Sender: TObject);
     procedure ActionViewSymbolsUpdate(Sender: TObject);
     procedure DebuggerStateChanged(Sender: TObject);
-    procedure EditorChange(Sender: TObject);
     procedure UpdateTimerTimer(Sender: TObject);
-    procedure SynCodeCompletionExecute(Kind: SynCompletionType; Sender: TObject; var CurrentInput: string; var x, y: Integer; var CanExecute: Boolean);
-    procedure SynCodeCompletionShow(Sender: TObject);
-    procedure SynParametersExecute(Kind: SynCompletionType; Sender: TObject; var CurrentInput: string; var x, y: Integer; var CanExecute: Boolean);
     procedure ActionGotoLineNumberExecute(Sender: TObject);
     procedure ActionGotoLineNumberUpdate(Sender: TObject);
     procedure PageControlEditorCanCloseEx(Sender: TObject; ATabIndex: Integer; var ACanClose: Boolean);
@@ -658,19 +496,27 @@ type
     FCompileContext: IScriptContext;
     FProgram: IdwsProgram;
     FMainUnitName: string;
-    FMainUnit: TEditorPage;
+    FMainUnit: IScriptEditor;
     FSaveOnNeedUnit: TdwsOnNeedUnitEvent;
 
 
     FGotoForm: TDwsIdeGotoLineNumber;
-
-    FHomePositionCaptionSuffix: string;
 
     FSavedModalForm: TCustomForm;
     FPreviousDebuggerState: TdwsDebuggerState;
     FPendingExceptionMsg: string;
     FPendingExceptionPos: TScriptPos;
 
+  private
+    // Editor container and view management
+    FActiveEditor: IScriptEditor;
+    // FEditorContainers maps from container control to editor
+    FEditorContainers: TDictionary<TWinControl, IScriptEditor>;
+    FEditors: TList<IScriptEditor>;
+    function EditorByName(const AName: string): IScriptEditor;
+    function EditorByContainer(const AContainer: TWinControl): IScriptEditor;
+    function ContainerByEditor(const AEditor: IScriptEditor): TWinControl;
+    procedure CloseEditor(const AEditor: IScriptEditor);
   protected
     procedure WMWindowPosChanged(var Msg: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
     procedure WMDpiChanged(var Message: TWMDpi); message WM_DPICHANGED;
@@ -678,6 +524,8 @@ type
     procedure MsgFormMaximize(var Msg: TMessage); message MSG_FORM_MAXIMIZE;
     procedure DoCreate; override;
     procedure CreateParams(var Params: TCreateParams); override;
+  protected
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   private
     // Recent files
     procedure LoadRecentFiles;
@@ -686,8 +534,6 @@ type
   private
     // HighDPI
     FDPIScale: Double;
-  public
-    function DPIAware(Value: Integer): Integer;
   private
     // Layout
     FLayoutName: string; // Currently selected layout
@@ -710,36 +556,24 @@ type
     procedure DoOnExecutionEnded(Execution: TdwsProgramExecution);
 
   private
-    //FActivePageIndex: Integer;
-    //FHoveredPageIndex: Integer;
-    //FBasePageIndex: Integer;
-    //FHoveredCloseButton: Boolean;
-    //FHoveredLeftArrow, FHoveredRightArrow: Boolean;
-    //FLeftArrowActive, FRightArrowActive: Boolean;
-    //FTabArrowLeft, FTabArrowRight: TRect;
-    FPages: Generics.Collections.TObjectList<TEditorPage>;
+    // Help
+    class var FHasCheckedHelpVersion: boolean;
+  private
     FEnvironment: IdwsEnvironment;
     FFormEvaluate: TFormDebugEvaluate;
 
     function OpenScriptStream(const Name: string; const CurrentScriptProvider: IScriptProvider = nil): IScriptProvider;
-    procedure GotoHomePosition;
-    function  CanGotoHomePosition: Boolean;
     function  TryRunSelection(ADebug: Boolean): Boolean;
     function  DoExecute(ADebug: Boolean): Boolean;
     function  BeginDebug: Boolean;
     function  EndDebug: Boolean;
-    function  EditorPageCount: Integer;
-    function  EditorPage(AIndex: Integer): TEditorPage;
-    function  CurrentEditorPage: TEditorPage;
-    procedure EditorPageClose(AIndex: Integer);
-    function EditorPagesCloseQuery(AExceptIndex: Integer = -1): boolean;
-    function EditorPagesCloseAll(AExceptIndex: Integer = -1): boolean;
+    procedure NotifyEditors(Notification: TScriptEditorHostNotification);
+    procedure EditorChange(const AEditor: IScriptEditor);
+    procedure EditorPageClose(const AEditor: IScriptEditor);
+    function EditorPagesCloseQuery(const AExceptEditor: IScriptEditor = nil): boolean;
+    function EditorPagesCloseAll(const AExceptEditor: IScriptEditor = nil): boolean;
     procedure EditorSaveAllIfModified(APromptOverwrite: Boolean);
-    function  NameToEditorPageIndex(const AName: string): Integer;
-    function OpenEditorPage(const AName: string; FileMustExist: boolean = False; const CurrentScriptProvider: IScriptProvider = nil): Boolean;
-    procedure SetEditorCurrentPageIndex(const Value: Integer);
     procedure ResetProgram;
-    function  GetExecutableLines(const AUnitName: string): TLineNumbers;
     procedure SetScript(const Value: TDelphiWebScript);
     procedure AddMessage(const AMessage: string; const AScriptPos: TScriptPos; AKind: TMessageKind = mkNone; Select: boolean = False); overload;
     procedure AddMessage(const AMessage: string; AKind: TMessageKind = mkNone; Select: boolean = False); overload;
@@ -747,85 +581,37 @@ type
     procedure ClearOutputWindow;
     function AddAlertMessage(const ACaption, AMessage: string; AImageIndex: integer = -1; ATimeout: integer = -1): IScriptHostAlertWindow;
     function UnitMainScript(const AUnitName, AIdentifier: string): string;
-    function MainUnitName: string;
 
-    function GetMainUnit: TEditorPage;
-    procedure SetMainUnit(const Value: TEditorPage);
-    property MainUnit: TEditorPage read GetMainUnit write SetMainUnit;
-
-    function  CurrentEditor: TSynEdit;
     function  HasEditorPage: Boolean;
 
     function  FileIsOpenInEditor(const AFileName: TFileName; Activate: boolean = False): Boolean;
     function  ModifyFileNameToUniqueInProject(const AFileName: TFileName): string;
 
-    procedure ShowExecutableLines;
     procedure ClearCurrentLine;
     procedure ClearAllBreakpoints;
-    procedure ClearExecutableLines;
     procedure AddStatusMessage(const AStr: string);
     function GetScriptProvider(var MainUnitName: string; const AScript: string = ''): IScriptProvider;
     function CreateCompilerContext(const ScriptProvider: IScriptProvider): IScriptContext;
     procedure Compile(ABuild: Boolean; const AScript: string = '');
-    function  IsCompiled: Boolean;
+    function IsCompiled: Boolean;
 
     procedure ListSymbols;
 
-{$ifdef DISABLED_STUFF}
-  private
-    FProjectFileName: TFileName;
-    procedure MakeSettingsRec;
-    function  ProjectSourceScript: string;
-    function  GetProjectSourceFileName: TFileName;
-    procedure SetProjectSourceFileName(const Value: TFileName);
-    property ProjectSourceFileName: TFileName read GetProjectSourceFileName write SetProjectSourceFileName;
-    procedure SetProjectFileName(const Value: TFileName);
-    function  FileIsProjectSource(const AFileName: TFileName): Boolean;
-    function  ProjectSourceFileIndex: Integer;
-    function  ProjectFileNameToProjectSourceFileName(const AProjectfileName: TFileName): string;
-    procedure LoadProjectFile(const AProjectFileName: TFileName);
-    procedure NewProjectFile(const AProjectFileName: TFileName);
-    procedure SaveProjectFileAs(const AProjectFileName: TFileName);
-
-    function  HasProject: Boolean;
-    function  SaveProjectAs: Boolean;
-    procedure LoadSettings(
-           var AProjectFileName: TFileName;
-           var AIDESettingsRec: TIDESettingsRec);
-    procedure SaveSettings(
-         const AProjectFileName: TFileName;
-         const AIDESettingsRec: TIDESettingsRec);
-{$endif DISABLED_STUFF}
-
-    procedure RunFunctionMethodByName(const AUnit, AName: string; AWithDebugging, APrompt: Boolean);
+   procedure RunFunctionMethodByName(const AUnit, AName: string; AWithDebugging, APrompt: Boolean);
 
     function GetGotoForm: TDwsIdeGotoLineNumber;
-    function GetEditorCurrentPageIndex: Integer;
 
-    property EditorCurrentPageIndex: Integer read GetEditorCurrentPageIndex write SetEditorCurrentPageIndex;
     property GotoForm: TDwsIdeGotoLineNumber read GetGotoForm;
-    procedure SavePage(Page: TEditorPage);
+    procedure SavePage(const Page: IScriptEditor);
 
     function DoOnNeedUnit(const unitName : UnicodeString; var unitSource : UnicodeString) : IdwsUnit;
 
   private
-    SynCodeCompletion: TSynCompletionProposal;
-    SynEditSearch: TSynEditSearch;
-    SynMacroRecorder: TSynMacroRecorder;
-    SynParameters: TSynCompletionProposal;
-    SynEditRegexSearch: TSynEditRegexSearch;
-    SynAutoComplete: TSynAutoComplete;
-
-    procedure SetupSynEdit;
-
-  protected
-    procedure ClearLinesChangedState; // declared protected to get rid of "unused" hint
-  private
     FSearchText: string;
-    FSearchOptions: TSynSearchOptions;
+    FSearchOptions: TSearchReplaceOptions;
     FSearchHistory: string;
-    FSearchRegularExpression: boolean;
     FSearchAutoWrap: boolean;
+    procedure DoSearch(AOptions: TSearchReplaceOptions; First: boolean);
   private
     // Shell explorer
 {$ifdef SHELL_EXPLORER}
@@ -838,10 +624,6 @@ type
     procedure ApplicationNotify(const ScriptHostApplication: IScriptHostApplication; Notification: TScriptHostApplicationNotification);
     // IScriptHostApplicationCloseNotification
     procedure ApplicationCloseQuery(const ScriptHostApplication: IScriptHostApplication; var CanClose: boolean);
-  protected
-    procedure DoSearch(AOptions: TSynSearchOptions; First: boolean);
-    property SearchText: string read FSearchText;
-    property SearchOptions: TSynSearchOptions read FSearchOptions;
   private
     FCaseNormalizeScriptProgram: IdwsProgram;
     procedure OnCaseNormalize(Line, Col : Integer; const Name : string);
@@ -859,6 +641,7 @@ type
     function GetDebugger: TdwsDebugger;
     function GetProgram: IdwsProgram;
     procedure ViewScriptPos(const AScriptPos: TScriptPos; AMoveCurrent: boolean = False; AHiddenMainModule: Boolean = False);
+    function GetExecutableLines(const AUnitName: string): TLineNumbers;
     function FindBreakPoint(const ScriptPos: TScriptPos): TBreakpointStatus;
     procedure AddBreakpoint(const ScriptPos: TScriptPos; AEnabled: Boolean = True);
     procedure ClearBreakpoint(const ScriptPos: TScriptPos);
@@ -869,23 +652,42 @@ type
     procedure Evaluate(const Expression: string; ScriptPos: PScriptPos = nil);
     function UnitNameFromScriptPos(const ScriptPos: TScriptPos): string;
     function UnitNameFromInternalName(const Name: string): string;
+  protected
+    // IScriptEditorHost
+    function CreateEditor(const AName: string; FileMustExist: boolean = False; const CurrentScriptProvider: IScriptProvider = nil): Boolean; overload;
+    function GetMainUnit: IScriptEditor;
+    procedure SetMainUnit(const Value: IScriptEditor);
+    property MainUnit: IScriptEditor read GetMainUnit write SetMainUnit;
+    function GetMainUnitName: string;
+    property MainUnitName: string read GetMainUnitName;
+    function GetActiveEditor: IScriptEditor;
+    procedure SetActiveEditor(const Editor: IScriptEditor);
+    function GetEditorPagePopupMenu: TPopupMenu;
+    function PromptSaveScript(var Filename: string; const Foldername: string = ''): boolean;
+    function DpiScale(Value: Integer): Integer;
+  protected
+    // IScriptEditorNotification
+    procedure ScriptEditorNotification(const AEditor: IScriptEditor; ANotification: TScriptEditorNotification);
+    // IScriptEditorActionHandler
+    function EditorActionHandler(const AEditor: IScriptEditor; AAction: TScriptEditorAction): boolean;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
 
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
 
-{$ifdef DISABLED_STUFF}
-    property ProjectFileName: TFileName read FProjectFileName write SetProjectFileName;
-{$endif DISABLED_STUFF}
-
     property Script: TDelphiWebScript read FScript write SetScript;
-
     property Environment: IdwsEnvironment read FEnvironment write FEnvironment;
 
-    function EditorPageAddNew(const ScriptProvider: IScriptProvider = nil): IScriptDebugEditPage; overload;
-    function EditorPageAddNew(const AFileName: TFileName; ALoadfile: Boolean = False; AFileRequired: boolean = False; const CurrentScriptProvider: IScriptProvider = nil): IScriptDebugEditPage; overload;
-    function EditorPageAddNew(const AName, AScript: string): IScriptDebugEditPage; overload;
+    property ActiveEditor: IScriptEditor read FActiveEditor;
+
+    // Create an editor. Optionally load a script into it.
+    function CreateEditor(const ScriptProvider: IScriptProvider = nil): IScriptEditor; overload;
+    // Create an editor with the specified filename. Optionally load a script from the file.
+    function CreateEditor(const AFileName: TFileName; ALoadfile: Boolean = False; AFileRequired: boolean = False; const CurrentScriptProvider: IScriptProvider = nil): IScriptEditor; overload;
+    // Create an editor with the specified Name. Load the specified script into it.
+    function CreateEditor(const AName, AScript: string): IScriptEditor; overload;
     property OnBeforeExecution: TDebuggerExecutionEvent read FOnBeforeExecution write FOnBeforeExecution;
     property OnAfterExecution: TDebuggerExecutionEvent read FOnAfterExecution write FOnAfterExecution;
 
@@ -973,6 +775,7 @@ uses
   amURLUtils,
 
   amScriptDebugger.View.Data,
+  amScript.Editor.Data,
   amScriptDebuggerDialogSearch,
 {$ifdef FEATURE_SCRIPT_BUNDLE}
   amScriptDebuggerDialogBundleBuilder,
@@ -998,7 +801,6 @@ const //resourcestring
   RStrRunning = 'Running';
   RStrPaused = 'Paused';
   RStrErrors = 'Errors';
-  RStrNoParametersRequired = '"<no parameters required>"';
   RStrProjectFileDoesNotExist = 'Project file does not exist (%s)';
   RStrCannotRunWithoutProjectFile = 'Cannot run without a project file';
   RStrProgramCompleted = 'Program completed';
@@ -1028,25 +830,6 @@ begin
 
   if SHGetFolderPath(0, CSIDL_DESKTOP, 0, 0, @LStr) = S_OK then
     Result := LStr;
-end;
-
-
-function Lighten(AColor: TColor; AFactor: Byte): TColor;
-// Lightens a color by this amount
-var
-  R, G, B: Byte;
-begin
-  AColor := ColorToRGB(AColor);
-
-  R := GetRValue(AColor);
-  G := GetGValue(AColor);
-  B := GetBValue(AColor);
-
-  Inc(R, AFactor);
-  Inc(G, AFactor);
-  Inc(B, AFactor);
-
-  Result := RGB(R, G, B);
 end;
 
 
@@ -1108,21 +891,6 @@ begin
   Result := (MessageTaskDlgEx('Confirm', AStr, mtConfirmation, [mbYes, mbNo]) = mrYes);
 end;
 
-function ConfirmDlgYesNoAbort(const AStr: string): Boolean;
-begin
-  Result := False;
-  case MessageTaskDlgEx('Confirm', AStr, mtError, [mbYes, mbNo, mbCancel]) of
-    idYes:
-      Result := True;
-    idNo:
-      Exit;
-    else
-      Abort;
-  end;
-end;
-
-
-
 procedure SymbolsToStrings(ATable: TSymbolTable; AStrings: TStrings);
 // Dumps this table symbol names to AStrings recursively.
 
@@ -1145,185 +913,6 @@ procedure SymbolsToStrings(ATable: TSymbolTable; AStrings: TStrings);
 
 begin
   AddSymbolTable(ATable);
-end;
-
-
-
-// -----------------------------------------------------------------------------
-//
-// TEditorPageSynEditPlugin
-//
-// -----------------------------------------------------------------------------
-type
-  TEditorPageSynEditPlugin = class(TSynEditPlugin)
-  protected
-    FPage: TEditorPage;
-    procedure LinesInserted(FirstLine, Count: Integer); override;
-    procedure LinesDeleted(FirstLine, Count: Integer); override;
-    procedure PaintTransient(ACanvas: TCanvas; ATransientType: TTransientType); override;
-  public
-    constructor Create(APage: TEditorPage);
-  end;
-
-constructor TEditorPageSynEditPlugin.Create(APage: TEditorPage);
-begin
-  inherited Create(APage.Editor);
-  FPage := APage;
-end;
-
-procedure TEditorPageSynEditPlugin.LinesInserted(FirstLine, Count: Integer);
-var
-  I, iLineCount: Integer;
-  UpdateBreakpoints: boolean;
-begin
-  if (FirstLine < 1) then
-    exit;
-
-  // Track the executable lines
-  iLineCount := FPage.Editor.Lines.Count;
-  FirstLine := Min(FirstLine, iLineCount-1);
-  FPage.FExecutableLines.Size := iLineCount;
-  for I := iLineCount - 1 downto FirstLine + Count do
-    FPage.FExecutableLines[i] := FPage.FExecutableLines[I - Count];
-  for I := FirstLine + Count - 1 downto FirstLine do
-    FPage.FExecutableLines[i] := False;
-
-  SetLength(FPage.FLineChangedState, iLineCount);
-  for I := iLineCount - 1 downto FirstLine + Count do
-    FPage.FLineChangedState[i] := FPage.FLineChangedState[I - Count];
-  for I := FirstLine + Count - 1 downto FirstLine - 1 do
-    FPage.FLineChangedState[i] := csModified;
-
-  // Track the breakpoint lines in the debugger
-  UpdateBreakpoints := False;
-  with FPage.FForm.Debugger do
-    for I := 0 to Breakpoints.Count - 1 do
-      if Breakpoints[I].SourceName = FPage.InternalUnitName then
-        if Breakpoints[I].Line >= FirstLine then
-        begin
-          Breakpoints[I].Line := Breakpoints[I].Line + Count;
-          UpdateBreakpoints := True;
-        end;
-
-  // Redraw the gutter for updated icons.
-  FPage.Editor.InvalidateGutter;
-
-  if (UpdateBreakpoints) then
-    IScriptDebugger(FPage.FForm).NotifyBreakPoint(nil, dnBreakPointsUpdate, [bpuRefreshLines]);
-end;
-
-procedure TEditorPageSynEditPlugin.PaintTransient(ACanvas: TCanvas;
-  ATransientType: TTransientType);
-var
-  BracketCoord: TBufferCoord;
-  Pt: TPoint;
-  Rct: TRect;
-  MouseBufferCoord: TBufferCoord;
-  Attri: TSynHighlighterAttributes;
-  TokenType, Start: Integer;
-  TokenName: String;
-  OldFont: TFont;
-begin
-
-  // only handle after transient
-  if ATransientType <> ttAfter then
-    Exit;
-
-  // Matching pair hightlighting
-  BracketCoord := Editor.CaretXY;
-  if (BracketCoord.Char <> 0) and (BracketCoord.Line <> 0) then
-  begin
-    BracketCoord := Editor.GetMatchingBracketEx(BracketCoord);
-    if (BracketCoord.Char <> 0) and (BracketCoord.Line <> 0) then
-    begin
-      ACanvas.Brush.Style := bsSolid;
-
-      Pt := Editor.RowColumnToPixels(Editor.BufferToDisplayPos(Editor.CaretXY));
-      Rct := Rect(Pt.X, Pt.Y, Pt.X + Editor.CharWidth * 1, Pt.Y + Editor.LineHeight);
-      ACanvas.Brush.Color := $00F5FFE5;
-      InflateRect(Rct, 1, 1);
-      ACanvas.TextRect(Rct, Pt.X, Pt.Y, Editor.Lines[Editor.CaretY-1][Editor.CaretX]);
-      InflateRect(Rct, 1, 1);
-      ACanvas.Brush.Color := $0098D900;
-      ACanvas.FrameRect(Rct);
-
-      Pt := Editor.RowColumnToPixels(Editor.BufferToDisplayPos(BracketCoord));
-      Rct := Rect(Pt.X, Pt.Y, Pt.X + Editor.CharWidth * 1, Pt.Y + Editor.LineHeight);
-      ACanvas.Brush.Color := $00F5FFE5;
-      InflateRect(Rct, 1, 1);
-      ACanvas.TextRect(Rct, Pt.X, Pt.Y, Editor.Lines[BracketCoord.Line-1][BracketCoord.Char]);
-      InflateRect(Rct, 1, 1);
-      ACanvas.Brush.Color := $0098D900;
-      ACanvas.FrameRect(Rct);
-    end;
-  end;
-
-  // only continue if [CTRL] is pressed
-  if not (ssCtrl in KeyboardStateToShiftState) then
-  begin
-    Editor.Cursor := crDefault;
-    Exit;
-  end;
-
-  Pt := Editor.ScreenToClient(Mouse.CursorPos);
-  MouseBufferCoord := Editor.DisplayToBufferPos(Editor.PixelsToRowColumn(Pt.X, Pt.Y));
-  Editor.GetHighlighterAttriAtRowColEx(MouseBufferCoord, TokenName, TokenType, Start, Attri);
-
-  if TtkTokenKind(TokenType) <> tkIdentifier then
-  begin
-    Editor.Cursor := crDefault;
-    Exit;
-  end;
-
-  with Editor do
-    Pt := RowColumnToPixels(BufferToDisplayPos(WordStartEx(MouseBufferCoord)));
-
-  Rct := Rect(Pt.X, Pt.Y, Pt.X + Editor.CharWidth * Length(TokenName), Pt.Y + Editor.LineHeight);
-
-  OldFont := TFont.Create;
-  try
-    OldFont.Assign(ACanvas.Font);
-    ACanvas.Font.Color := clBlue;
-    ACanvas.Font.Style := [fsUnderline];
-    ACanvas.TextRect(Rct, Pt.X, Pt.Y, TokenName);
-    ACanvas.Font := OldFont;
-  finally
-    OldFont.Free;
-  end;
-  Editor.Cursor := crHandPoint;
-end;
-
-procedure TEditorPageSynEditPlugin.LinesDeleted(FirstLine, Count: Integer);
-var
-  I: Integer;
-  UpdateBreakpoints: boolean;
-begin
-  // Track the executable lines
-  for I := FirstLine - 1 to FPage.FExecutableLines.Size - Count - 1 do
-    FPage.FExecutableLines[i] := FPage.FExecutableLines[I + Count];
-  FPage.FExecutableLines.Size := FPage.FExecutableLines.Size - Count;
-
-  // Track the executable lines
-  for I := FirstLine - 1 to Length(FPage.FLineChangedState) - Count - 1 do
-    FPage.FLineChangedState[i] := FPage.FLineChangedState[I + Count];
-  SetLength(FPage.FLineChangedState, Length(FPage.FLineChangedState) - Count);
-
-  // Track the breakpoint lines in the debugger
-  UpdateBreakpoints := False;
-  with FPage.FForm.Debugger do
-    for I := 0 to Breakpoints.Count - 1 do
-      if Breakpoints[I].SourceName = FPage.InternalUnitName then
-        if Breakpoints[I].Line >= FirstLine then
-        begin
-          Breakpoints[I].Line := Breakpoints[I].Line - Count;
-          UpdateBreakpoints := True;
-        end;
-
-  // Redraw the gutter for updated icons.
-  FPage.Editor.InvalidateGutter;
-
-  if (UpdateBreakpoints) then
-    IScriptDebugger(FPage.FForm).NotifyBreakPoint(nil, dnBreakPointsUpdate, [bpuRefreshLines]);
 end;
 
 
@@ -1370,1410 +959,6 @@ begin
   ReadLn(str);
 end;
 
-// -----------------------------------------------------------------------------
-//
-// TEditorPage
-//
-// -----------------------------------------------------------------------------
-constructor TEditorPage.Create(AOwner: TFormScriptDebugger; APage: TcxTabSheet);
-
-  procedure InitEditor;
-
-    procedure DefineShortcut(Command: TSynEditorCommand; Key: Word; Shift: TShiftState; RemoveOld: boolean = False);
-    var
-      i: integer;
-      Short: TShortCut;
-    begin
-      Short := ShortCut(Key, Shift);
-      i := FEditor.Keystrokes.FindShortcut(Short);
-      if (i <> -1) then
-        FEditor.Keystrokes[i].ShortCut := 0;
-
-      i := FEditor.Keystrokes.FindCommand(ecPageTop);
-      if (RemoveOld) and (i <> -1) then
-        FEditor.Keystrokes[i].ShortCut := Short
-      else
-        FEditor.Keystrokes.AddKey(Command, Key, Shift);
-    end;
-
-  var
-    HighlighterClass: TEditorHighlighterClass;
-  begin
-    FEditor := TSynEdit.Create(nil);
-    FEditor.OnChange := DoOnEditorChange;
-    FEditor.Parent  := FPage;
-    FEditor.Align   := alClient;
-    FEditor.BorderStyle := bsNone;
-    FEditor.Gutter.Width := EditorGutterWidth;
-    FEditor.PopupMenu := AOwner.EditorPagePopupMenu;
-    FEditor.WantTabs := True;
-    FEditor.FontSmoothing := fsmClearType;
-    FEditor.TabWidth := 8;
-(*
-    // SynEdit.IndentWidth requires patched source
-    FEditor.IndentWidth := 2;
-*)
-
-    if (ScriptSettings.Editor.HighlighterClass <> '') then
-    begin
-      HighlighterClass := TEditorHighlighterClass(GetClass(ScriptSettings.Editor.HighlighterClass));
-      if (HighlighterClass <> nil) and (HighlighterClass.InheritsFrom(TSynCustomHighlighter)) then
-        FEditor.Highlighter := HighlighterClass.Create(FEditor);
-    end;
-
-    if (ScriptSettings.Editor.FontName <> '') then
-    begin
-      FEditor.Font.Name := ScriptSettings.Editor.FontName;
-      FEditor.Font.Size := ScriptSettings.Editor.FontSize;
-    end else
-    begin
-      FEditor.Font.Name := EditorFontName;
-      FEditor.Font.Size := EditorFontSize;
-    end;
-
-    FEditor.Options := [
-      //eoAltSetsColumnMode,       //Holding down the Alt Key will put the selection mode into columnar format
-      eoAutoIndent,              //Will indent the caret on new lines with the same amount of leading white space as the preceding line
-      //eoAutoSizeMaxScrollWidth,  //Automatically resizes the MaxScrollWidth property when inserting text
-      //eoDisableScrollArrows,     //Disables the scroll bar arrow buttons when you can't scroll in that direction any more
-      //eoDragDropEditing,         //Allows you to select a block of text and drag it within the document to another location
-      //eoDropFiles,               //Allows the editor accept OLE file drops
-      //eoEnhanceHomeKey,          //enhances home key positioning, similar to visual studio
-      eoEnhanceEndKey,           //enhances End key positioning, similar to JDeveloper
-      eoGroupUndo,               //When undoing/redoing actions, handle all continous changes of the same kind in one call instead undoing/redoing each command separately
-      //eoHalfPageScroll,          //When scrolling with page-up and page-down commands, only scroll a half page at a time
-      eoHideShowScrollbars,      //if enabled, then the scrollbars will only show when necessary.  If you have ScrollPastEOL, then it the horizontal bar will always be there (it uses MaxLength instead)
-      eoKeepCaretX,              //When moving through lines w/o Cursor Past EOL, keeps the X position of the cursor
-      //eoNoCaret,                 //Makes it so the caret is never visible
-      //eoNoSelection,             //Disables selecting text
-      eoRightMouseMovesCursor,   //When clicking with the right mouse for a popup menu, move the cursor to that location
-      eoScrollByOneLess,         //Forces scrolling to be one less
-      eoScrollHintFollows,       //The scroll hint follows the mouse when scrolling vertically
-      eoScrollPastEof,           //Allows the cursor to go past the end of file marker
-      eoScrollPastEol,           //Allows the cursor to go past the last character into the white space at the end of a line
-      eoShowScrollHint,          //Shows a hint of the visible line numbers when scrolling vertically
-      //eoShowSpecialChars,        //Shows the special Characters
-      eoSmartTabDelete,          //similar to Smart Tabs, but when you delete characters
-      //eoSmartTabs,               //When tabbing, the cursor will go to the next non-white space character of the previous line
-      //eoSpecialLineDefaultFg,    //disables the foreground text color override when using the OnSpecialLineColor event
-      eoTabIndent,               //When active <Tab> and <Shift><Tab> act as block indent, unindent when text is selected
-      eoTabsToSpaces,            //Converts a tab character to a specified number of space characters
-      eoTrimTrailingSpaces       //Spaces at the end of lines will be trimmed and not saved
-      ];
-
-    DefineShortcut(ecGotoXY, 47, [ssAlt]);
-    DefineShortcut(ecOpenFileUnderCursor, VK_RETURN, [ssCtrl]);
-    DefineShortcut(ecToggleDeclImpl, VK_UP, [ssCtrl, ssShift]);
-    DefineShortcut(ecToggleDeclImpl, VK_DOWN, [ssCtrl, ssShift], False);
-    DefineShortcut(ecRepeatSearch, VK_F3, []);
-    DefineShortcut(ecToggleBreakPoint, VK_F8, [ssCtrl]);
-    DefineShortcut(ecAutoCompletion, Ord('J'), [ssCtrl]);
-    DefineShortcut(ecInsertGUID, Ord('G'), [ssShift, ssCtrl]);
-    DefineShortcut(ecSelectNextTab, VK_TAB, [ssCtrl]);
-    DefineShortcut(ecSelectPrevTab, VK_TAB, [ssShift, ssCtrl]);
-
-    DefineShortcut(ecPageTop, VK_HOME, [ssCtrl]);
-    DefineShortcut(ecSelPageTop, VK_HOME, [ssShift, ssCtrl]);
-    DefineShortcut(ecPageBottom, VK_END, [ssCtrl]);
-    DefineShortcut(ecSelPageBottom, VK_END, [ssShift, ssCtrl]);
-    DefineShortcut(ecEditorTop, VK_PRIOR, [ssCtrl]);
-    DefineShortcut(ecSelEditorTop, VK_PRIOR, [ssShift, ssCtrl]);
-    DefineShortcut(ecEditorBottom, VK_NEXT, [ssCtrl]);
-    DefineShortcut(ecSelEditorBottom, VK_NEXT, [ssShift, ssCtrl]);
-
-    DefineShortcut(ecAutoCompletionPropose, Ord(' '), [ssCtrl]);
-
-    FForm.SynMacroRecorder.AddEditor(FEditor);
-
-    FForm.SynAutoComplete.AddEditor(FEditor);
-
-    FForm.SynParameters.AddEditor(FEditor);
-    FForm.SynParameters.Font.Name := FEditor.Font.Name;
-
-    FForm.SynCodeCompletion.AddEditor(FEditor);
-    FForm.SynCodeCompletion.Font.Name := FEditor.Font.Name;
-    begin
-      var Column := FForm.SynCodeCompletion.Columns.Add;
-      Column.ColumnWidth := -1;//FForm.SynCodeCompletion.Form.Canvas.TextWidth('constructor')+16+8; // 16=Glyph, 8=margin
-
-      Column := FForm.SynCodeCompletion.Columns.Add;
-      begin
-        Column.DefaultFontStyle := [fsBold];
-        Column.ColumnWidth := -1;
-      end;
-    end;
-
-    FEditor.OnSpecialLineColors := SynEditorSpecialLineColors;
-    FEditor.OnGutterClick := SynEditorGutterClick;
-    FEditor.OnGutterPaint := SynEditGutterPaint;
-    FEditor.OnMouseMove := SynEditorMouseMove;
-    FEditor.OnProcessCommand := SynEditorProcessCommand;
-    FEditor.OnCommandProcessed := SynEditorCommandProcessed;
-    FEditor.OnMouseUp := SynEditorMouseDown;
-//    FEditor.OnClick := SynEditorClick;
-    FEditor.OnKeyDown := SynEditorKeyDown;
-    FEditor.OnStatusChange := SynEditorStatusChange;
-
-    TEditorPageSynEditPlugin.Create(Self);
-
-    SetupDPIAware;
-  end;
-
-begin
-  inherited Create;
-
-  FForm := AOwner;
-  FPage := APage;
-  FCurrentLine := -1;
-  FExecutableLines := TBits.Create;
-
-  InitEditor;
-  InitLineChangeStates;
-
-  FEditor.Align := alClient;
-  FEditor.Parent := FPage;
-  FEditor.Visible := True;
-
-  FEditor.Modified := False;
-end;
-
-destructor TEditorPage.Destroy;
-begin
-  if (FForm.MainUnit = Self) then
-    FForm.MainUnit := nil;
-
-  FForm.FPages.Extract(Self);
-
-  FForm.SynParameters.RemoveEditor(FEditor);
-  FForm.SynCodeCompletion.RemoveEditor(FEditor);
-  FForm.SynMacroRecorder.RemoveEditor(FEditor);
-  FForm.SynAutoComplete.RemoveEditor(FEditor);
-  FExecutableLines.Free;
-  FEditor.Free;
-  FPage.Free;
-
-  FScriptProvider := nil;
-
-  inherited;
-end;
-
-function TEditorPage.QueryInterface(const IID: TGUID; out Obj): HResult;
-begin
-  if GetInterface(IID, Obj) then
-    Result := S_OK
-  else
-    Result := E_NOINTERFACE
-end;
-
-function TEditorPage._AddRef: Integer;
-begin
-  Result := -1;
-end;
-
-function TEditorPage._Release: Integer;
-begin
-  Result := -1;
-end;
-
-procedure TEditorPage.DoOnEditorChange(ASender: TObject);
-begin
-  FLineChangedState[FEditor.CaretY - 1] := csModified;
-  FForm.EditorChange(ASender);
-end;
-
-procedure TEditorPage.FindDeclaration(CursorPos: TBufferCoord; SymbolUsage: TSymbolUsage);
-var
-  ScriptProgram: IdwsProgram;
-  Symbol: TSymbol;
-  SymbolPosList: TSymbolPositionList;
-  Index: integer;
-  s: string;
-begin
-  ScriptProgram := FForm.GetCompiledScript;
-  if (ScriptProgram = nil) then
-    Exit;
-
-  CursorPos := Editor.WordStartEx(CursorPos);
-  Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(CursorPos.Char, CursorPos.Line, InternalUnitName);
-
-  if (Symbol = nil) then
-    Exit;
-
-  SymbolPosList := ScriptProgram.SymbolDictionary.FindSymbolPosList(Symbol);
-
-  if (SymbolPosList = nil) or (SymbolPosList.Count = 0) then
-    Exit;
-
-  Index := SymbolPosList.Count-1;
-  while (Index >= 0) do
-  begin
-    if (SymbolUsage in SymbolPosList[Index].SymbolUsages) then
-      break;
-    dec(Index);
-  end;
-  if (Index < 0) then
-    exit;
-
-  s := FForm.UnitNameFromScriptPos(SymbolPosList[Index].ScriptPos);
-
-  if (FForm.OpenEditorPage(s, True, ScriptProvider)) then
-  begin
-    FForm.CurrentEditor.CaretX := SymbolPosList[Index].ScriptPos.Col;
-    FForm.CurrentEditor.CaretY := SymbolPosList[Index].ScriptPos.Line;
-  end;
-end;
-
-function TEditorPage.GetFilename: TFileName;
-begin
-  Result := FFilename;
-end;
-
-function TEditorPage.GetHasProvider: boolean;
-begin
-  Result := (FScriptProvider <> nil);
-end;
-
-function TEditorPage.GetIndex: integer;
-begin
-  Result := FPage.PageIndex;
-end;
-
-{$ifdef DISABLED_STUFF}
-function TEditorPage.GetIsProjectSourceFile: Boolean;
-begin
-  Result := (Filename = '') or (SameText(ExtractFileExt(FileName), sDwsIdeProjectSourceFileExt));
-end;
-{$endif DISABLED_STUFF}
-
-function TEditorPage.GetIsMainUnit: boolean;
-begin
-  Result := (FForm <> nil) and (FForm.MainUnit = Self);
-end;
-
-function TEditorPage.GetIsReadOnly: Boolean;
-begin
-  Result := FEditor.ReadOnly;
-end;
-
-function TEditorPage.GotoIdentifier(const AIdentifier: string): Boolean;
-var
-  I: Integer;
-  S: string;
-  bImplementation: Boolean;
-begin
-  Result := False;
-  S := UpperCase(AIdentifier);
-  bImplementation := False;
-  for I := 0 to FEditor.Lines.Count - 1 do
-  begin
-    if Pos('IMPLEMENTATION', UpperCase(FEditor.Lines[I])) <> 0 then
-      bImplementation := True
-    else
-    if bImplementation then
-    begin
-      Result := Pos(S, UpperCase(FEditor.Lines[I])) <> 0;
-      if Result then
-      begin
-        FEditor.CaretY := I + 1;
-        FEditor.CaretX := 1;
-        FEditor.SearchReplace(AIdentifier, '', []); // << selects the identifier
-        Exit;
-      end;
-    end;
-  end;
-end;
-
-// AddBreakpoint
-//
-procedure TEditorPage.AddBreakpoint(ALineNum: Integer; AEnabled: Boolean);
-var
-  Breakpoint: TdwsDebuggerBreakpoint;
-  WasAdded: Boolean;
-  Index: Integer;
-begin
-  Breakpoint := TdwsDebuggerBreakpoint.Create;
-  try
-    Breakpoint.Line := ALineNum;
-    Breakpoint.SourceName := InternalUnitName;
-
-    IScriptDebugger(FForm).NotifyBreakPoint(Breakpoint, dnBreakPointAdd);
-
-    WasAdded := False;
-    Index := FForm.Debugger.Breakpoints.AddOrFind(Breakpoint, WasAdded);
-
-  finally
-    if not WasAdded then
-      Breakpoint.Free;
-  end;
-
-  FForm.Debugger.Breakpoints[Index].Enabled := AEnabled;
-
-  Editor.InvalidateGutterLine(ALineNum);
-  Editor.InvalidateLine(ALineNum);
-
-  IScriptDebugger(FForm).NotifyBreakPoint(FForm.Debugger.Breakpoints[Index], dnBreakPointAdded);
-end;
-
-// ClearBreakpoint
-//
-procedure TEditorPage.ClearBreakpoint(ALineNum: Integer);
-var
-  Test, Breakpoint: TdwsDebuggerBreakpoint;
-  Index: Integer;
-begin
-  if FForm.Debugger.Breakpoints.Count = 0 then
-    Exit;
-
-  Test := TdwsDebuggerBreakpoint.Create;
-  try
-    Test.Line := ALineNum;
-    Test.SourceName := InternalUnitName;
-
-    Index := FForm.Debugger.Breakpoints.IndexOf(Test);
-  finally
-    Test.Free;
-  end;
-
-  if (Index <> -1) then
-  begin
-    Breakpoint := FForm.Debugger.Breakpoints[Index];
-    IScriptDebugger(FForm).NotifyBreakPoint(Breakpoint, dnBreakPointRemove);
-    FForm.Debugger.Breakpoints.Extract(Breakpoint);
-    try
-      IScriptDebugger(FForm).NotifyBreakPoint(Breakpoint, dnBreakPointRemoved);
-    finally
-      Breakpoint.Free;
-    end;
-  end;
-
-  Editor.InvalidateGutterLine(ALineNum);
-  Editor.InvalidateLine(ALineNum);
-end;
-
-// GetBreakpointStatus
-//
-function TEditorPage.GetBreakpointStatus(ALine: Integer): TBreakpointStatus;
-var
-  Test, Breakpoint: TdwsDebuggerBreakpoint;
-  Index: Integer;
-begin
-  Result := bpsNone;
-  if (FForm.Debugger.Breakpoints.Count = 0) then
-    Exit;
-
-  Test := TdwsDebuggerBreakpoint.Create;
-  try
-    Test.Line := ALine;
-    Test.SourceName := InternalUnitName;
-
-    Index := FForm.Debugger.Breakpoints.IndexOf(Test);
-  finally
-    FreeAndNil(Test);
-  end;
-
-  if (Index <> -1) then
-  begin
-    Breakpoint := FForm.Debugger.Breakpoints[Index];
-    if Breakpoint.Enabled then
-      Result := bpsBreakpoint
-    else
-      Result := bpsBreakpointDisabled;
-  end;
-end;
-
-function TEditorPage.GetCanClose: boolean;
-begin
-  Result := FPage.AllowCloseButton;
-end;
-
-function TEditorPage.GetCaption: string;
-begin
-  Result := FCaption;
-end;
-
-// ClearExecutableLines
-//
-procedure TEditorPage.ClearExecutableLines;
-var
-  I: Integer;
-begin
-  for I := 0 to FExecutableLines.Size do
-    FExecutableLines[I] := False;
-
-  Editor.InvalidateGutter;
-end;
-
-// InitExecutableLines
-//
-procedure TEditorPage.InitExecutableLines;
-begin
-  FExecutableLines.Size := 0;
-  if Editor.Lines.Count = 0 then
-    FExecutableLines.Size := 1
-  else
-  FExecutableLines.Size := Editor.Lines.Count;
-end;
-
-// ShowExecutableLines
-//
-procedure TEditorPage.ShowExecutableLines;
-var
-  LineNumbers: TLineNumbers;
-  I: Integer;
-begin
-  ClearExecutableLines;
-  LineNumbers := FForm.GetExecutableLines(InternalUnitName);
-  for I := 0 to Length(LineNumbers) - 1 do
-    FExecutableLines[ LineNumbers[I] ] := True;
-  Editor.InvalidateGutter;
-end;
-
-// ClearLineStates
-//
-procedure TEditorPage.ClearLineChangeStates;
-var
-  I: Integer;
-begin
-  for I := 0 to Length(FLineChangedState) do
-    FLineChangedState[I] := csOriginal;
-
-  Editor.InvalidateGutter;
-end;
-
-procedure TEditorPage.ClearModified;
-begin
-  FEditor.Modified := False;
-  ToggleLineChangedStates;
-end;
-
-procedure TEditorPage.MarkModified(Line: integer);
-begin
-  if (Line <> -1) then
-    FLineChangedState[Line] := csModified;
-  FEditor.Modified := True;
-  FForm.EditorChange(FEditor);
-end;
-
-function TEditorPage.CloseQuery: boolean;
-var
-  Res: integer;
-begin
-  if (Modified) then
-  begin
-    // Make page visible so user knows which script we're prompting for
-    FPage.PageControl.ActivePage := FPage;
-
-    Res := MessageTaskDlgEx('Script has been modified.', 'Save changes?', mtConfirmation, [mbYes, mbNo, mbCancel], mbYes);
-    if (Res = mrYes) then
-    begin
-      Save;
-      Result := True;
-    end else
-    if (Res = mrNo) then
-    begin
-//      ClearModified;
-      Result := True;
-    end else
-      Result := False;
-  end else
-    Result := True;
-end;
-
-// InitLineStates
-//
-procedure TEditorPage.InitLineChangeStates;
-begin
-  SetLength(FLineChangedState, 0);
-  if Editor.Lines.Count = 0 then
-    SetLength(FLineChangedState, 1)
-  else
-    SetLength(FLineChangedState, Editor.Lines.Count);
-end;
-
-function TEditorPage.InternalUnitName: string;
-begin
-  Result := JustFileName(FFileName);
-  if (Result = '') or (AnsiSameText(Result, FForm.MainUnitName)) or (FForm.GetProgram = nil) then
-    Result := MSG_MainModule;
-end;
-
-// ToggleLineChangedStates
-//
-procedure TEditorPage.ToggleLineChangedStates;
-var
-  Index: Integer;
-begin
-  for Index := 0 to High(FLineChangedState) do
-    if FLineChangedState[Index] = csModified then
-      FLineChangedState[Index] := csSaved;
-
-  FEditor.InvalidateGutter;
-end;
-
-// SetFileName
-//
-procedure TEditorPage.SetFileName(const Value: TFileName);
-begin
-  FFilename := Value; // << where file name is stored
-  if (Caption = '') and (FFilename <> MSG_MainModule) then
-    Caption := JustFileName(FFilename);
-end;
-
-// SetIsReadOnly
-//
-procedure TEditorPage.SetIsReadOnly(const Value: Boolean);
-begin
-  if Value <> IsReadOnly then
-  begin
-    FEditor.ReadOnly := Value;
-// WTF?:
-//    if FileExists(FileName) then
-//      FileSetReadOnly(Filename, Value);
-  end;
-end;
-
-procedure TEditorPage.SetScript(const Value: string);
-begin
-  FEditor.Lines.Text := Value;
-  InitExecutableLines;
-  InitLineChangeStates;
-end;
-
-procedure TEditorPage.SetScriptProvider(const Value: IScriptProvider);
-begin
-  FScriptProvider := Value;
-
-  if (FScriptProvider <> nil) then
-  begin
-    Script := FScriptProvider.GetScript;
-    IsReadOnly := FScriptProvider.ReadOnly;
-    Filename := FScriptProvider.ScriptName;
-  end;
-end;
-
-procedure TEditorPage.SetupDPIAware;
-begin
-  var FontSize: integer;
-  if (ScriptSettings.Editor.FontName <> '') then
-    FontSize := ScriptSettings.Editor.FontSize
-  else
-    FontSize := EditorFontSize;
-
-  FForm.SynParameters.Font.Size := FForm.DPIAware(FontSize-1);
-  FForm.SynCodeCompletion.Font.Size := FForm.DPIAware(FontSize-1);
-end;
-
-// SetCurrentLine
-//
-function TEditorPage.Save: boolean;
-begin
-  Result := False;
-
-  if (FScriptProvider <> nil) then
-  begin
-    FScriptProvider.SetScript(Script);
-    Result := True;
-  end;
-end;
-
-function TEditorPage.SaveToStream(Stream: TStream): boolean;
-var
-  Writer: TStreamWriter;
-begin
-  Result := True;
-  Writer := TStreamWriter.Create(Stream);
-  try
-    Writer.Write(Script);
-  finally
-    Writer.Free;
-  end;
-end;
-
-procedure TEditorPage.SetCanClose(const Value: boolean);
-begin
-  FPage.AllowCloseButton := Value;
-end;
-
-procedure TEditorPage.SetCaption(const Value: string);
-begin
-  FCaption := Value;
-  FPage.Caption := FCaption;
-end;
-
-procedure TEditorPage.SetCurrentLine(ALine: Integer; ACol: Integer; MoveCurrent: boolean);
-begin
-  if (FCurrentLine <> ALine) or (Editor.CaretY <> FCurrentLine) then
-  begin
-    Editor.InvalidateGutterLine(FCurrentLine);
-    Editor.InvalidateLine(FCurrentLine);
-    if (MoveCurrent) then
-      FCurrentLine := ALine;
-    if (ALine > 0) and (Editor.CaretY <> ALine) then
-    begin
-      Editor.CaretXY := BufferCoord(ACol, ALine);
-      Editor.InvalidateGutterLine(ALine);
-      Editor.InvalidateLine(ALine);
-      Editor.EnsureCursorPosVisibleEx(True, True);
-    end;
-  end else
-  if (FCurrentLine > 0) and (Editor.CaretY <> FCurrentLine) then
-  begin
-    Editor.CaretXY := BufferCoord(ACol, FCurrentLine);
-    Editor.EnsureCursorPosVisibleEx(True, True);
-  end;
-end;
-
-// IsExecutableLine
-//
-function TEditorPage.IsExecutableLine(ALine: Integer): Boolean;
-begin
-  if ALine < FExecutableLines.Size then
-    Result := FExecutableLines[ALine]
-  else
-    Result := False;
-end;
-
-procedure TEditorPage.LoadFromFile(const AFilename: string);
-var
-  Stream: TStream;
-begin
-  Stream := TFileStream.Create(AFilename, fmOpenRead);
-  try
-    LoadFromStream(Stream);
-  finally
-    Stream.Free;
-  end;
-  FileName := AFileName;
-  FEditor.ReadOnly  := FileIsReadOnly(AFileName);
-end;
-
-procedure TEditorPage.LoadFromStream(Stream: TStream);
-var
-  Reader: TStreamReader;
-  AScript: string;
-begin
-  Reader := TStreamReader.Create(Stream);
-  try
-    AScript := Reader.ReadToEnd;
-  finally
-    Reader.Free;
-  end;
-
-  LoadFromString(AScript);
-end;
-
-procedure TEditorPage.LoadFromString(const AScript: string);
-begin
-  Script := AScript;
-end;
-
-// GetLineChangeState
-//
-function TEditorPage.GetLineChangeState(ALine: Integer): TLineChangedState;
-begin
-  if ALine < Length(FLineChangedState) then
-    Result := FLineChangedState[ALine]
-  else
-    Result := csOriginal;
-end;
-
-function TEditorPage.GetModified: boolean;
-begin
-  Result := FEditor.Modified;
-end;
-
-function TEditorPage.GetScript: string;
-begin
-  Result := FEditor.Lines.Text;
-end;
-
-// UnitName
-//
-function TEditorPage.UnitName: string;
-begin
-  if (FFilename <> MSG_MainModule) then
-    Result := JustFileName(FFileName)
-  else
-    Result := Caption;
-end;
-
-// SynEditorSpecialLineColors
-//
-procedure TEditorPage.SynEditorSpecialLineColors(Sender: TObject;
-  Line: Integer; var Special: Boolean; var FG, BG: TColor);
-const
-  BreakpointColor = TColor($FFA0A0);
-  CurrentLineColor = TColor($A0A0F0);
-  CurrentLineSteppingColor = TColor($A0C0F0);
-begin
-  if Line = FCurrentLine then
-  begin
-    Special := TRUE;
-    FG := clBlack;
-    if FForm.Debugger.State = dsDebugSuspended then
-      BG := CurrentLineSteppingColor
-    else
-      BG := CurrentLineColor
-  end
-  else
-  if GetBreakpointStatus(Line) = bpsBreakpoint then
-  begin
-    Special := TRUE;
-    FG := clBlack;
-    BG := BreakpointColor;
-  end;
-end;
-
-// SynEditGutterPaint
-//
-procedure TEditorPage.SynEditGutterPaint(Sender: TObject; aLine, X, Y: Integer);
-var
-  GutterWidth: Integer;
-  ImgIndex: Integer;
-  R: TRect;
-  LineNumText: string;
-  LineNumTextRect: TRect;
-label
-  DrawGutter;
-begin
-  GutterWidth := FForm.DPIAware(EditorGutterWidth - 5);
-
-  // Ruler background
-  if Y = 0 then
-  begin
-    FEditor.Canvas.Brush.Color := Lighten(clBtnFace, 6);
-    R := Rect(FForm.DPIAware(24), 0, GutterWidth, FEditor.Height);
-    FEditor.Canvas.FillRect(R);
-  end;
-
-  // Ruler cosmetics..
-  FEditor.Canvas.Brush.Style := bsClear;
-  FEditor.Canvas.Font.Color := clGray;
-  FEditor.Canvas.Pen.Color := clGray;
-
-  if ALine = FCurrentLine then
-  begin
-    if GetBreakpointStatus(ALine) <> bpsNone then
-      ImgIndex := ImageIndexCurrentLineBreakpoint
-    else
-    if FForm.Debugger.State = dsDebugSuspended then
-      ImgIndex := ImageIndexForwardArrow
-    else
-      ImgIndex := ImageIndexExecutableLine
-  end
-  else
-    case GetBreakpointStatus(ALine) of
-      bpsBreakpoint :
-        if IsExecutableLine(ALine) then
-          ImgIndex := ImageIndexBreakpoint
-        else
-          ImgIndex := ImageIndexBreakpointDisabled;
-
-      bpsBreakpointDisabled :
-        ImgIndex := ImageIndexBreakpointDisabled;
-
-     else
-       if IsExecutableLine(ALine) then
-         ImgIndex := ImageIndexExecutableLine
-        else
-         ImgIndex := -1;
-    end;
-
-  if (ImgIndex >= 0) and (FImages <> nil) then
-    FImages.Draw(FEditor.Canvas, X, Y, ImgIndex);
-
-  case GetLineChangeState(aLine - 1) of
-    csModified: FEditor.Canvas.Brush.Color := clYellow;
-    csSaved: FEditor.Canvas.Brush.Color := clLime;
-    csOriginal: goto DrawGutter;
-  end;
-
-  R := Rect(FForm.DPIAware(EditorGutterWidth - 5 - 3), y, GutterWidth, y + FEditor.LineHeight);
-  FEditor.Canvas.FillRect(R);
-  FEditor.Canvas.Brush.Style := bsClear;
-
-DrawGutter:
-  GutterWidth := FForm.DPIAware(EditorGutterWidth - 5 - 4);
-
-  if (ALine = 1) or (aLine = FEditor.CaretY) or (ALine mod 10 = 0) then
-  begin
-
-    LineNumText := IntToStr(aLine);
-    LineNumTextRect := Rect(x, y, GutterWidth, y + FEditor.LineHeight);
-    FEditor.Canvas.TextRect(LineNumTextRect, LineNumText, [tfVerticalCenter, tfSingleLine, tfRight]);
-  end
-  else
-  begin
-    FEditor.Canvas.Pen.Color := FEditor.Gutter.Font.Color;
-    var GutterFrom: integer;
-    if (aLine mod 5) = 0 then
-      GutterFrom := FForm.DPIAware(EditorGutterWidth - 5 - 4 - 5)
-    else
-      GutterFrom := FForm.DPIAware(EditorGutterWidth - 5 - 4 - 2);
-    Inc(y, FEditor.LineHeight div 2);
-    FEditor.Canvas.MoveTo(GutterFrom, y);
-    FEditor.Canvas.LineTo(GutterWidth, y);
-  end;
-end;
-
-// SynEditorClick
-//
-// SynEditorKeyDown
-//
-procedure TEditorPage.SynEditorKeyDown(Sender: TObject; var Key: Word;  Shift: TShiftState);
-begin
-  inherited;
-
-  SetCurrentLine(-1);
-end;
-
-// SynEditorMouseMove
-//
-procedure TEditorPage.SynEditorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var
-  MousePos: TDisplayCoord;
-  CursorPos: TBufferCoord;
-  SymbolUsage: TSymbolUsage;
-begin
-  TSynEdit(Sender).InvalidateGutter;
-
-  if (ssDouble in Shift) or (Button <> mbLeft) then
-    exit;
-
-  if not (ssCTRL in Shift) then
-    Exit;
-
-  MousePos := FEditor.PixelsToRowColumn(X, Y);
-
-  CursorPos := FEditor.DisplayToBufferPos(MousePos);
-
-  if (ssShift in Shift) then
-    SymbolUsage := suImplementation
-  else
-    SymbolUsage := suDeclaration;
-
-  FindDeclaration(CursorPos, SymbolUsage);
-end;
-
-procedure TEditorPage.SynEditorMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
-var
-  MouseCoord: TDisplayCoord;
-  UnderLine: Integer;
-begin
-  if FUnderLine > 0 then
-    FEditor.InvalidateLine(FUnderLine);
-
-  if ssCtrl in Shift then
-  begin
-    MouseCoord := FEditor.PixelsToRowColumn(X, Y);
-    UnderLine := FEditor.DisplayToBufferPos(MouseCoord).Line;
-    if UnderLine <> FUnderLine then
-    begin
-      FUnderLine := UnderLine;
-      FEditor.InvalidateLine(FUnderLine);
-    end;
-  end
-  else
-    FUnderLine := -1;
-end;
-
-procedure TEditorPage.SynEditorProcessCommand(Sender: TObject; var Command: TSynEditorCommand; var AChar: Char; Data: pointer);
-var
-  Coord, NextCoord: TBufferCoord;
-  ThisWord, NextWord: string;
-  i: integer;
-const
-  sBlockKeywords: array[0..0, 0..1] of string = (('begin', 'end'));
-begin
-  if (Command = ecLineBreak) then
-  begin
-    Coord := Editor.CaretXY;
-    Dec(Coord.Char);
-
-    if (Editor.CaretX <> Editor.WordEndEx(Coord).Char) then
-      exit;
-
-    NextCoord := Editor.NextWordPosEx(Coord);
-    if (Coord.Line = NextCoord.Line) and (Coord.Char <> NextCoord.Char) then
-      exit;
-
-    ThisWord := Editor.GetWordAtRowCol(Coord);
-    NextWord := Editor.GetWordAtRowCol(NextCoord);
-
-    for i := Low(sBlockKeywords) to High(sBlockKeywords) do
-      if (AnsiSameText(ThisWord, sBlockKeywords[i, 0])) then
-      begin
-        if (AnsiSameText(NextWord, sBlockKeywords[i, 1])) then
-          exit;
-
-        Command := ecAutoCompletion;
-
-        break;
-      end;
-  end;
-end;
-
-procedure TEditorPage.SynEditorStatusChange(Sender: TObject; Changes: TSynStatusChanges);
-begin
-  if (scModified in Changes) then
-  begin
-    // Force recalc of tab caption width (bold text is wider than normal text)
-    FPage.PageControl.ViewInfo.Calculate;
-    // Redraw
-    FPage.PageControl.Invalidate;
-  end;
-end;
-
-// SynEditorCommandProcessed
-//
-type
-  TSynCompletionProposalCracker = class(TSynCompletionProposal);
-
-procedure TEditorPage.SynEditorCommandProcessed(Sender: TObject; var Command: TSynEditorCommand; var AChar: Char; Data: Pointer);
-
-  function CreateGUID: string;
-  var
-    Guid: TGUID;
-  begin
-    SysUtils.CreateGUID(Guid);
-    Result := GUIDToString(Guid);
-  end;
-
-begin
-  case Command of
-    ecGotoXY:
-      GotoLineNumber;
-
-    ecOpenFileUnderCursor:
-      OpenFileUnderCursor;
-
-    ecToggleDeclImpl:
-      ToggleDeclImpl;
-
-    ecRepeatSearch:
-      if (FForm.SearchText <> '') then
-        FForm.DoSearch(FForm.SearchOptions - [ssoEntireScope], False);
-
-    ecToggleBreakPoint:
-      begin
-        if (Editor.CaretY < FExecutableLines.Size) then
-        begin
-          if (GetBreakpointStatus(Editor.CaretY) <> bpsNone) then
-            ClearBreakpoint(Editor.CaretY)
-          else
-            AddBreakpoint(Editor.CaretY, True);
-          Editor.Repaint;
-        end;
-      end;
-
-    ecAutoCompletionPropose:
-      TSynCompletionProposalCracker(FForm.SynCodeCompletion).DoExecute(Editor);
-
-    ecContextHelp:
-      PerformContextHelp;
-
-    ecInsertGUID:
-      Editor.SelText := ''''+CreateGuid+'''';
-
-    ecSelectNextTab:
-      FForm.PageControlEditor.SelectNextPage(True);
-
-    ecSelectPrevTab:
-      FForm.PageControlEditor.SelectNextPage(False);
-  end;
-end;
-
-// SynEditorGutterClick
-//
-procedure TEditorPage.SynEditorGutterClick(Sender: TObject;
-  Button: TMouseButton; X, Y, Line: Integer; Mark: TSynEditMark);
-var
-  iLine: Integer;
-begin
-  iLine := Editor.RowToLine(Line);
-  if iLine < FExecutableLines.Size then
-  begin
-    if GetBreakpointStatus(Line) <> bpsNone then
-      ClearBreakpoint(iLine)
-    else
-      AddBreakpoint(iLine, True);
-    Editor.Repaint;
-  end;
-end;
-
-// SaveToFile
-//
-function TEditorPage._SaveToFile(APromptOverwrite: Boolean): Boolean;
-begin
-  Result := _SaveToFile(FileName, APromptOverwrite);
-end;
-
-function TEditorPage._SaveToFile(const AFilename: string; APromptOverwrite: Boolean): boolean;
-begin
-  Result := False;
-
-  if (APromptOverwrite) and (FileExists(AFileName)) then
-  begin
-    if (not ConfirmDlgYesNoAbort(Format(RStrFileAlreadyExistsOverwrite, [AFileName]))) then
-      exit;
-  end;
-
-  SaveTextToUTF8File(AFileName, UTF8String(Editor.Lines.Text));
-
-  ClearModified;
-
-  Result := True;
-end;
-
-// SaveIfModified
-//
-procedure TEditorPage._SaveIfModified(APromptOverwrite: Boolean);
-begin
-  if Editor.Modified then
-{$ifdef DISABLED_STUFF}
-    if not APromptOverwrite or (IsProjectSourceFile and not FileExists(FileName)) or
-{$else DISABLED_STUFF}
-    if not APromptOverwrite or (not FileExists(FileName)) or
-{$endif DISABLED_STUFF}
-     ConfirmDlgYesNoAbort(
-      Format(RStrFileHasChanged,  [ ExtractFileName(FileName) ])) then
-        _SaveToFile(False);
-end;
-
-// SaveAs
-//
-function TEditorPage._SaveAs: boolean;
-var
-  s: string;
-  Folder: string;
-begin
-  Result := False;
-
-  Folder := '';
-
-  if (AnsiSameText(FileName, MSG_MainModule)) then
-  begin
-    s := Caption;
-  end else
-  begin
-    s := TPath.GetFileName(FileName);
-    Folder := TPath.GetDirectoryName(FileName);
-  end;
-
-  if (Folder <> '') then
-    Folder := ScriptSettings.Folders.FolderScript;
-
-  FForm.SaveSourceDialog.DefaultFolder := Folder;
-  FForm.SaveSourceDialog.FileName := s;
-
-  if (not FForm.SaveSourceDialog.Execute) then
-    exit;
-
-  s := FForm.SaveSourceDialog.FileName;
-
-  Result := _SavetoFile(s, False);
-
-  if (not Result) then
-    exit;
-
-  Caption := '';
-  ScriptProvider := TFileScriptProvider.Create(s);
-  ScriptSettings.Folders.FolderScript := TPath.GetDirectoryName(s);
-end;
-
-// ToggleDeclImpl
-//
-procedure TEditorPage.ToggleDeclImpl;
-var
-  ScriptProgram: IdwsProgram;
-  ScriptPos: TScriptPos;
-  Symbol: TSymbol;
-  SymDict: TdwsSymbolDictionary;
-  Context: TdwsSourceContext;
-  SymbolPositionList: TSymbolPositionList;
-  SymbolPosition: TSymbolPosition;
-begin
-  ScriptProgram := FForm.GetCompiledScript;
-  if (ScriptProgram = nil) then
-    Exit;
-
-  SymDict := ScriptProgram.SymbolDictionary;
-  Assert(SymDict <> nil);
-
-  Context := ScriptProgram.SourceContextMap.FindContext(FEditor.CaretX, FEditor.CaretY, InternalUnitName);
-
-  while (Context <> nil) do
-  begin
-    Symbol := Context.ParentSym;
-    if (Symbol is TFuncSymbol) then
-    begin
-      // retrieve symbol position list
-      SymbolPositionList := SymDict.FindSymbolPosList(Symbol);
-      if (SymbolPositionList <> nil) then
-      begin
-        // get declaration position
-        SymbolPosition := SymbolPositionList.FindUsage(suDeclaration);
-        if (SymbolPosition <> nil) then
-        begin
-          ScriptPos := SymbolPosition.ScriptPos;
-
-          // check if current position is declaration
-          if (Context.IsPositionInContext(ScriptPos)) then
-            // TODO -cRevival : We should take advantage of new DeclarationPosition etc.
-            ScriptPos := TFuncSymbol(Symbol).DeclarationPosition;
-
-          if (ScriptPos.Line > 0) and (ScriptPos.Col > 0) then
-          begin
-            FEditor.CaretXY := BufferCoord(ScriptPos.Col, ScriptPos.Line);
-            Exit;
-          end;
-        end;
-      end;
-    end;
-
-    Context := Context.Parent;
-  end;
-end;
-
-// GotoLineNumber
-//
-procedure TEditorPage.GotoLineNumber;
-begin
-  if (FForm.GotoForm.ShowModal = mrOK) then
-    FEditor.GotoLineAndCenter(FForm.GotoForm.LineNumber);
-end;
-
-// OpenFileUnderCursor
-//
-procedure TEditorPage.OpenFileUnderCursor;
-var
-  ScriptProgram: IdwsProgram;
-  Symbol: TSymbol;
-  WordStart: TBufferCoord;
-begin
-  ScriptProgram := FForm.GetCompiledScript;
-  if not Assigned(ScriptProgram) then
-    Exit;
-
-  WordStart := FEditor.WordStart;
-  Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(WordStart.Char, WordStart.Line, InternalUnitName);
-
-  if (Symbol is TUnitMainSymbol) then
-  begin
-    FForm.OpenEditorPage(TUnitMainSymbol(Symbol).Name);
-    // eventually move caret position here...
-  end;
-end;
-
-var
-  FHasCheckedHelpVersion: boolean = False;
-
-procedure TEditorPage.PerformContextHelp;
-var
-  ScriptProgram: IdwsProgram;
-  Symbol: TSymbol;
-  i: integer;
-  ChildSymbol: TCompositeTypeSymbol;
-  WordStart: TBufferCoord;
-  //PerformSearch: boolean;
-  Keyword: string;
-  UnitName: string;
-  HelpSystem: IHelpSystem3;
-  HelpFilename: string;
-  HelpDownloadFilename: string;
-  HelpDownloadPackage: string;
-  First: boolean;
-  DownloadURL: string;
-  HelpFileNotFound: boolean;
-  NeedDownload: boolean;
-  DownloadIsPackage: boolean;
-begin
-  Keyword := FEditor.WordAtCursor;
-  if (Keyword = '') and (FEditor.CaretX > 1) then
-    // Try one char to the left in case we're positioned just past the end of the word
-    Keyword := FEditor.GetWordAtRowCol(BufferCoord(FEditor.CaretX-1, FEditor.CaretY));
-
-  //PerformSearch := True;
-
-  ScriptProgram := FForm.GetCompiledScript;
-  if (ScriptProgram <> nil) then
-  begin
-    WordStart := FEditor.WordStart;
-    UnitName := InternalUnitName;
-
-    Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(WordStart.Char, WordStart.Line, UnitName);
-    if (Symbol = nil) and (UnitName <> MSG_MainModule) then
-      Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(WordStart.Char, WordStart.Line, MSG_MainModule);
-
-    if (Symbol <> nil) then
-    begin
-      // If symbol is a method then determine if it is a property accesor. If that is the case then use the property symbol instead.
-      if (Symbol is TMethodSymbol) then
-      begin
-        for i := 0 to TMethodSymbol(Symbol).StructSymbol.Members.Count-1 do
-          if (TMethodSymbol(Symbol).StructSymbol.Members[i] is TPropertySymbol) and
-            ((TPropertySymbol(TMethodSymbol(Symbol).StructSymbol.Members[i]).ReadSym = Symbol) or
-             (TPropertySymbol(TMethodSymbol(Symbol).StructSymbol.Members[i]).WriteSym = Symbol)) then
-          begin
-            Symbol := TMethodSymbol(Symbol).StructSymbol.Members[i];
-            break;
-          end;
-      end;
-
-      // If symbol is a value then get the type of the value instead - unless the value is declared in an external unit
-      if (Symbol is TValueSymbol) then
-      begin
-        if (ScriptProgram.SymbolDictionary.FindSymbolUsage(Symbol, suDeclaration) <> nil) then
-          Symbol := Symbol.Typ;
-      end;
-
-      if (Symbol is TCompositeTypeSymbol) then
-      begin
-        ChildSymbol := TCompositeTypeSymbol(Symbol);
-        while (ChildSymbol <> nil) do
-        begin
-          // If symbol is declared in script then get the base type instead
-          if (ScriptProgram.SymbolDictionary.FindSymbolUsage(ChildSymbol, suDeclaration) = nil) then
-            break;
-          ChildSymbol := ChildSymbol.Parent;
-        end;
-
-        if (ChildSymbol <> nil) then
-          Symbol := ChildSymbol;
-      end;
-
-      Keyword := Symbol.QualifiedName;
-      //PerformSearch := False;
-
-      // Qualify keyword with parameters
-      if (Symbol is TFuncSymbol) then
-      begin
-        if (TFuncSymbol(Symbol).Params.Count > 0) then
-        begin
-          Keyword := Keyword + '(';
-          First := True;
-          for i := 0 to TFuncSymbol(Symbol).Params.Count-1 do
-          begin
-            if (not First) then
-              Keyword := Keyword + ',';
-            First := False;
-            Keyword := Keyword + TFuncSymbol(Symbol).Params[i].Typ.Name;
-          end;
-          Keyword := Keyword + ')';
-        end;
-      end else
-      if (Symbol is TPropertySymbol) then
-      begin
-        if (TPropertySymbol(Symbol).ArrayIndices.Count > 0) then
-        begin
-          Keyword := Keyword + '[';
-          First := True;
-          for i := 0 to TPropertySymbol(Symbol).ArrayIndices.Count-1 do
-          begin
-            if (not First) then
-              Keyword := Keyword + ',';
-            First := False;
-            Keyword := Keyword + TPropertySymbol(Symbol).ArrayIndices[i].Typ.Name;
-          end;
-          Keyword := Keyword + ']';
-        end;
-      end;
-    end;
-  end;
-
-  if (GetHelpSystem(HelpSystem)) then
-  begin
-    HelpDownloadFilename := ExpandEnvironmentVariable(sScriptHelpRtlFilenameDownload);
-    HelpDownloadPackage := HelpDownloadFilename;
-
-    // Try downloaded help file
-    HelpFilename := HelpDownloadFilename;
-
-{$ifdef DEBUG}
-    // Try development help file
-    if (not FileExists(HelpFilename)) then
-      HelpFilename := ExpandEnvironmentVariable(sScriptHelpRtlFilenameDebug);
-{$endif DEBUG}
-
-    // Try preinstalled help file
-    if (not FileExists(HelpFilename)) then
-      HelpFilename := ExpandEnvironmentVariable(sScriptHelpRtlFilenameDefault);
-
-    HelpFileNotFound := (not FileExists(HelpFilename));
-    // Prompt to download help file if it wasn't found on the system
-    if (HelpFileNotFound) then
-    begin
-      if (MessageTaskDlgEx('Help file not found', BrandString('The script RTL help file was not found on your system.'#13#13+
-        '%brandname% will now try to download and install the help file for you.|Help filename:'#13+HelpFilename),
-        mtConfirmation, [mbOK, mbCancel], mbOK) <> mrOK) then
-        exit;
-    end;
-
-    NeedDownload := False;
-    DownloadURL := '';
-
-    // Perform auto update check if help file wasn't found on the system or if we haven't performed an auto update check yet
-    if (HelpFileNotFound) or (not FHasCheckedHelpVersion) then
-    begin
-      FHasCheckedHelpVersion := True;
-{$ifdef FEATURE_PACKAGE_INSTALLER}
-      NeedDownload := PackageInstallerService.AutoUpdateCheck(sPackageIDAppScriptHelpRtl, DownloadURL, [], 'script RTL help file');
-{$else FEATURE_PACKAGE_INSTALLER}
-      NeedDownload := HelpFileNotFound;
-{$endif FEATURE_PACKAGE_INSTALLER}
-    end;
-
-    // Download and install help package
-    if (NeedDownload) then
-    begin
-      HelpFilename := HelpDownloadFilename;
-
-      // Determine if download is a package or a help file
-{$ifdef FEATURE_PACKAGE_INSTALLER}
-      DownloadIsPackage := (AnsiSameText(URLExtractFileExt(DownloadURL), sPackageInstallerFileType));
-{$else FEATURE_PACKAGE_INSTALLER}
-      DownloadIsPackage := False;
-{$endif FEATURE_PACKAGE_INSTALLER}
-
-      if (DownloadIsPackage) then
-        HelpDownloadPackage := ExtractFilePath(HelpDownloadFilename) + URLExtractFilename(DownloadURL)
-      else
-        HelpDownloadPackage := HelpDownloadFilename;
-
-{$ifdef FEATURE_PACKAGE_INSTALLER}
-      PackageInstallerService.AutoUpdateExecute(DownloadURL, HelpDownloadPackage, DownloadIsPackage);
-{$else FEATURE_PACKAGE_INSTALLER}
-      ShowMessage('Auto update feature not enabled - Help will not be available');
-      Abort;
-{$endif FEATURE_PACKAGE_INSTALLER}
-
-      // Make sure we now have the help file
-      HelpFileNotFound := (not FileExists(HelpFilename));
-    end;
-
-
-    (*
-    if (PerformSearch) then
-    begin
-      // BUG: HTML Help: HH_DISPLAY_SEARCH API Command Does Not Perform a Search
-      // https://support.microsoft.com/en-us/kb/241381
-      HelpSystem.ShowSearch(Keyword, HelpFilename);
-    end else
-    *)
-    if (not HelpFileNotFound) then
-    begin
-      if (Keyword <> '') then
-      begin
-        HelpSystem.ShowHelp(Keyword, HelpFilename);
-        HtmlHelp(Application.Handle, HelpFilename, HH_SYNC, 0);
-        HtmlHelp(Application.Handle, HelpFilename, HH_DISPLAY_TOC, 0);
-        HtmlHelp(Application.Handle, HelpFilename, HH_SYNC, 0);
-      end else
-        HelpSystem.ShowTopicHelp(TPath.GetFileNameWithoutExtension(sScriptHelpRtlFilename), HelpFilename);
-    end;
-  end;
-end;
 
 // -----------------------------------------------------------------------------
 //
@@ -2791,11 +976,12 @@ begin
 
   FSearchHistory := '';
   FSearchOptions := [];
-  FSearchRegularExpression := False;
 
-  SetupSynEdit;
+  DataModuleDebuggerEditorData.Initialize(Self);
 
   FDebuggerFrames := TList<IScriptDebuggerWindow>.Create;
+  FEditorContainers := TDictionary<TWinControl, IScriptEditor>.Create;
+  FEditors := TList<IScriptEditor>.Create;
 end;
 
 procedure TFormScriptDebugger.AfterConstruction;
@@ -2846,7 +1032,7 @@ begin
     begin
       // Here we've got a dws (main) file, so load it and make a project file from it too..
       FProjectFileName := ChangeFileExt(S, sDwsIdeProjectFileExt);
-      EditorPageAddNew(S, True);
+      CreateEditor(S, True);
       SaveProjectFileAs(FProjectFileName);
     end
     else
@@ -2876,6 +1062,56 @@ begin
     PostMessage(Handle, MSG_FORM_MAXIMIZE, 0, 0);
 end;
 
+destructor TFormScriptDebugger.Destroy;
+var
+  DebuggerFrame: IScriptDebuggerWindow;
+begin
+  if (FDebuggerFrames <> nil) then
+    for DebuggerFrame in FDebuggerFrames do
+      DebuggerFrame.Finalize;
+
+  if (FScriptDebuggerHost <> nil) then
+  begin
+    FScriptDebuggerHost.NotifyClose(Self);
+    FScriptDebuggerHost := nil;
+    if (FScript <> nil) and (Assigned(FSaveOnNeedUnit)) then
+      FScript.OnNeedUnit := FSaveOnNeedUnit;
+    FScript := nil;
+  end;
+
+  if (Assigned(FOnDebuggerClose)) then
+    FOnDebuggerClose(Self);
+
+  if (ScriptHostApplication <> nil) then
+    ScriptHostApplication.Unsubscribe(Self);
+
+  FMainUnit := nil;
+  FActiveEditor := nil;
+  for var Editor in FEditors.ToArray do
+    CloseEditor(Editor);
+
+  SaveRecentFiles;
+  ScriptSettings.Forms.Main.PrepareSettings(Self);
+  ScriptSettings.WriteConfig;
+
+  ClearMessagesWindow;
+  Debugger.Breakpoints.Clean;
+  Debugger.Watches.Clean;
+  FProgram := nil;
+
+  FEditorContainers.Clear;
+  FEditors.Clear;
+
+  FreeAndNil(FEditorContainers);
+  FreeAndNil(FEditors);
+
+  FDebuggerFrames.Free;
+
+  FGotoForm.Free;
+
+  inherited;
+end;
+
 procedure TFormScriptDebugger.BeforeDestruction;
 begin
 
@@ -2901,11 +1137,8 @@ procedure TFormScriptDebugger.FormCreate(Sender: TObject);
 var
   i: integer;
 begin
-  FPages := Generics.Collections.TObjectList<TEditorPage>.Create;
-
   RibbonDebug.ActiveTab := RibbonTabEditor;
   RibbonTabDebug.Visible := False;
-  SynCodeCompletion.Images := TImageList(DataModuleDebuggerViewData.ImageListSymbols);
 
   for i := 0 to ComponentCount-1 do
     if (Components[i] is TdxDockPanel) and (TdxDockPanel(Components[i]).ControlCount = 0) then
@@ -2942,48 +1175,6 @@ begin
     ScriptHostApplication.Subscribe(Self);
 end;
 
-procedure TFormScriptDebugger.FormDestroy(Sender: TObject);
-var
-  DebuggerFrame: IScriptDebuggerWindow;
-  i: integer;
-begin
-  if (FDebuggerFrames <> nil) then
-    for DebuggerFrame in FDebuggerFrames do
-      DebuggerFrame.Finalize;
-
-  if (FScriptDebuggerHost <> nil) then
-  begin
-    FScriptDebuggerHost.NotifyClose(Self);
-    FScriptDebuggerHost := nil;
-    if (FScript <> nil) and (Assigned(FSaveOnNeedUnit)) then
-      FScript.OnNeedUnit := FSaveOnNeedUnit;
-    FScript := nil;
-  end;
-
-  if (Assigned(FOnDebuggerClose)) then
-    FOnDebuggerClose(Self);
-
-  if (ScriptHostApplication <> nil) then
-    ScriptHostApplication.Unsubscribe(Self);
-
-  SaveRecentFiles;
-  ScriptSettings.Forms.Main.PrepareSettings(Self);
-  ScriptSettings.WriteConfig;
-
-  for i := FPages.Count-1 downto 0 do
-    FPages[i].Free;
-
-  ClearMessagesWindow;
-  Debugger.Breakpoints.Clean;
-  Debugger.Watches.Clean;
-  FProgram := nil;
-  FPages.Clear;
-  FPages.Free;
-  FDebuggerFrames.Free;
-
-  FGotoForm.Free;
-end;
-
 // -----------------------------------------------------------------------------
 
 procedure TFormScriptDebugger.ApplicationCloseQuery(const ScriptHostApplication: IScriptHostApplication; var CanClose: boolean);
@@ -3018,27 +1209,16 @@ end;
 procedure TFormScriptDebugger.ViewScriptPos(const AScriptPos: TScriptPos; AMoveCurrent: boolean; AHiddenMainModule: Boolean);
 var
   ScriptName: string;
-  i: integer;
-  EditPage: IScriptDebugEditPage;
+  EditPage: IScriptEditor;
   ScriptProvider: IScriptProvider;
 begin
   if (not AScriptPos.Defined) then
     exit;
 
   ScriptName := UnitNameFromScriptPos(AScriptPos);
-{$ifdef DISABLED_STUFF}
-  if ScriptName = SYS_MainModule then
-  begin
-    if AHiddenMainModule then
-      i := -1
-    else
-      i := ProjectSourceFileIndex
-  end
-  else
-{$endif DISABLED_STUFF}
-    i := NameToEditorPageIndex(ScriptName);
+  EditPage := EditorByName(ScriptName);
 
-  if (i = -1) then
+  if (EditPage = nil) then
   begin
     if (not AnsiSameText(ExtractFileExt(ScriptName), sScriptFileType)) then
       ScriptName := ScriptName + sScriptFileType;
@@ -3051,24 +1231,19 @@ begin
     ScriptProvider := OpenScriptStream(ScriptName, ScriptProvider);
     if (ScriptProvider <> nil) then
     begin
-      EditPage := EditorPageAddNew(ScriptProvider);
+      EditPage := CreateEditor(ScriptProvider);
     end else
     begin
-      EditPage := EditorPageAddNew(ScriptName, AScriptPos.SourceCode);
+      EditPage := CreateEditor(ScriptName, AScriptPos.SourceCode);
       // Read-only because we have no file to associate the source with
       EditPage.IsReadOnly := True;
     end;
-    i := EditPage.Index;
   end;
 
-  if (i <> -1) then
+  if (EditPage <> nil) then
   begin
-    EditorCurrentPageIndex := i;
-    CurrentEditorPage.SetCurrentLine(AScriptPos.Line, AScriptPos.Col, AMoveCurrent);
-    if (Visible) and (CurrentEditor.CanFocus) then
-      CurrentEditor.SetFocus;
-    CurrentEditor.InvalidateGutterLine(AScriptPos.Line);
-    CurrentEditor.InvalidateLine(AScriptPos.Line);
+    SetActiveEditor(EditPage);
+    ActiveEditor.GotoLine(AScriptPos.Line, AScriptPos.Col, AMoveCurrent);
   end;
 end;
 
@@ -3078,8 +1253,7 @@ begin
 
   FDPIScale := Monitor.PixelsPerInch / 96;
 
-  for var EditorPage in FPages do
-    EditorPage.SetupDPIAware;
+  NotifyEditors(ehNotifyDpiChanged);
 end;
 
 procedure TFormScriptDebugger.WMWindowPosChanged(var Msg: TWMWindowPosChanged);
@@ -3138,11 +1312,8 @@ begin
 
   Debugger.Breakpoints[Index].Enabled := AEnabled;
 
-  if (CurrentEditorPage <> nil) then
-  begin
-    CurrentEditorPage.Editor.InvalidateGutterLine(ScriptPos.Line);
-    CurrentEditorPage.Editor.InvalidateLine(ScriptPos.Line);
-  end;
+  if (ActiveEditor <> nil) then
+    ActiveEditor.InvalidateLine(ScriptPos.Line);
 
   NotifyBreakPoint(Debugger.Breakpoints[Index], dnBreakPointAdded);
 
@@ -3182,11 +1353,8 @@ begin
     Breakpoint.Free;
   end;
 
-  if (CurrentEditorPage <> nil) then
-  begin
-    CurrentEditorPage.Editor.InvalidateGutterLine(ScriptPos.Line);
-    CurrentEditorPage.Editor.InvalidateLine(ScriptPos.Line);
-  end;
+  if (ActiveEditor <> nil) then
+    ActiveEditor.InvalidateLine(ScriptPos.Line);
 
   Debugger.Breakpoints.BreakPointsChanged;
 end;
@@ -3295,6 +1463,69 @@ begin
     end;
   finally
     Watch.Free;
+  end;
+end;
+
+function TFormScriptDebugger.GetMainUnit: IScriptEditor;
+begin
+  Result := FMainUnit;
+
+  if (Result = nil) then
+    Result := ActiveEditor;
+end;
+
+procedure TFormScriptDebugger.SetMainUnit(const Value: IScriptEditor);
+begin
+  if (FMainUnit = Value) then
+    exit;
+
+  NotifyEditors(ehNotifyResetDebugState);
+  ClearMessagesWindow;
+
+  FMainUnit := Value;
+
+  if (FMainUnit = nil) then
+    FProgram := nil;
+
+  PageControlEditor.ViewInfo.Calculate;
+  PageControlEditor.InvalidateWithChildren;
+end;
+
+function TFormScriptDebugger.GetMainUnitName: string;
+begin
+  Result := FMainUnitName;
+
+  if (Result = '') then
+  begin
+    if (FMainUnit <> nil) then
+      Result := FMainUnit.UnitName;
+
+    if (Result = '') then
+      Result := SYS_MainModule;
+  end;
+end;
+
+function TFormScriptDebugger.GetActiveEditor: IScriptEditor;
+begin
+  Result := FActiveEditor;
+end;
+
+procedure TFormScriptDebugger.SetActiveEditor(const Editor: IScriptEditor);
+begin
+  if (Editor = FActiveEditor) then
+    exit;
+
+  if (FActiveEditor <> nil) then
+    FActiveEditor.EditorDeactivated;
+
+  FActiveEditor := Editor;
+
+  if (FActiveEditor <> nil) then
+  begin
+    var Container := ContainerByEditor(FActiveEditor);
+    PageControlEditor.ActivePage := Container as TcxTabSheet;
+
+    FActiveEditor.EditorActivated;
   end;
 end;
 
@@ -3491,7 +1722,7 @@ var
   Filename: string;
 begin
   Filename := BarApplicationMenu.ExtraPaneItems[AIndex].Text;
-  EditorPageAddNew(FileName, True, True);
+  CreateEditor(FileName, True, True);
 end;
 
 procedure TFormScriptDebugger.BarApplicationMenuPopup(Sender: TObject);
@@ -3685,9 +1916,6 @@ begin
   I := Min(I, Height - 30);
   PanelBottom.Height := I;
 *)
-
-  if CanGotoHomePosition then
-    GotoHomePosition;
 end;
 
 procedure TFormScriptDebugger.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -3771,18 +1999,15 @@ begin
   end;
 
   SaveActiveControl := ActiveControl;
-  if (SaveActiveControl <> CurrentEditor) then
+  if (not DockPanelMain.Active) then
     SaveActiveControl := nil;
+
   DockPanelMessages.Activate;
+
   if (SaveActiveControl <> nil) then
     ActiveControl := SaveActiveControl;
-(* Do not steal focus from editor
-  if (Visible) and (DockPanelMessages.CanFocus) then
-    DockPanelMessages.SetFocus;
-*)
 
   ListViewMessages.Update;
-//  PageControlBottomWindows.ActivePage := TabSheetMessages;
 end;
 
 procedure TFormScriptDebugger.AddMessage(const AMessage: string; AKind: TMessageKind; Select: boolean);
@@ -3860,7 +2085,6 @@ procedure TFormScriptDebugger.Compile(ABuild: Boolean; const AScript: string = '
 var
   ScriptProvider: IScriptProvider;
   i: integer;
-  Page: TEditorPage;
   Stopwatch: TStopwatch;
   Duration: Int64;
 begin
@@ -3872,7 +2096,7 @@ begin
   NotifyDebuggerFrames(dnCompiling);
 
   // Make the implicit "main unit" explicit.
-  Page := MainUnit;
+  var Page := MainUnit;
   if (Page <> nil) then
     MainUnit := Page;
 
@@ -3918,17 +2142,73 @@ begin
   end;
 
   if (IsCompiled) then
+  begin
     NotifyDebuggerFrames(dnCompiled);
+    NotifyEditors(ehNotifyCompiled);
+  end;
 end;
 
-function TFormScriptDebugger.NameToEditorPageIndex(const AName: string): Integer;
+// -----------------------------------------------------------------------------
+
+function TFormScriptDebugger.ContainerByEditor(const AEditor: IScriptEditor): TWinControl;
 begin
-  Result := EditorPageCount - 1;
-  while (Result >= 0) do
+  for var Pair in FEditorContainers do
+    if (Pair.Value = AEditor) then
+      Exit(Pair.Key);
+  Result := nil;
+end;
+
+function TFormScriptDebugger.EditorByContainer(const AContainer: TWinControl): IScriptEditor;
+begin
+  if (not FEditorContainers.TryGetValue(AContainer, Result)) then
+    Result := nil;
+end;
+
+// -----------------------------------------------------------------------------
+
+function TFormScriptDebugger.EditorByName(const AName: string): IScriptEditor;
+begin
+  for var Editor in FEditors do
+    if AnsiSameText(Editor.UnitName, AName) then
+      Exit(Editor);
+  Result := nil;
+end;
+
+// -----------------------------------------------------------------------------
+
+procedure TFormScriptDebugger.CloseEditor(const AEditor: IScriptEditor);
+begin
+  var Container := ContainerByEditor(AEditor);
+  FEditorContainers.Remove(Container);
+  FEditors.Remove(AEditor);
+
+  (AEditor as IScriptEditorInternal).Finalize;
+
+  // Do not destroy the container until editor has had a chance to
+  // detach the editor control from it.
+  Container.Free;
+end;
+
+// -----------------------------------------------------------------------------
+
+procedure TFormScriptDebugger.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  inherited;
+
+  if (Operation <> opRemove) then
+    exit;
+
+  if (not (AComponent is TWinControl)) then
+    exit;
+
+  var Editor: IScriptEditor;
+  if (FEditorContainers <> nil) and (FEditorContainers.TryGetValue(TWinControl(AComponent), Editor)) then
   begin
-    if AnsiSameText(EditorPage(Result).UnitName, AName) then
-      break;
-    dec(Result);
+    FEditorContainers.Remove(TWinControl(AComponent));
+    FEditors.Remove(Editor);
+
+    (Editor as IScriptEditorInternal).Finalize;
+    Editor := nil;
   end;
 end;
 
@@ -3937,8 +2217,8 @@ var
   Handler: IScriptDebuggerBreakPointHandler;
   DebuggerFrame: IScriptDebuggerWindow;
 begin
-  if (CurrentEditorPage <> nil) then
-    CurrentEditorPage.Editor.Invalidate;
+  if (ActiveEditor <> nil) then
+    ActiveEditor.InvalidateLine;
 
   for DebuggerFrame in FDebuggerFrames do
     if (Supports(DebuggerFrame, IScriptDebuggerBreakPointHandler, Handler)) then
@@ -3955,50 +2235,43 @@ begin
     DebuggerFrame.DebuggerStateChanged(State);
 end;
 
-function TFormScriptDebugger.EditorPagesCloseAll(AExceptIndex: Integer): boolean;
-var
-  i: Integer;
+procedure TFormScriptDebugger.NotifyEditors(Notification: TScriptEditorHostNotification);
 begin
-  Result := True;
-
-  for i := EditorPageCount - 1 downto 0 do
-    if (i <> AExceptIndex) then
-      EditorPageClose(i);
+  for var Editor in FEditors.ToArray do
+    Editor.HostNotification(Notification);
 end;
 
-function TFormScriptDebugger.EditorPagesCloseQuery(AExceptIndex: Integer = -1): boolean;
-var
-  i: Integer;
-  Page: TEditorPage;
+function TFormScriptDebugger.EditorPagesCloseAll(const AExceptEditor: IScriptEditor): boolean;
 begin
   Result := True;
-  for i := EditorPageCount - 1 downto 0 do
-    if (i <> AExceptIndex) then
+  for var Editor in FEditors.ToArray do
+    if (Editor <> AExceptEditor) then
+      EditorPageClose(Editor);
+end;
+
+function TFormScriptDebugger.EditorPagesCloseQuery(const AExceptEditor: IScriptEditor): boolean;
+begin
+  Result := True;
+  for var Editor in FEditors.ToArray do
+    if (Editor <> AExceptEditor) then
     begin
-      Page := EditorPage(i);
-      Result := Page.CloseQuery;
+      Result := Editor.CloseQuery;
       if (not Result) then
         exit;
     end;
 end;
 
 procedure TFormScriptDebugger.EditorSaveAllIfModified(APromptOverwrite: Boolean);
-var
-  I: Integer;
-  Page: TEditorPage;
 begin
-  for I := 0 to EditorPageCount - 1 do
-  begin
-    Page := EditorPage(I);
-    if (Page.Modified) then
-      SavePage(Page);
-  end;
+  for var Editor in FEditors.ToArray do
+    if (Editor.Modified) then
+      SavePage(Editor);
 end;
 
-procedure TFormScriptDebugger.SavePage(Page: TEditorPage);
+procedure TFormScriptDebugger.SavePage(const Page: IScriptEditor);
 begin
   if (Page.ScriptProvider = nil) then
-    CurrentEditorPage._SaveAs
+    ActiveEditor._SaveAs
   else
   if (Page.Save) then
     Page.ClearModified;
@@ -4053,7 +2326,6 @@ begin
 
   AddStatusMessage(RStrRunning);
   Update;
-  ShowExecutableLines;
 
   Exec := FProgram.CreateNewExecution;
   Stopwatch := TStopwatch.Create;
@@ -4074,7 +2346,8 @@ begin
     else
       Exec.EndProgram;
 
-    ClearExecutableLines;
+    NotifyEditors(ehNotifyResetDebugState); // TODO : Why?
+
     if Exec.Msgs.Count > 0 then
     begin
       AddStatusMessage('Errors');
@@ -4091,15 +2364,14 @@ begin
 end;
 
 function TFormScriptDebugger.TryRunSelection(ADebug: Boolean): Boolean;
-var
-  S: string;
 begin
-  Result := CurrentEditor.SelAvail;
+  Result := ActiveEditor.HasSelection;
+
   if Result then
   begin
-    S := CurrentEditor.SelText;
+    var S := ActiveEditor.SelectedText;
     if IsValidIdentifier(S) then
-      RunFunctionMethodByName(CurrentEditorPage.InternalUnitName, S, ADebug, True {prompt});
+      RunFunctionMethodByName(ActiveEditor.InternalUnitName, S, ADebug, True {prompt});
   end;
 end;
 
@@ -4112,60 +2384,17 @@ begin
 end;
 
 procedure TFormScriptDebugger.ClearCurrentLine;
-var
-  I: Integer;
 begin
-  for I := 0 to EditorPageCount - 1 do
-    EditorPage(I).SetCurrentLine(-1);
+  for var Editor in FEditors do
+    Editor.GotoLine(-1);
 end;
 
 procedure TFormScriptDebugger.ClearAllBreakpoints;
-var
-  I: Integer;
 begin
   Debugger.Breakpoints.Clean;
   NotifyBreakPoint(nil, dnBreakPointsClear);
 
-  for I := 0 to EditorPageCount - 1 do
-    EditorPage(I).Editor.Invalidate;
-end;
-
-function TFormScriptDebugger.CurrentEditor: TSynEdit;
-begin
-  if HasEditorPage then
-    Result := EditorPage(EditorCurrentPageIndex).Editor
-  else
-    Result := nil;
-end;
-
-function TFormScriptDebugger.CurrentEditorPage: TEditorPage;
-begin
-  Result := EditorPage(EditorCurrentPageIndex);
-end;
-
-function TFormScriptDebugger.GetMainUnit: TEditorPage;
-begin
-  Result := FMainUnit;
-
-  if (Result = nil) then
-    Result := CurrentEditorPage;
-end;
-
-procedure TFormScriptDebugger.SetMainUnit(const Value: TEditorPage);
-begin
-  if (FMainUnit = Value) then
-    exit;
-
-  ClearExecutableLines;
-  ClearMessagesWindow;
-
-  FMainUnit := Value;
-
-  if (FMainUnit = nil) then
-    FProgram := nil;
-
-  PageControlEditor.ViewInfo.Calculate;
-  PageControlEditor.InvalidateWithChildren;
+  NotifyEditors(ehNotifyInvalidate);
 end;
 
 procedure TFormScriptDebugger.DoOnExecutionStarted(Execution: TdwsProgramExecution);
@@ -4185,38 +2414,30 @@ begin
 end;
 
 function TFormScriptDebugger.DoOnNeedUnit(const unitName: UnicodeString; var unitSource: UnicodeString): IdwsUnit;
-var
-  i: integer;
-  Page: TEditorPage;
 begin
   Result := nil;
-  i := NameToEditorPageIndex(UnitName);
-  if (i = -1) and (UnitName = MSG_MainModule) and (FMainUnitName <> '') then
-    i := NameToEditorPageIndex(FMainUnitName);
 
-  if (i <> -1) then
-  begin
-    Page := EditorPage(i);
-    unitSource := Page.Script;
-  end;
+  var Editor := EditorByName(UnitName);
+  if (Editor = nil) and (UnitName = MSG_MainModule) and (FMainUnitName <> '') then
+    Editor := EditorByName(FMainUnitName);
+
+  if (Editor <> nil) then
+    unitSource := Editor.Script;
 end;
 
-procedure TFormScriptDebugger.DoSearch(AOptions: TSynSearchOptions; First: boolean);
-var
-  Editor: TSynEdit;
-  SavePos: TBufferCoord;
+procedure TFormScriptDebugger.DoSearch(AOptions: TSearchReplaceOptions; First: boolean);
 begin
-  Editor := CurrentEditor;
+  var Editor := ActiveEditor;
 
   if (Editor.SearchReplace(FSearchText, '', AOptions) <> 0) then
     exit;
 
   if (FSearchAutoWrap) then
   begin
-    SavePos := Editor.CaretXY;
-    if (Editor.SearchReplace(FSearchText, '', AOptions + [ssoEntireScope]) <> 0) then
+    var SavePos := Editor.CaretPos;
+    if (Editor.SearchReplace(FSearchText, '', AOptions + [srEntireScope]) <> 0) then
     begin
-      if (Editor.CaretXY = SavePos) then
+      if (Editor.CaretPos = SavePos) then
         AddAlertMessage('Find', 'No more matches', -1, 1000);
       exit;
     end;
@@ -4224,15 +2445,15 @@ begin
 
   AddAlertMessage('Find', 'Search text not found', -1, 1000);
 
-  if (ssoBackwards in AOptions) then
+  if (srBackwards in AOptions) then
     Editor.BlockEnd := Editor.BlockBegin
   else
     Editor.BlockBegin := Editor.BlockEnd;
 
-  Editor.CaretXY := Editor.BlockBegin;
+  Editor.CaretPos := Editor.BlockBegin;
 end;
 
-function TFormScriptDebugger.DPIAware(Value: Integer): Integer;
+function TFormScriptDebugger.DpiScale(Value: Integer): Integer;
 begin
   if (FDPIScale = 0.0) then
     FDPIScale := Monitor.PixelsPerInch / 96;
@@ -4249,7 +2470,7 @@ begin
   for i := 0 to DropFileTarget1.Files.Count-1 do
     if (AnsiSameText(ExtractFileExt(DropFileTarget1.Files[i]), sScriptFileType)) then
     begin
-      if (FileIsOpenInEditor(DropFileTarget1.Files[i])) or (EditorPageAddNew(DropFileTarget1.Files[i], True, True) <> nil) then
+      if (FileIsOpenInEditor(DropFileTarget1.Files[i])) or (CreateEditor(DropFileTarget1.Files[i], True, True) <> nil) then
         Any := True;
     end;
 
@@ -4283,15 +2504,13 @@ begin
   MemoOutputWindow.Lines.Add('ODS: ' + msg);
 
   SaveActiveControl := ActiveControl;
-  if (SaveActiveControl <> CurrentEditor) then
+  if (not DockPanelMain.Active) then
     SaveActiveControl := nil;
+
   DockPanelOutput.Activate;
+
   if (SaveActiveControl <> nil) then
     ActiveControl := SaveActiveControl;
-(* Do not steal focus from editor
-  if (Visible) and (DockPanelOutput.CanFocus) then
-    DockPanelOutput.SetFocus;
-*)
 end;
 
 procedure TFormScriptDebugger.DebuggerDebugStop(exec: TdwsExecution);
@@ -4436,29 +2655,6 @@ begin
 end;
 
 
-procedure TFormScriptDebugger.GotoHomePosition;
-begin
-  FHomePositionCaptionSuffix := '';
-  if (ScriptSettings.Editor.HomePositionFileName <> '') then
-    if OpenEditorPage(ScriptSettings.Editor.HomePositionFileName) then
-    begin
-      FHomePositionCaptionSuffix := ScriptSettings.Editor.HomePositionFileName;
-      if ScriptSettings.Editor.HomePositionFileIdentifier <> '' then
-      begin
-        CurrentEditorPage.GotoIdentifier(ScriptSettings.Editor.HomePositionFileIdentifier);
-        FHomePositionCaptionSuffix := Format('%s%s [%s]', [
-          ScriptSettings.Editor.HomePositionFileName,
-          sScriptFileType,
-          ScriptSettings.Editor.HomePositionFileIdentifier]);
-      end;
-    end;
-end;
-
-function TFormScriptDebugger.CanGotoHomePosition: Boolean;
-begin
-  Result := ScriptSettings.Editor.HomePositionFileName <> '';
-end;
-
 procedure TFormScriptDebugger.dxBarButton12Click(Sender: TObject);
 begin
   try
@@ -4481,11 +2677,385 @@ begin
   end;
 end;
 
-procedure TFormScriptDebugger.EditorChange(Sender: TObject);
+function TFormScriptDebugger.EditorActionHandler(const AEditor: IScriptEditor; AAction: TScriptEditorAction): boolean;
+
+  procedure HandleOpenFileUnderCursor;
+  var
+    ScriptProgram: IdwsProgram;
+    Symbol: TSymbol;
+    WordStart: TBufferPos;
+  begin
+    ScriptProgram := GetCompiledScript;
+    if (ScriptProgram = nil) then
+      Exit;
+
+    WordStart := AEditor.WordStart(AEditor.CaretPos);
+    Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(WordStart.Column, WordStart.Line, AEditor.InternalUnitName);
+
+    if (Symbol is TUnitMainSymbol) then
+    begin
+      CreateEditor(TUnitMainSymbol(Symbol).Name);
+      // eventually move caret position here...
+    end;
+  end;
+
+  procedure HandleToggleDeclImpl;
+  var
+    ScriptProgram: IdwsProgram;
+    ScriptPos: TScriptPos;
+    Symbol: TSymbol;
+    SymDict: TdwsSymbolDictionary;
+    BufferPos: TBufferPos;
+    Context: TdwsSourceContext;
+    SymbolPositionList: TSymbolPositionList;
+    SymbolPosition: TSymbolPosition;
+  begin
+    ScriptProgram := GetCompiledScript;
+    if (ScriptProgram = nil) then
+      Exit;
+
+    SymDict := ScriptProgram.SymbolDictionary;
+    Assert(SymDict <> nil);
+
+    BufferPos := AEditor.CaretPos;
+    Context := ScriptProgram.SourceContextMap.FindContext(BufferPos.Column, BufferPos.Line, AEditor.InternalUnitName);
+
+    while (Context <> nil) do
+    begin
+      Symbol := Context.ParentSym;
+      if (Symbol is TFuncSymbol) then
+      begin
+        // retrieve symbol position list
+        SymbolPositionList := SymDict.FindSymbolPosList(Symbol);
+        if (SymbolPositionList <> nil) then
+        begin
+          // get declaration position
+          SymbolPosition := SymbolPositionList.FindUsage(suDeclaration);
+          if (SymbolPosition <> nil) then
+          begin
+            ScriptPos := SymbolPosition.ScriptPos;
+
+            // check if current position is declaration
+            if (Context.IsPositionInContext(ScriptPos)) then
+              // TODO -cRevival : We should take advantage of new DeclarationPosition etc.
+              ScriptPos := TFuncSymbol(Symbol).DeclarationPosition;
+
+            if (ScriptPos.Line > 0) and (ScriptPos.Col > 0) then
+            begin
+              BufferPos.Line := ScriptPos.Line;
+              BufferPos.Column := ScriptPos.Col;
+              AEditor.CaretPos := BufferPos;
+              Exit;
+            end;
+          end;
+        end;
+      end;
+
+      Context := Context.Parent;
+    end;
+  end;
+
+  procedure HandleContextHelp;
+  var
+    ScriptProgram: IdwsProgram;
+    Symbol: TSymbol;
+    i: integer;
+    ChildSymbol: TCompositeTypeSymbol;
+    WordStart: TBufferPos;
+    //PerformSearch: boolean;
+    Keyword: string;
+    UnitName: string;
+    HelpSystem: IHelpSystem3;
+    HelpFilename: string;
+    HelpDownloadFilename: string;
+    HelpDownloadPackage: string;
+    First: boolean;
+    DownloadURL: string;
+    HelpFileNotFound: boolean;
+    NeedDownload: boolean;
+    DownloadIsPackage: boolean;
+  begin
+    var BufferPos := AEditor.CaretPos;
+    Keyword := AEditor.WordAt(BufferPos);
+
+    if (Keyword = '') and (BufferPos.Column > 1) then
+    begin
+      Dec(BufferPos.Column);
+      // Try one char to the left in case we're positioned just past the end of the word
+      Keyword := AEditor.WordAt(BufferPos);
+    end;
+
+    //PerformSearch := True;
+
+    ScriptProgram := GetCompiledScript;
+    if (ScriptProgram <> nil) then
+    begin
+      WordStart := AEditor.WordStart(BufferPos);
+      UnitName := AEditor.InternalUnitName;
+
+      Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(WordStart.Column, WordStart.Line, UnitName);
+      if (Symbol = nil) and (UnitName <> MSG_MainModule) then
+        Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(WordStart.Column, WordStart.Line, MSG_MainModule);
+
+      if (Symbol <> nil) then
+      begin
+        // If symbol is a method then determine if it is a property accesor. If that is the case then use the property symbol instead.
+        if (Symbol is TMethodSymbol) then
+        begin
+          for i := 0 to TMethodSymbol(Symbol).StructSymbol.Members.Count-1 do
+            if (TMethodSymbol(Symbol).StructSymbol.Members[i] is TPropertySymbol) and
+              ((TPropertySymbol(TMethodSymbol(Symbol).StructSymbol.Members[i]).ReadSym = Symbol) or
+               (TPropertySymbol(TMethodSymbol(Symbol).StructSymbol.Members[i]).WriteSym = Symbol)) then
+            begin
+              Symbol := TMethodSymbol(Symbol).StructSymbol.Members[i];
+              break;
+            end;
+        end;
+
+        // If symbol is a value then get the type of the value instead - unless the value is declared in an external unit
+        if (Symbol is TValueSymbol) then
+        begin
+          if (ScriptProgram.SymbolDictionary.FindSymbolUsage(Symbol, suDeclaration) <> nil) then
+            Symbol := Symbol.Typ;
+        end;
+
+        if (Symbol is TCompositeTypeSymbol) then
+        begin
+          ChildSymbol := TCompositeTypeSymbol(Symbol);
+          while (ChildSymbol <> nil) do
+          begin
+            // If symbol is declared in script then get the base type instead
+            if (ScriptProgram.SymbolDictionary.FindSymbolUsage(ChildSymbol, suDeclaration) = nil) then
+              break;
+            ChildSymbol := ChildSymbol.Parent;
+          end;
+
+          if (ChildSymbol <> nil) then
+            Symbol := ChildSymbol;
+        end;
+
+        Keyword := Symbol.QualifiedName;
+        //PerformSearch := False;
+
+        // Qualify keyword with parameters
+        if (Symbol is TFuncSymbol) then
+        begin
+          if (TFuncSymbol(Symbol).Params.Count > 0) then
+          begin
+            Keyword := Keyword + '(';
+            First := True;
+            for i := 0 to TFuncSymbol(Symbol).Params.Count-1 do
+            begin
+              if (not First) then
+                Keyword := Keyword + ',';
+              First := False;
+              Keyword := Keyword + TFuncSymbol(Symbol).Params[i].Typ.Name;
+            end;
+            Keyword := Keyword + ')';
+          end;
+        end else
+        if (Symbol is TPropertySymbol) then
+        begin
+          if (TPropertySymbol(Symbol).ArrayIndices.Count > 0) then
+          begin
+            Keyword := Keyword + '[';
+            First := True;
+            for i := 0 to TPropertySymbol(Symbol).ArrayIndices.Count-1 do
+            begin
+              if (not First) then
+                Keyword := Keyword + ',';
+              First := False;
+              Keyword := Keyword + TPropertySymbol(Symbol).ArrayIndices[i].Typ.Name;
+            end;
+            Keyword := Keyword + ']';
+          end;
+        end;
+      end;
+    end;
+
+    if (GetHelpSystem(HelpSystem)) then
+    begin
+      HelpDownloadFilename := ExpandEnvironmentVariable(sScriptHelpRtlFilenameDownload);
+      HelpDownloadPackage := HelpDownloadFilename;
+
+      // Try downloaded help file
+      HelpFilename := HelpDownloadFilename;
+
+  {$ifdef DEBUG}
+      // Try development help file
+      if (not FileExists(HelpFilename)) then
+        HelpFilename := ExpandEnvironmentVariable(sScriptHelpRtlFilenameDebug);
+  {$endif DEBUG}
+
+      // Try preinstalled help file
+      if (not FileExists(HelpFilename)) then
+        HelpFilename := ExpandEnvironmentVariable(sScriptHelpRtlFilenameDefault);
+
+      HelpFileNotFound := (not FileExists(HelpFilename));
+      // Prompt to download help file if it wasn't found on the system
+      if (HelpFileNotFound) then
+      begin
+        if (MessageTaskDlgEx('Help file not found', BrandString('The script RTL help file was not found on your system.'#13#13+
+          '%brandname% will now try to download and install the help file for you.|Help filename:'#13+HelpFilename),
+          mtConfirmation, [mbOK, mbCancel], mbOK) <> mrOK) then
+          exit;
+      end;
+
+      NeedDownload := False;
+      DownloadURL := '';
+
+      // Perform auto update check if help file wasn't found on the system or if we haven't performed an auto update check yet
+      if (HelpFileNotFound) or (not FHasCheckedHelpVersion) then
+      begin
+        FHasCheckedHelpVersion := True;
+  {$ifdef FEATURE_PACKAGE_INSTALLER}
+        NeedDownload := PackageInstallerService.AutoUpdateCheck(sPackageIDAppScriptHelpRtl, DownloadURL, [], 'script RTL help file');
+  {$else FEATURE_PACKAGE_INSTALLER}
+        NeedDownload := HelpFileNotFound;
+  {$endif FEATURE_PACKAGE_INSTALLER}
+      end;
+
+      // Download and install help package
+      if (NeedDownload) then
+      begin
+        HelpFilename := HelpDownloadFilename;
+
+        // Determine if download is a package or a help file
+  {$ifdef FEATURE_PACKAGE_INSTALLER}
+        DownloadIsPackage := (AnsiSameText(URLExtractFileExt(DownloadURL), sPackageInstallerFileType));
+  {$else FEATURE_PACKAGE_INSTALLER}
+        DownloadIsPackage := False;
+  {$endif FEATURE_PACKAGE_INSTALLER}
+
+        if (DownloadIsPackage) then
+          HelpDownloadPackage := ExtractFilePath(HelpDownloadFilename) + URLExtractFilename(DownloadURL)
+        else
+          HelpDownloadPackage := HelpDownloadFilename;
+
+  {$ifdef FEATURE_PACKAGE_INSTALLER}
+        PackageInstallerService.AutoUpdateExecute(DownloadURL, HelpDownloadPackage, DownloadIsPackage);
+  {$else FEATURE_PACKAGE_INSTALLER}
+        ShowMessage('Auto update feature not enabled - Help will not be available');
+        Abort;
+  {$endif FEATURE_PACKAGE_INSTALLER}
+
+        // Make sure we now have the help file
+        HelpFileNotFound := (not FileExists(HelpFilename));
+      end;
+
+
+      (*
+      if (PerformSearch) then
+      begin
+        // BUG: HTML Help: HH_DISPLAY_SEARCH API Command Does Not Perform a Search
+        // https://support.microsoft.com/en-us/kb/241381
+        HelpSystem.ShowSearch(Keyword, HelpFilename);
+      end else
+      *)
+      if (not HelpFileNotFound) then
+      begin
+        if (Keyword <> '') then
+        begin
+          HelpSystem.ShowHelp(Keyword, HelpFilename);
+          HtmlHelp(Application.Handle, HelpFilename, HH_SYNC, 0);
+          HtmlHelp(Application.Handle, HelpFilename, HH_DISPLAY_TOC, 0);
+          HtmlHelp(Application.Handle, HelpFilename, HH_SYNC, 0);
+        end else
+          HelpSystem.ShowTopicHelp(TPath.GetFileNameWithoutExtension(sScriptHelpRtlFilename), HelpFilename);
+      end;
+    end;
+  end;
+
 begin
+  case AAction of
+    seActionGotoLineNumber:
+      begin
+        if (GotoForm.ShowModal = mrOK) then
+          AEditor.GotoLine(GotoForm.LineNumber);
+        Result := True;
+      end;
+
+    seActionOpenFileUnderCursor:
+      begin
+        HandleOpenFileUnderCursor;
+        Result := True;
+      end;
+
+    seActionToggleDeclImpl:
+      begin
+        HandleToggleDeclImpl;
+        Result := True;
+      end;
+
+    seActionRepeatSearch:
+      begin
+        if (FSearchText <> '') then
+          DoSearch(FSearchOptions - [srEntireScope], False);
+        Result := True;
+      end;
+
+//    seActionToggleBreakPoint,
+//    seActionAutoCompletionPropose:
+
+    seActionContextHelp:
+      begin
+        HandleContextHelp;
+        Result := True;
+      end;
+
+    seActionSelectNextTab:
+      begin
+        PageControlEditor.SelectNextPage(True);
+        Result := True;
+      end;
+
+    seActionSelectPrevTab:
+      begin
+        PageControlEditor.SelectNextPage(False);
+        Result := True;
+      end;
+  else
+    Result := False;
+  end;
+end;
+
+procedure TFormScriptDebugger.ScriptEditorNotification(const AEditor: IScriptEditor; ANotification: TScriptEditorNotification);
+begin
+  case ANotification of
+    seNotifyInitialize:
+      ;
+
+    seNotifyFinalize:
+      begin
+        AEditor.Unsubscribe(Self);
+
+        if (FMainUnit = AEditor) then
+          FMainUnit := nil;
+
+        if (FActiveEditor = AEditor) then
+          FActiveEditor := nil;
+      end;
+
+    seNotifySaving,
+    seNotifySaved:
+      ;
+    seNotifyChanged:
+      EditorChange(AEditor);
+  end;
+end;
+
+procedure TFormScriptDebugger.EditorChange(const AEditor: IScriptEditor);
+begin
+  var Container := ContainerByEditor(AEditor) as TcxTabSheet;
+
+  // Force recalc of tab caption width (bold text is wider than normal text)
+  Container.PageControl.ViewInfo.Calculate;
+  // Redraw
+  Container.PageControl.Invalidate;
+
   if IsCompiled then
   begin
-    ClearExecutableLines;
+    NotifyEditors(ehNotifyResetDebugState);
     ClearMessagesWindow;
     FProgram := nil;
   end;
@@ -4493,23 +3063,21 @@ begin
 end;
 
 function TFormScriptDebugger.FileIsOpenInEditor(const AFileName: TFileName; Activate: boolean): Boolean;
-var
-  I: Integer;
 begin
-  Result := True;
-  for I := 0 to EditorPageCount - 1 do
-    if AnsiSameText(AFileName, EditorPage(I).FileName) then
+  Result := False;
+  for var Editor in FEditors do
+    if AnsiSameText(AFileName, Editor.FileName) then
     begin
       if (Activate) then
-        SetEditorCurrentPageIndex(i);
-      Exit;
+        SetActiveEditor(Editor);
+      Result := True;
+      break;
     end;
-  Result := False;
 end;
 
 function TFormScriptDebugger.HasEditorPage: Boolean;
 begin
-  Result := EditorCurrentPageIndex <> -1;
+  Result := (FActiveEditor <> nil);
 end;
 
 function TFormScriptDebugger.IsCompiled: Boolean;
@@ -4536,133 +3104,7 @@ begin
   FScript.OnNeedUnit := DoOnNeedUnit;
 end;
 
-procedure TFormScriptDebugger.SetupSynEdit;
-begin
-  SynEditSearch := TSynEditSearch.Create(Self);
-
-  SynMacroRecorder := TSynMacroRecorder.Create(Self);
-  SynMacroRecorder.RecordShortCut := 24658;
-  SynMacroRecorder.PlaybackShortCut := 24656;
-
-  SynCodeCompletion := TSynCompletionProposal.Create(Self);
-  SynCodeCompletion.Resizeable := True;
-  SynCodeCompletion.Options := [scoLimitToMatchedText, scoUseInsertList, scoUsePrettyText, scoUseBuiltInTimer, scoEndCharCompletion, scoCompleteWithTab, scoCompleteWithEnter];
-  SynCodeCompletion.NbLinesInWindow := 6;
-  SynCodeCompletion.Width := 400;
-  SynCodeCompletion.EndOfTokenChr := '()[]. ';
-  SynCodeCompletion.TriggerChars := '.';
-  SynCodeCompletion.Font.Height := -11;
-  SynCodeCompletion.Font.Name := 'MS Sans Serif';
-  SynCodeCompletion.TitleFont.Color := clBtnText;
-  SynCodeCompletion.TitleFont.Height := -11;
-  SynCodeCompletion.TitleFont.Name := 'MS Sans Serif';
-  SynCodeCompletion.TitleFont.Style := [fsBold];
-  SynCodeCompletion.OnExecute := SynCodeCompletionExecute;
-  SynCodeCompletion.OnShow := SynCodeCompletionShow;
-  SynCodeCompletion.ShortCut := 16416;
-
-  SynParameters := TSynCompletionProposal.Create(Self);
-  SynParameters.DefaultType := ctParams;
-  SynParameters.Options := [scoLimitToMatchedText, scoUsePrettyText, scoUseBuiltInTimer];
-  SynParameters.ClBackground := clInfoBk;
-  SynParameters.Width := 262;
-  SynParameters.EndOfTokenChr := '()[]. ';
-  SynParameters.TriggerChars := '(';
-  SynParameters.Font.Color := clWindowText;
-  SynParameters.Font.Height := -11;
-  SynParameters.Font.Name := 'MS Sans Serif';
-  SynParameters.TitleFont.Color := clBtnText;
-  SynParameters.TitleFont.Height := -11;
-  SynParameters.TitleFont.Name := 'MS Sans Serif';
-  SynParameters.TitleFont.Style := [fsBold];
-  SynParameters.OnExecute := SynParametersExecute;
-  SynParameters.ShortCut := 24608;
-
-  SynEditRegexSearch := TSynEditRegexSearch.Create(Self);
-
-  SynAutoComplete := TSynAutoComplete.Create(Self);
-  SynAutoComplete.AutoCompleteList.Text :=
-      '[tryf|try..finally block]'#13+
-      'try'#13+
-      '  |'#13+
-      'finally'#13+
-      'end;'#13+
-      '[trye|try..except block]'#13+
-      'try'#13+
-      '  |'#13+
-      'except'#13+
-      'end;'#13+
-      '[begin|begin..end block]'#13+
-      'begin'#13+
-      '  |'#13+
-      'end;'#13+
-      '[if|if..then statement with begin..end block]'#13+
-      'if (|) then'#13+
-      'begin'#13+
-      'end;'#13;
-  SynAutoComplete.EndOfTokenChr := '()[]. ';
-  SynAutoComplete.ShortCut := 8224;
-
-//  SynCodeCompletion.ClSelect := RootLookAndFeel.Painter.DefaultSelectionColor;
-//  SynCodeCompletion.ClSelectedText := RootLookAndFeel.Painter.DefaultSelectionTextColor;
-  SynCodeCompletion.ShortCut := 0;
-
-end;
-
-procedure TFormScriptDebugger.SetEditorCurrentPageIndex(const Value: Integer);
-var
-  page: TEditorPage;
-begin
-  if Value = EditorCurrentPageIndex then
-    Exit;
-
-  if Value > FPages.Count - 1 then
-    Exit;
-
-  if EditorCurrentPageIndex >= 0 then
-  begin
-    page := EditorPage(Value);
-(*
-    page.Visible := False;
-    page.Parent := nil;
-*)
-    // Disconnect search items
-    page.Editor.SearchEngine := nil;
-  end;
-
-  if (Value >= 0) and (Value < FPages.Count) then
-  begin
-    page := EditorPage(Value);
-(*
-    page.Align := alClient;
-    page.Parent := pnlPageControl;
-    page.Visible := True;
-    page.Editor.Repaint;
-*)
-    // Connect the search engine
-    page.Editor.SearchEngine := SynEditSearch;
-
-    PageControlEditor.ActivePageIndex := Value;
-
-    // Focus the new editor now ...
-    ActiveControl := page.Editor;
-  end;
-end;
-
 procedure TFormScriptDebugger.UpdateTimerTimer(Sender: TObject);
-
-{$ifdef DISABLED_STUFF}
-  procedure UpdateFormCaption;
-  begin
-    if FHomePositionCaptionSuffix <> '' then
-      Caption := Format('Home: %s', [FHomePositionCaptionSuffix])
-    else
-    if ProjectfileName = '' then
-      Caption := '[No project]'
-    else
-      Caption := Format('%s  (%s)', [ExtractFileName(ProjectFilename), ExtractfileDir(ProjectFilename)]);
-  end;
-{$endif DISABLED_STUFF}
 
   procedure UpdateStatusBarPanels;
   resourcestring
@@ -4673,16 +3115,15 @@ procedure TFormScriptDebugger.UpdateTimerTimer(Sender: TObject);
   const
     MacroRecorderStates: array[ TSynMacroState ] of string = (
       'Stopped', 'Recording', 'Playing', 'Paused');
-  var
-    ptCaret: TPoint;
-    Editor: TSynEdit;
   begin
-    Editor := CurrentEditor;
+    var Editor := ActiveEditor;
+
     if Editor <> nil then
     begin
-      ptCaret := TPoint(Editor.CaretXY);
-      if (ptCaret.X > 0) and (ptCaret.Y > 0) then
-        StatusBar.Panels[0].Text := Format(' %6d:%3d ', [ptCaret.Y, ptCaret.X])
+      var CaretPos := Editor.CaretPos;
+
+      if (CaretPos.Column > 0) and (CaretPos.Line > 0) then
+        StatusBar.Panels[0].Text := Format(' %6d:%3d ', [CaretPos.Line, CaretPos.Column])
       else
         StatusBar.Panels[0].Text := '';
 
@@ -4691,20 +3132,18 @@ procedure TFormScriptDebugger.UpdateTimerTimer(Sender: TObject);
       else
         StatusBar.Panels[1].Text := '';
 
-      if Editor.ReadOnly then
+      if Editor.IsReadOnly then
         StatusBar.Panels[2].Text := SReadOnly
       else
-        if Editor.InsertMode then
-        begin
-          if SynMacroRecorder.State <> msStopped then
-            StatusBar.Panels[2].Text := UpperCase(MacroRecorderStates[SynMacroRecorder.State])
-          else
-            StatusBar.Panels[2].Text := SInsert
-        end
+      if Editor.InsertMode then
+      begin
+        if DataModuleDebuggerEditorData.SynMacroRecorder.State <> msStopped then
+          StatusBar.Panels[2].Text := UpperCase(MacroRecorderStates[DataModuleDebuggerEditorData.SynMacroRecorder.State])
         else
-          StatusBar.Panels[2].Text := SOverwrite;
-    end
-    else
+          StatusBar.Panels[2].Text := SInsert
+      end else
+        StatusBar.Panels[2].Text := SOverwrite;
+    end else
     begin
       StatusBar.Panels[0].Text := '';
       StatusBar.Panels[1].Text := '';
@@ -4714,10 +3153,6 @@ procedure TFormScriptDebugger.UpdateTimerTimer(Sender: TObject);
 
 begin
   UpdateStatusBarPanels;
-
-{$ifdef DISABLED_STUFF}
-  UpdateFormCaption;
-{$endif DISABLED_STUFF}
 end;
 
 {$ifdef SHELL_EXPLORER}
@@ -4727,338 +3162,9 @@ begin
   var Filename := GetPidlName(APIDL);
 
   if (not FileIsOpenInEditor(Filename, True)) then
-    EditorPageAddNew(Filename, True, True);
+    CreateEditor(Filename, True, True);
 end;
 {$endif SHELL_EXPLORER}
-
-procedure TFormScriptDebugger.ShowExecutableLines;
-var
-  I: Integer;
-begin
-  for I := 0 to EditorPageCount - 1 do
-    EditorPage(I).ShowExecutableLines;
-end;
-
-procedure TFormScriptDebugger.SynCodeCompletionExecute(Kind: SynCompletionType;
-  Sender: TObject; var CurrentInput: string; var x, y: Integer;
-  var CanExecute: Boolean);
-var
-  SuggestionIndex: Integer;
-  Proposal: TSynCompletionProposal;
-  SourceFile: TSourceFile;
-  ScriptPos: TScriptPos;
-  ScriptProgram: IdwsProgram;
-  Suggestions: IdwsSuggestions;
-  Item, AddOn: string;
-  n: integer;
-  s: string;
-  SuggestionCategory: TdwsSuggestionCategory;
-begin
-  CanExecute := False;
-
-  Assert(Sender is TSynCompletionProposal);
-
-  // check the proposal type
-  Proposal := TSynCompletionProposal(Sender);
-  Proposal.InsertList.Clear;
-  Proposal.ItemList.Clear;
-
-  if Assigned(Proposal.Form) then
-    Proposal.Form.DoubleBuffered := True;
-
-  // use this handler only in case the kind is set to ctCode!
-  Assert(Kind = ctCode);
-
-  // get script program
-  ScriptProgram := GetCompiledScript;
-  if ScriptProgram = nil then
-    Exit;
-
-  // ok, get the compiled "program" from DWS
-  SourceFile := ScriptProgram.SourceList.MainScript.SourceFile;
-  ScriptPos := TScriptPos.Create(SourceFile, CurrentEditor.CaretY, CurrentEditor.CaretX);
-  Suggestions := TDWSSuggestions.Create(ScriptProgram, ScriptPos, [soNoReservedWords]);
-
-  // now populate the suggestion box
-  for SuggestionIndex := 0 to Suggestions.Count - 1 do
-  begin
-    // discard empty suggestions
-    if Suggestions.Caption[SuggestionIndex] = '' then
-      Continue;
-
-    SuggestionCategory := Suggestions.Category[SuggestionIndex];
-
-    Item := '\image{' + IntToStr(DebuggerSuggestionCategoryImageIndexMap[SuggestionCategory]) + '}';
-
-    with CurrentEditor.Highlighter.KeywordAttribute do
-      Item := Item + '\color{' + ColorToString(Foreground) + '}';
-
-    Item := Item + SuggestionCategoryShortNames[SuggestionCategory];
-
-    Item := Item + ' \column{}';
-    s := Suggestions.Code[SuggestionIndex];
-    with CurrentEditor.Highlighter.IdentifierAttribute do
-      Item := Item + '\color{' + ColorToString(Foreground) + '}';
-    Item := Item + s;
-    AddOn := Suggestions.Caption[SuggestionIndex];
-    Delete(AddOn, 1, Length(s));
-    // Fix default DWS formatting
-    n := 1;
-    while (n > 0) do
-    begin
-      n := PosEx(' : ', AddOn, n);
-      if (n > 0) then
-        Delete(AddOn, n, 1);
-    end;
-    n := Pos(' (', AddOn);
-    if (n > 0) then
-      Delete(AddOn, n, 1);
-    n := Pos('()', AddOn);
-    if (n > 0) then
-      Delete(AddOn, n, 2);
-    n := Pos('array of String = )', AddOn);
-    if (n > 0) then
-      Insert('[]', AddOn, n+18);
-
-    Item := Item + '\style{-B}' + AddOn;
-
-    Proposal.ItemList.AddObject(Item, pointer(DebuggerSuggestionCategoryImageIndexMap[SuggestionCategory]));
-    Proposal.InsertList.AddObject(s, pointer(DebuggerSuggestionCategoryImageIndexMap[SuggestionCategory]));
-  end;
-
-  CanExecute := True;
-end;
-
-procedure TFormScriptDebugger.SynCodeCompletionShow(Sender: TObject);
-var
-  CompletionProposalForm: TSynBaseCompletionProposalForm;
-begin
-  inherited;
-
-  if (Sender <> nil) and (Sender is TSynBaseCompletionProposalForm) then
-  begin
-    CompletionProposalForm := TSynBaseCompletionProposalForm(Sender);
-    try
-      CompletionProposalForm.DoubleBuffered := True;
-
-      if CompletionProposalForm.Height > 300 then
-        CompletionProposalForm.Height := 300
-    except
-      on Exception do;
-    end;
-  end;
-end;
-
-procedure TFormScriptDebugger.SynParametersExecute(Kind: SynCompletionType;
-  Sender: TObject; var CurrentInput: string; var x, y: Integer;
-  var CanExecute: Boolean);
-
-  procedure GetParameterInfosForCursor(const AProgram: IdwsProgram; Col,
-    Line: Integer; var ParameterInfos: TStrings; InfoPosition: Integer = 0);
-
-    procedure ParamsToInfo(const AParams: TParamsSymbolTable);
-    var
-      y: Integer;
-      ParamsStr: string;
-    begin
-      ParamsStr := '';
-      if (AParams <> nil) and (AParams.Count > 0) then
-      begin
-        if InfoPosition >= AParams.Count then
-          Exit;
-
-        ParamsStr := '"' + AParams[0].Description + ';"';
-        for y := 1 to AParams.Count - 1 do
-          ParamsStr := ParamsStr + ',"' + AParams[y].Description + ';"';
-      end else
-      if InfoPosition > 0 then
-        Exit;
-
-      if (ParameterInfos.IndexOf(ParamsStr) < 0) then
-        ParameterInfos.Add(ParamsStr);
-    end;
-
-  var
-    Overloads: TFuncSymbolList;
-
-    procedure CollectMethodOverloads(methSym: TMethodSymbol);
-    var
-      Member: TSymbol;
-      Struct: TCompositeTypeSymbol;
-      LastOverloaded: TMethodSymbol;
-    begin
-      LastOverloaded := methSym;
-      Struct := methSym.StructSymbol;
-      repeat
-        for Member in Struct.Members do
-        begin
-          if not UnicodeSameText(Member.Name, methSym.Name) then
-            Continue;
-          if not (Member is TMethodSymbol) then
-            Continue;
-
-          LastOverloaded := TMethodSymbol(Member);
-          if not Overloads.ContainsChildMethodOf(LastOverloaded) then
-            Overloads.Add(LastOverloaded);
-        end;
-
-        Struct := Struct.Parent;
-      until (Struct = nil) or not LastOverloaded.IsOverloaded;
-    end;
-
-  var
-    ItemIndex: Integer;
-    FuncSymbol: TFuncSymbol;
-
-    SymbolDictionary: TdwsSymbolDictionary;
-    SymbolPositionList: TSymbolPositionList;
-    Symbol, TestSymbol: TSymbol;
-  begin
-    // make sure the string list is present
-    Assert(Assigned(ParameterInfos));
-
-    // ensure a compiled program is assigned
-    if not Assigned(AProgram) then
-      Exit;
-
-    SymbolDictionary := AProgram.SymbolDictionary;
-    Symbol := SymbolDictionary.FindSymbolAtPosition(Col, Line, MSG_MainModule);
-
-    if (Symbol is TSourceMethodSymbol) then
-    begin
-      Overloads := TFuncSymbolList.Create;
-      try
-        CollectMethodOverloads(TSourceMethodSymbol(Symbol));
-        for ItemIndex := 0 to Overloads.Count - 1 do
-        begin
-          FuncSymbol := Overloads[ItemIndex];
-          ParamsToInfo(FuncSymbol.Params);
-        end;
-      finally
-        Overloads.Free;
-      end;
-    end else
-    if (Symbol is TFuncSymbol) then
-    begin
-      ParamsToInfo(TFuncSymbol(Symbol).Params);
-
-      if TFuncSymbol(Symbol).IsOverloaded then
-      begin
-        for SymbolPositionList in SymbolDictionary do
-        begin
-          TestSymbol := SymbolPositionList.Symbol;
-          if (TestSymbol.ClassType = Symbol.ClassType) and
-            AnsiSameText(TFuncSymbol(TestSymbol).Name, TFuncSymbol(Symbol).Name) and
-            (TestSymbol <> Symbol) then
-            ParamsToInfo(TFuncSymbol(TestSymbol).Params);
-        end;
-      end
-    end;
-
-    // check if no parameters at all is an option, if so: replace and move to top
-    ItemIndex := ParameterInfos.IndexOf('');
-    if ItemIndex >= 0 then
-    begin
-      ParameterInfos.Delete(ItemIndex);
-      ParameterInfos.Insert(0, RStrNoParametersRequired);
-    end;
-  end;
-
-
-var
-  LineText: string;
-  Proposal: TSynCompletionProposal;
-  LocLine: string;
-  TmpX: Integer;
-  TmpLocation, StartX, ParenCounter: Integer;
-  ParameterInfoList: TStrings;
-  ScriptProgram: IdwsProgram;
-begin
-  CanExecute := False;
-  Assert(Kind = ctParams);
-
-  // get script program
-  ScriptProgram := GetCompiledScript;
-  if ScriptProgram = nil then
-    Exit;
-
-  // check the proposal type
-  if Sender is TSynCompletionProposal then
-  begin
-    Proposal := TSynCompletionProposal(Sender);
-    Proposal.InsertList.Clear;
-    Proposal.ItemList.Clear;
-    ParameterInfoList := TStrings(Proposal.ItemList);
-
-    // get current line
-    LineText := CurrentEditor.LineText;
-
-    with CurrentEditor do
-    begin
-      // get current compiled program
-      if not Assigned(ScriptProgram) then
-        Exit;
-
-      LocLine := LineText;
-
-      //go back from the cursor and find the first open paren
-      TmpX := CaretX;
-      if TmpX > Length(LocLine) then
-        TmpX := Length(LocLine)
-      else Dec(TmpX);
-      TmpLocation := 0;
-
-      while (TmpX > 0) and not CanExecute do
-      begin
-        if LocLine[TmpX] = ',' then
-        begin
-          Inc(TmpLocation);
-          Dec(TmpX);
-        end else if LocLine[TmpX] = ')' then
-        begin
-          // we found a close, go till it's opening paren
-          ParenCounter := 1;
-          Dec(TmpX);
-          while (TmpX > 0) and (ParenCounter > 0) do
-          begin
-            if LocLine[TmpX] = ')' then
-              Inc(ParenCounter)
-            else
-            if LocLine[TmpX] = '(' then
-              Dec(ParenCounter);
-            Dec(TmpX);
-          end;
-          if TmpX > 0 then Dec(TmpX);  // eat the open paren
-        end else if LocLine[TmpX] = '(' then
-        begin
-          // we have a valid open paren, lets see what the word before it is
-          StartX := TmpX;
-          while (TmpX > 0) and not IsIdentChar(LocLine[TmpX])do
-            Dec(TmpX);
-          if TmpX > 0 then
-          begin
-            while (TmpX > 0) and IsIdentChar(LocLine[TmpX]) do
-              Dec(TmpX);
-            Inc(TmpX);
-
-            GetParameterInfosForCursor(ScriptProgram, TmpX,
-              CurrentEditor.CaretY, ParameterInfoList, TmpLocation);
-
-            CanExecute := ParameterInfoList.Count > 0;
-
-            if not CanExecute then
-            begin
-              TmpX := StartX;
-              Dec(TmpX);
-            end
-            else
-              TSynCompletionProposal(Sender).Form.CurrentIndex := TmpLocation;
-          end;
-        end else Dec(TmpX)
-      end;
-    end;
-  end;
-end;
 
 procedure TFormScriptDebugger.ListViewMessagesDblClick(Sender: TObject);
 var
@@ -5109,56 +3215,23 @@ begin
   end;
 end;
 
-procedure TFormScriptDebugger.ClearExecutableLines;
-var
-  I: Integer;
+procedure TFormScriptDebugger.EditorPageClose(const AEditor: IScriptEditor);
 begin
-  for I := 0 to EditorPageCount - 1 do
-    EditorPage(I).ClearExecutableLines;
-end;
-
-procedure TFormScriptDebugger.ClearLinesChangedState;
-var
-  I: Integer;
-begin
-  for I := 0 to EditorPageCount - 1 do
-    EditorPage(I).ClearLineChangeStates;
-end;
-
-procedure TFormScriptDebugger.EditorPageClose(AIndex: Integer);
-var
-  Page: TEditorPage;
-begin
-  Page := EditorPage(AIndex);
-
-  if (Page = nil) then
+  if (AEditor = nil) then
     Exit;
 
-  if (not Page.CanClose) then
+  if (not AEditor.CanClose) then
     exit;
 
-  if (not Page.CloseQuery) then
+  if (not AEditor.CloseQuery) then
     exit;
 
-  Page.Free;
+  CloseEditor(AEditor);
 end;
 
-function TFormScriptDebugger.EditorPageCount: Integer;
+function TFormScriptDebugger.CreateEditor(const AName, AScript: string): IScriptEditor;
 begin
-  Result := FPages.Count;
-end;
-
-function TFormScriptDebugger.EditorPage(AIndex: Integer): TEditorPage;
-begin
-  if (AIndex <> -1) and (AIndex < FPages.Count) then
-    Result := FPages[AIndex]
-  else
-    Result := nil;
-end;
-
-function TFormScriptDebugger.EditorPageAddNew(const AName, AScript: string): IScriptDebugEditPage;
-begin
-  Result := EditorPageAddNew;
+  Result := CreateEditor;
 
   if (AnsiSameText(ExtractFileExt(AName), sScriptFileType)) then
   begin
@@ -5170,70 +3243,78 @@ begin
   Result.Script := AScript;
 end;
 
-function TFormScriptDebugger.EditorPageAddNew(const ScriptProvider: IScriptProvider): IScriptDebugEditPage;
-var
-  EditorPage: TEditorPage;
-  Page: TcxTabSheet;
-  MenuLink: TdxBarPopupMenuLink;
-  i: integer;
-  UnitName: string;
-  Filename: string;
+function TFormScriptDebugger.CreateEditor(const ScriptProvider: IScriptProvider): IScriptEditor;
 const
   sScriptNewUnitNameTemplate = 'unit%d';
 begin
-  Page := TcxTabSheet.Create(Self);
+  var TabSheet := TcxTabSheet.Create(Self);
+  try
 
-  MenuLink := BarManager.PopupMenuLinks.Add;
-  MenuLink.Control := Page;
-  MenuLink.PopupMenu := PopupMenuEditorTabs;
+    var MenuLink := BarManager.PopupMenuLinks.Add;
+    try
+      MenuLink.Control := TabSheet;
+      MenuLink.PopupMenu := PopupMenuEditorTabs;
 
-  EditorPage := TEditorPage.Create(Self, Page);
-  EditorPage.Images := DataModuleDebuggerViewData.SmallImages;
-//  EditorPage.FileName := MSG_MainModule;
-  i := 1;
+      Result := ScriptEditorFactory.CreateEditor(Self, TabSheet);
+    except
+      MenuLink.Free;
+      raise;
+    end;
+  except
+    TabSheet.Free;
+    raise;
+  end;
+
+  var i := 1;
   while (True) do
   begin
-    UnitName := Format(sScriptNewUnitNameTemplate, [i]);
-    if (NameToEditorPageIndex(UnitName) = -1) then
+    var UnitName := Format(sScriptNewUnitNameTemplate, [i]);
+    if (EditorByName(UnitName) = nil) then
     begin
-      EditorPage.FileName := UnitName + sScriptFileType;
+      Result.FileName := UnitName + sScriptFileType;
       break;
     end;
     Inc(i);
   end;
 
-  FPages.Add(EditorPage);
+  FEditorContainers.Add(TabSheet, Result);
+  FEditors.Add(Result);
 
-  Page.PageControl := PageControlEditor;
+  Result.Subscribe(Self);
 
-  ASSERT(FPages.Count = PageControlEditor.PageCount);
+  try
+    ASSERT(FEditorContainers.Count = FEditors.Count);
 
-  SetEditorCurrentPageIndex(Page.TabIndex);
+    TabSheet.PageControl := PageControlEditor;
 
-  Result := IScriptDebugEditPage(EditorPage);
-
-  if (ScriptProvider <> nil) then
-    try
-      EditorPage.Caption := '';
-      EditorPage.ScriptProvider := ScriptProvider;
-    except
-      Result := nil;
-      EditorPage.Free;
-      raise;
-    end;
-
-  if (ScriptProvider <> nil) then
-  begin
-    Filename := ScriptProvider.ScriptName;
-    if (Filename <> '') then
+    if (ScriptProvider <> nil) then
     begin
-      if (ExtractFileExt(Filename) <> sScriptFileType) then
-        Filename := Filename + sScriptFileType;
-
-      Filename := IncludeTrailingPathDelimiter(ScriptProvider.Folder) + Filename;
-
-      AddRecentFile(Filename);
+      Result.Caption := '';
+      Result.ScriptProvider := ScriptProvider;
     end;
+
+    if (ScriptProvider <> nil) then
+    begin
+      var Filename := ScriptProvider.ScriptName;
+      if (Filename <> '') then
+      begin
+        if (ExtractFileExt(Filename) <> sScriptFileType) then
+          Filename := Filename + sScriptFileType;
+
+        Filename := IncludeTrailingPathDelimiter(ScriptProvider.Folder) + Filename;
+
+        AddRecentFile(Filename);
+      end;
+    end;
+
+    (Result as IScriptEditorInternal).Initialize(DataModuleDebuggerViewData.SmallImages);
+
+    TabSheet.AllowCloseButton := Result.CanClose;
+
+    SetActiveEditor(Result);
+  except
+    CloseEditor(Result);
+    raise;
   end;
 end;
 
@@ -5326,9 +3407,8 @@ begin
   end;
 end;
 
-function TFormScriptDebugger.EditorPageAddNew(const AFileName: TFileName; ALoadFile, AFileRequired: Boolean; const CurrentScriptProvider: IScriptProvider): IScriptDebugEditPage;
+function TFormScriptDebugger.CreateEditor(const AFileName: TFileName; ALoadFile, AFileRequired: Boolean; const CurrentScriptProvider: IScriptProvider): IScriptEditor;
 var
-  EditorPage: TEditorPage;
   Filename: string;
   ScriptProvider: IScriptProvider;
 begin
@@ -5369,28 +3449,12 @@ begin
   end else
     ScriptProvider := nil;
 
-  Result := EditorPageAddNew(ScriptProvider);
+  Result := CreateEditor(ScriptProvider);
 
-  EditorPage := TEditorPage(Result);
-  try
-
-    EditorPage.Caption := '';
-    EditorPage.FileName := AFilename;
-
-  except
-    Result := nil;
-    EditorPage.Free;
-    raise;
-  end;
+  Result.Caption := '';
+  Result.FileName := AFilename;
 
   AddRecentFile(Filename);
-end;
-
-procedure TFormScriptDebugger.ActionFileSaveProjectAsExecute(Sender: TObject);
-begin
-{$ifdef DISABLED_STUFF}
-  SaveProjectAs;
-{$endif DISABLED_STUFF}
 end;
 
 procedure TFormScriptDebugger.ActionViewASTExecute(Sender: TObject);
@@ -5463,340 +3527,46 @@ begin
   TAction(Sender).Checked := DockPanelOutput.Visible;
 end;
 
-procedure TFormScriptDebugger.ActionViewProjectSourceExecute(Sender: TObject);
-{$ifdef DISABLED_STUFF}
-var
-  I: Integer;
-{$endif DISABLED_STUFF}
-begin
-{$ifdef DISABLED_STUFF}
-  I := ProjectSourceFileIndex;
-  if I >= 0 then
-    EditorCurrentPageIndex := I
-  else
-    EditorPageAddNew(ProjectfileNameToProjectSourceFileName(ProjectFileName), True);
-{$endif DISABLED_STUFF}
-end;
-
 procedure TFormScriptDebugger.ActionViewProjectSourceUpdate(Sender: TObject);
 begin
   TAction(Sender).Enabled := False;//(ProjectFileName <> '');
 end;
 
-procedure TFormScriptDebugger.ActionFileNewProjectExecute(Sender: TObject);
-{$ifdef DISABLED_STUFF}
+function TFormScriptDebugger.CreateEditor(const AName: string; FileMustExist: boolean; const CurrentScriptProvider: IScriptProvider): Boolean;
 var
-  sFileName: TFileName;
-{$endif DISABLED_STUFF}
+  s: string;
 begin
-{$ifdef DISABLED_STUFF}
-  sFileName := Format('%sProject1%s',
-    [IncludeTrailingBackslash(FScriptFolder), sDwsIdeProjectFileExt]);
-  sFileName := ModifyFileNameToUniqueInProject(sFileName);
+  var Editor := EditorByName(AName);
 
-  NewProjectFile(sFileName);
+  if (Editor = nil) and (AName = MSG_MainModule) and (FMainUnitName <> '') then
+    Editor := EditorByName(FMainUnitName);
 
-  sFileName := ProjectfileNameToProjectSourceFileName(sFileName);
-  EditorPageAddNew(sFileName, False);
-{$endif DISABLED_STUFF}
-end;
-
-procedure TFormScriptDebugger.ActionFileOpenProjectExecute(Sender: TObject);
-begin
-{$ifdef DISABLED_STUFF}
-  if OpenProjectDialog.Execute then
-    LoadProjectfile(OpenProjectDialog.FileName);
-{$endif DISABLED_STUFF}
-end;
-
-{$ifdef DISABLED_STUFF}
-function TFormScriptDebugger.ProjectfileNameToProjectSourceFileName(const AProjectfileName: TFileName): string;
-begin
-  if AProjectFileName = '' then
-    Result := ''
-  else
-    Result := ChangeFileExt(AProjectFileName, sDwsIdeProjectSourceFileExt);
-end;
-
-procedure TFormScriptDebugger.SetProjectSourceFileName(const Value: TFileName);
-var
-  I: Integer;
-begin
-  I := ProjectSourceFileIndex;
-  if I >= 0 then
-  begin
-    EditorPage(I).FileName := Value;
-    FPages[i].Caption := ChangeFileExt(ExtractFileName(Value), '') + ' *' ;
-  end;
-end;
-
-procedure TFormScriptDebugger.SetProjectFileName(const Value: TFileName);
-begin
-  if FileExists(Value) then
-  begin
-    FProjectFileName := Value;
-    LoadProjectFile(FProjectFileName);
-  end
-  else
-    FProjectFileName := '';
-end;
-
-function TFormScriptDebugger.FileIsProjectSource(const AFileName: TFileName): Boolean;
-begin
-  Result := SameText(ExtractFileExt(AFileName), sDwsIdeProjectSourceFileExt);
-end;
-
-function TFormScriptDebugger.GetProjectSourceFileName: TFileName;
-var
-  I: Integer;
-begin
-  I := ProjectSourceFileIndex;
-  if I >= 0 then
-    Result := EditorPage(I).FileName
-  else
-    Result := '';
-end;
-
-function TFormScriptDebugger.ProjectSourceScript: string;
-var
-  sFileName: TFileName;
-begin
-  EditorSaveAllIfModified(False);
-  sFileName := ProjectSourceFileName;
-  if FileExists(sFileName) then
-    Result := LoadTextFromFile(sFileName)
-  else
-     Result := '';
-end;
-
-function TFormScriptDebugger.ProjectSourceFileIndex: Integer;
-var
-  S: string;
-begin
-  S := ExtractFileName(ProjectfileNameToProjectSourceFileName(ProjectFileName));
-  Result := EditorPageCount - 1;
-  while (Result >= 0) do
-  begin
-    if AnsiSameText(S, ExtractFileName(EditorPage(Result).FileName)) then
-      break;
-    dec(Result);
-  end;
-end;
-
-function TFormScriptDebugger.HasProject: Boolean;
-begin
-  Result := (ProjectFileName <> '') and ((ProjectSourceFileIndex <> -1) or FileExists(ProjectSourceFileName));
-end;
-
-function TFormScriptDebugger.SaveProjectAs: Boolean;
-var
-  sFilename: TFileName;
-begin
-  SaveProjectDialog.FileName := ExtractFileName(FProjectFileName);
-  Result := SaveProjectDialog.Execute;
-  if Result then
-  begin
-    sFilename := SaveProjectDialog.FileName;
-    ProjectSourceFileName := ProjectfileNameToProjectSourceFileName(SaveProjectDialog.FileName);
-    SaveProjectFileAs(sFileName);
-  end;
-end;
-
-procedure TFormScriptDebugger.MakeSettingsRec;
-begin
-  FIDESettingsRec.FormRect := BoundsRect;
-end;
-
-procedure TFormScriptDebugger.SaveProjectFileAs(const AProjectFileName: TFileName);
-
-  procedure SaveBreakpoints(AData: IXMLProjectConfigType);
-  var
-    I: Integer;
-    Breakpoint: IXMLBreakpointType;
-  begin
-    AData.Breakpoints.Clear;
-    for I := 0 to Debugger.Breakpoints.Count - 1 do
-    begin
-      Breakpoint := AData.Breakpoints.Add;
-      Breakpoint.SourceName := Debugger.Breakpoints[I].SourceName;
-      Breakpoint.LineNum := Debugger.Breakpoints[I].Line;
-      Breakpoint.Enabled := Debugger.Breakpoints[I].Enabled;
-    end;
-  end;
-
-  procedure SaveWatches(AData: IXMLProjectConfigType);
-  var
-    I: Integer;
-    Watch: IXMLWatchType;
-  begin
-    AData.Watches.Clear;
-    for I := 0 to Debugger.Watches.Count - 1 do
-    begin
-      Watch := AData.Watches.Add;
-      Watch.Expression := Debugger.Watches[I].ExpressionText;
-    end;
-  end;
-
-var
-  I: Integer;
-  XMLPage: IXMLEditorPageType;
-  XMLDocument: IXMLDocument;
-  Data: IXMLProjectConfigType;
-  Page: TEditorPage;
-  S: string;
-begin
-  XMLDocument := NewXMLDocument;
-  Data := XMLDocument.GetDocBinding('ProjectConfig', TXMLProjectConfigType) as IXMLProjectConfigType;
-
-  // Make an empty Document source file if required
-  S := ProjectfileNameToProjectSourceFileName(AProjectFilename);
-  if not FileExists(S) then
-    SaveTextToUTF8File(S, '');
-
-  for I := 0 to EditorPageCount - 1 do
-  begin
-    Page := EditorPage(I);
-
-    if (Page.Modified) then
-      SavePage(Page);
-
-    XMLPage := Data.EditorPages.EditorPage.Add;
-
-    XMLPage.FileName := ExtractRelativePath(
-      IncludeTrailingBackslash(FScriptFolder),
-      Page.FileName);
-    XMLPage.Name := JustFileName(Page.FileName);
-  end;
-
-  Data.EditorPages.ActivePageIndex := EditorCurrentPageIndex;
-
-  SaveBreakpoints(Data);
-  SaveWatches(Data);
-
-  XMLDocument.XML.Text := FormatXMLData(XMLDocument.XML.Text);
-  XMLDocument.Active := True;
-
-  XMLDocument.SaveToFile(AProjectFileName);
-
-  FProjectFileName := AProjectFileName;
-end;
-
-procedure TFormScriptDebugger.LoadProjectFile(const AProjectFileName: TFileName);
-
-  procedure LoadBreakpoints(AData: IXMLProjectConfigType);
-  var
-    I, iEditorPage: Integer;
-    Breakpoint: IXMLBreakpointType;
-  begin
-    Debugger.Breakpoints.Clean;
-    for I := 0 to AData.Breakpoints.Count - 1 do
-    begin
-      Breakpoint := AData.Breakpoints[I];
-
-      iEditorPage := NameToEditorPageIndex(Breakpoint.SourceName);
-      if iEditorPage <> -1 then
-        if (BreakPoint.LineNum >= 1) then
-          if BreakPoint.LineNum <= EditorPage(iEditorPage).FEditor.Lines.Count then
-          begin
-            Debugger.Breakpoints.Add(Breakpoint.LineNum, Breakpoint.SourceName);
-            Debugger.Breakpoints[I].Enabled := Breakpoint.Enabled;
-          end;
-    end;
-  end;
-
-  procedure LoadWatches(AData: IXMLProjectConfigType);
-  var
-    I: Integer;
-    Watch: IXMLWatchType;
-  begin
-    Debugger.Watches.Clean;
-    for I := 0 to AData.Watches.Count - 1 do
-    begin
-      Watch := AData.Watches[I];
-      Debugger.Watches.Add(Watch.Expression);
-    end;
-
-    NotifyDebuggerFrames(dnUpdateWatches);
-  end;
-
-var
-  I: Integer;
-  sFileName: TFileName;
-  XMLDocument: IXMLDocument;
-  Data: IXMLProjectConfigType;
-begin
-  if not FileExists(AProjectFileName) then
-    raise EDwsIde.CreateFmt(RStrProjectFileDoesNotExist, [AProjectFileName]);
-
-  if (not EditorPagesCloseQuery) then
-    exit;
-  EditorPagesCloseAll;
-
-  ClearOutputWindow;
-  ClearMessagesWindow;
-
-  FProjectFileName := AProjectFileName;
-
-  FProgram := nil;
-
-  XMLDocument := LoadXMLDocument(AProjectFileName);
-  Data := XMLDocument.GetDocBinding('ProjectConfig', TXMLProjectConfigType) as IXMLProjectConfigType;
-  for I := 0 to Data.EditorPages.EditorPage.Count - 1 do
-  begin
-    sFileName := IncludeTrailingBackslash(FScriptFolder) + Data.EditorPages.EditorPage[I].FileName;
-    if FileExists(sFileName) and not FileIsOpenInEditor(sFileName) then
-      EditorPageAddNew(sFileName, True);
-  end;
-  EditorCurrentPageIndex := Data.EditorPages.ActivePageIndex;
-
-  LoadBreakpoints(Data);
-  LoadWatches(Data);
-
-  ClearExecutableLines;
-end;
-
-procedure TFormScriptDebugger.NewProjectFile(const AProjectFileName: TFileName);
-begin
-  if (not EditorPagesCloseQuery) then
-    exit;
-  EditorPagesCloseAll;
-
-  ClearOutputWindow;
-  ClearMessagesWindow;
-
-  FProjectFileName := AProjectFileName;
-end;
-
-{$endif DISABLED_STUFF}
-
-function TFormScriptDebugger.OpenEditorPage(const AName: string; FileMustExist: boolean; const CurrentScriptProvider: IScriptProvider): Boolean;
-var
-  I: Integer;
-  S: string;
-begin
-  I := NameToEditorPageIndex(AName);
-  if (I = -1) and (AName = MSG_MainModule) and (FMainUnitName <> '') then
-    I := NameToEditorPageIndex(FMainUnitName);
-
-  Result := I <> -1;
+  Result := (Editor <> nil);
 
   if Result then
-    EditorCurrentPageIndex := I
+    SetActiveEditor(Editor)
   else
   begin
-//    S := ChangeFileExt(AName, sDwsIdeProjectSourceFileExt2);
-//    Result := (EditorPageAddNew(S, True) <> nil);
+//    s := ChangeFileExt(AName, sDwsIdeProjectSourceFileExt2);
+//    Result := (CreateEditor(s, True) <> nil);
     if (AnsiSameText(ExtractFileExt(AName), sScriptFileType)) then
-      S := AName
+      s := AName
     else
-      S := AName + sScriptFileType;
-    Result := (EditorPageAddNew(S, True, FileMustExist, CurrentScriptProvider) <> nil);
+      s := AName + sScriptFileType;
+
+    Editor := CreateEditor(s, True, FileMustExist, CurrentScriptProvider);
+
+    Result := (Editor <> nil);
   end;
 end;
 
 procedure TFormScriptDebugger.PageControlEditorCanCloseEx(Sender: TObject; ATabIndex: Integer; var ACanClose: Boolean);
 begin
-  EditorPageClose(ATabIndex);
+  var Container := PageControlEditor.Pages[ATabIndex];
+  var Editor := EditorByContainer(Container);
+
+  EditorPageClose(Editor);
+  Editor := nil;
 
   // We have already closed (free'd) the tab (or chosen not to)
   ACanClose := False;
@@ -5814,20 +3584,16 @@ begin
 end;
 
 procedure TFormScriptDebugger.PageControlEditorDrawTabEx(AControl: TcxCustomTabControl; ATab: TcxTab; Font: TFont);
-var
-  Page: TEditorPage;
 begin
   if (ATab.Index = cxPCNewButtonIndex) then
     exit;
 
-  Page := EditorPage(ATab.Index);
-  if (Page <> nil) and (Page.Modified) then
+  var Editor := EditorByContainer(AControl);
+  if (Editor <> nil) and (Editor.Modified) then
     Font.Style := Font.Style + [fsBold];
 end;
 
 procedure TFormScriptDebugger.PageControlEditorGetImageIndex(Sender: TObject; TabIndex: Integer; var ImageIndex: Integer);
-var
-  EditorPage: TEditorPage;
 begin
   if (TabIndex = cxPCNewButtonIndex) then
   begin
@@ -5835,8 +3601,12 @@ begin
     exit;
   end;
 
-  EditorPage := MainUnit;
-  if (EditorPage <> nil) and (EditorPage.Index = TabIndex) then
+  var MainEditor := MainUnit;
+  var Container := PageControlEditor.Pages[TabIndex];
+
+  var Editor := EditorByContainer(Container);
+
+  if (MainEditor <> nil) and (MainEditor = Editor) then
   begin
     if (FMainUnit <> nil) then
       ImageIndex := ImageIndexFileTypeScriptMain
@@ -5847,14 +3617,12 @@ begin
 end;
 
 procedure TFormScriptDebugger.PageControlEditorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var
-  Index: integer;
 begin
   if (ssDouble in Shift) then
   begin
-    Index := PageControlEditor.ViewInfo.IndexOfTabAt(X, Y);
+    var Index := PageControlEditor.ViewInfo.IndexOfTabAt(X, Y);
     if (Index >= 0) then
-      MainUnit := EditorPage(Index);
+      MainUnit := EditorByContainer(PageControlEditor.Pages[Index]);
   end;
 end;
 
@@ -5864,20 +3632,17 @@ begin
   ActionFileNewUnit.Execute;
 end;
 
-function TFormScriptDebugger.MainUnitName: string;
-var
-  EditorPage: TEditorPage;
+function TFormScriptDebugger.PromptSaveScript(var Filename: string; const Foldername: string): boolean;
 begin
-  Result := FMainUnitName;
-  if (Result = '') then
-  begin
-    EditorPage := MainUnit;
-    if (EditorPage <> nil) then
-      Result := EditorPage.UnitName;
+  if (Foldername <> '') then
+    SaveSourceDialog.DefaultFolder := FolderName;
 
-    if (Result = '') then
-      Result := SYS_MainModule;
-  end;
+  SaveSourceDialog.FileName := Filename;
+
+  Result := SaveSourceDialog.Execute;
+
+  if (Result) then
+    Filename := SaveSourceDialog.FileName;
 end;
 
 function TFormScriptDebugger.ModifyFileNameToUniqueInProject(const AFileName: TFileName): string;
@@ -5903,15 +3668,9 @@ begin
   end;
 end;
 
-function TFormScriptDebugger.GetEditorCurrentPageIndex: Integer;
+function TFormScriptDebugger.GetEditorPagePopupMenu: TPopupMenu;
 begin
-  if (csDestroying in PageControlEditor.ComponentState) then
-    // If form is destroying, then PageControlEditor.ActivePageIndex will cause AV
-    Exit(-1);
-
-  Result := PageControlEditor.ActivePageIndex;
-  if (Result >= FPages.Count) then
-    Result := -1;
+  Result := EditorPagePopupMenu;
 end;
 
 function TFormScriptDebugger.GetExecutableLines(const AUnitName: string): TLineNumbers;
@@ -5936,8 +3695,8 @@ begin
 
   Breakpointables := TdwsBreakpointableLines.Create(FProgram);
   try
-    Lines := Breakpointables.SourceLines[ AUnitName ];
-    if Lines <> nil then
+    Lines := Breakpointables.SourceLines[AUnitName];
+    if (Lines <> nil) then
     begin
       for I := 1 to Lines.Size - 1 do
         if Lines[I] then
@@ -5959,12 +3718,12 @@ end;
 {$REGION 'Action Handler'}
 procedure TFormScriptDebugger.ActionGotoLineNumberExecute(Sender: TObject);
 begin
-  CurrentEditorPage.GotoLineNumber;
+  EditorActionHandler(ActiveEditor, seActionGotoLineNumber);
 end;
 
 procedure TFormScriptDebugger.ActionGotoLineNumberUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditor <> nil);
+  TAction(Sender).Enabled := (ActiveEditor <> nil);
 end;
 
 procedure TFormScriptDebugger.ActionDummyExecute(Sender: TObject);
@@ -5975,8 +3734,6 @@ end;
 procedure TFormScriptDebugger.ActionBuildExecute(Sender: TObject);
 begin
   Compile(True);
-  if IsCompiled then
-    ShowExecutableLines;
 end;
 
 procedure TFormScriptDebugger.ActionBuildUpdate(Sender: TObject);
@@ -6001,64 +3758,64 @@ end;
 
 procedure TFormScriptDebugger.ActionEditCopyToClipboardExecute(Sender: TObject);
 begin
-  CurrentEditor.CopyToClipboard;
+  ActiveEditor.CopyToClipboard;
 end;
 
 procedure TFormScriptDebugger.ActionEditCopyToClipboardUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditor <> nil) and (CurrentEditor.SelAvail);
+  TAction(Sender).Enabled := (ActiveEditor <> nil) and (ActiveEditor.HasSelection);
 end;
 
 procedure TFormScriptDebugger.ActionEditCutExecute(Sender: TObject);
 begin
-  CurrentEditor.CutToClipboard;
+  ActiveEditor.CutToClipboard;
 end;
 
 procedure TFormScriptDebugger.ActionEditCutUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditor <> nil) and (not CurrentEditor.ReadOnly) and (CurrentEditor.SelAvail);
+  TAction(Sender).Enabled := (ActiveEditor <> nil) and (not ActiveEditor.IsReadOnly) and (ActiveEditor.HasSelection);
 end;
 
 procedure TFormScriptDebugger.ActionEditDeleteExecute(Sender: TObject);
 begin
-  CurrentEditor.SelText := '';
+  ActiveEditor.SelectedText := '';
 end;
 
 procedure TFormScriptDebugger.ActionEditDeleteUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditor <> nil) and (not CurrentEditor.ReadOnly) and (CurrentEditor.SelAvail);
+  TAction(Sender).Enabled := (ActiveEditor <> nil) and (not ActiveEditor.IsReadOnly) and (ActiveEditor.HasSelection);
 end;
 
 procedure TFormScriptDebugger.ActionEditPasteExecute(Sender: TObject);
 begin
-  CurrentEditor.PasteFromClipboard;
+  ActiveEditor.PasteFromClipboard;
 end;
 
 procedure TFormScriptDebugger.ActionEditPasteUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditor <> nil) and (not CurrentEditor.ReadOnly) and (CurrentEditor.CanPaste);
+  TAction(Sender).Enabled := (ActiveEditor <> nil) and (not ActiveEditor.IsReadOnly) and (ActiveEditor.CanPaste);
 end;
 
 procedure TFormScriptDebugger.ActionEditSelectAllExecute(Sender: TObject);
 begin
-  CurrentEditor.SelectAll;
+  ActiveEditor.SelectAll;
 end;
 
 procedure TFormScriptDebugger.ActionEditSelectAllUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditor <> nil);
+  TAction(Sender).Enabled := (ActiveEditor <> nil);
 end;
 
 procedure TFormScriptDebugger.ActionCloseAllOtherPagesExecute(Sender: TObject);
 begin
-  if (not EditorPagesCloseQuery(EditorCurrentPageIndex)) then
+  if (not EditorPagesCloseQuery(FActiveEditor)) then
     exit;
-  EditorPagesCloseAll(EditorCurrentPageIndex);
+  EditorPagesCloseAll(FActiveEditor);
 end;
 
 procedure TFormScriptDebugger.ActionCloseAllOtherPagesUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (EditorPageCount > 1);
+  TAction(Sender).Enabled := (FEditors.Count > 1);
 end;
 
 procedure TFormScriptDebugger.ActionExitExecute(Sender: TObject);
@@ -6068,12 +3825,12 @@ end;
 
 procedure TFormScriptDebugger.ActionClosePageExecute(Sender: TObject);
 begin
-  EditorPageClose(EditorCurrentPageIndex);
+  EditorPageClose(FActiveEditor);
 end;
 
 procedure TFormScriptDebugger.ActionClosePageUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (EditorCurrentPageIndex <> -1) and (CurrentEditorPage.CanClose);
+  TAction(Sender).Enabled := (FActiveEditor <> nil) and (FActiveEditor.CanClose);
 end;
 
 procedure TFormScriptDebugger.ActionDebugBreakOnPoopExecute(Sender: TObject);
@@ -6085,7 +3842,7 @@ procedure TFormScriptDebugger.ActionDebugEvaluateExecute(Sender: TObject);
 var
   Expression: string;
   ScriptProgram: IdwsProgram;
-  CursorPos: TBufferCoord;
+  CursorPos: TBufferPos;
   ScriptPos: TScriptPos;
   SourceItem: TScriptSourceItem;
   Symbol: TSymbol;
@@ -6094,8 +3851,8 @@ begin
   if (ScriptProgram = nil) then
     Exit;
 
-  if (CurrentEditor.SelAvail) then
-    Expression := CurrentEditor.SelText
+  if (ActiveEditor.HasSelection) then
+    Expression := ActiveEditor.SelectedText
   else
     Expression := '';
 
@@ -6103,18 +3860,20 @@ begin
 
   if (Expression = '') then
   begin
-    CursorPos := CurrentEditorPage.Editor.CaretXY;
-    CursorPos := CurrentEditorPage.Editor.WordStartEx(CursorPos);
+    CursorPos := ActiveEditor.CaretPos;
+    CursorPos := ActiveEditor.WordStart(CursorPos);
 
     Expression := '';
 
-    SourceItem := ScriptProgram.SourceList.FindScriptSourceItem(CurrentEditorPage.GetFilename);
-    if (SourceItem = nil) and (CurrentEditorPage.IsMainUnit) then
+    SourceItem := ScriptProgram.SourceList.FindScriptSourceItem(ActiveEditor.GetFilename);
+
+    if (SourceItem = nil) and (ActiveEditor = FMainUnit) then
       SourceItem := ScriptProgram.SourceList.MainScript;
+
     if (SourceItem <> nil) then
     begin
 
-      ScriptPos := TScriptPos.Create(SourceItem.SourceFile, CursorPos.Line, CursorPos.Char);
+      ScriptPos := TScriptPos.Create(SourceItem.SourceFile, CursorPos.Line, CursorPos.Column);
 
       Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(ScriptPos);
 
@@ -6124,7 +3883,7 @@ begin
   end;
 
   if (Expression = '') then
-    Expression := CurrentEditorPage.Editor.WordAtCursor;
+    Expression := ActiveEditor.WordAt(ActiveEditor.CaretPos);
 
   Evaluate(Expression, @ScriptPos);
 end;
@@ -6186,25 +3945,22 @@ begin
   if (not EditorPagesCloseQuery) then
     exit;
   EditorPagesCloseAll;
-{$ifdef DISABLED_STUFF}
-  ProjectFileName := '';
-{$endif DISABLED_STUFF}
 end;
 
 procedure TFormScriptDebugger.ActionFileCloseAllUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (FPages.Count > 1) or ((FPages.Count = 1) and (EditorCurrentPageIndex <> -1) and (CurrentEditorPage.CanClose));
+  TAction(Sender).Enabled := (FEditors.Count > 1) or ((FEditors.Count = 1) and (FActiveEditor <> nil) and (FActiveEditor.CanClose));
 end;
 
 procedure TFormScriptDebugger.ActionFileMainUnitExecute(Sender: TObject);
 begin
-  MainUnit := CurrentEditorPage;
+  MainUnit := ActiveEditor;
 end;
 
 procedure TFormScriptDebugger.ActionFileMainUnitUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (EditorCurrentPageIndex <> -1) and (Debugger.State in [dsIdle, dsDebugDone]);
-  TAction(Sender).Checked := (FMainUnit <> nil) and (CurrentEditorPage = MainUnit);
+  TAction(Sender).Enabled := (FActiveEditor <> nil) and (Debugger.State in [dsIdle, dsDebugDone]);
+  TAction(Sender).Checked := (FMainUnit <> nil) and (FActiveEditor = FMainUnit);
 end;
 
 procedure TFormScriptDebugger.ActionFileNewIncludeFileExecute(Sender: TObject);
@@ -6214,12 +3970,12 @@ begin
   sFileName := 'IncludeFile1.inc';
   sFileName := ModifyFileNameToUniqueInProject(sFileName);
 
-  EditorPageAddNew(sFileName, False);
+  CreateEditor(sFileName, False);
 end;
 
 procedure TFormScriptDebugger.ActionFileNewUnitExecute(Sender: TObject);
 begin
-  EditorPageAddNew;
+  CreateEditor;
 end;
 
 procedure TFormScriptDebugger.ActionFileSaveAsAttachmentExecute(Sender: TObject);
@@ -6231,7 +3987,7 @@ begin
   if not HasEditorPage then
     exit;
 
-  Name := TPath.GetFileName(CurrentEditorPage.FileName);
+  Name := TPath.GetFileName(ActiveEditor.FileName);
 
   while (True) do
   begin
@@ -6254,7 +4010,7 @@ begin
       Stream := TDocumentAttachmentStream.Create(Attachment);
       try
         Stream.Size := 0;
-        CurrentEditorPage.SaveToStream(Stream);
+        ActiveEditor.SaveToStream(Stream);
       finally
         Stream.Free;
       end;
@@ -6277,8 +4033,8 @@ end;
 procedure TFormScriptDebugger.ActionFileSaveAsFileExecute(Sender: TObject);
 begin
   if HasEditorPage then
-    CurrentEditorPage._SaveAs;
-//    SavePage(CurrentEditorPage); // SaveAs...
+    ActiveEditor._SaveAs;
+//    SavePage(ActiveEditor); // SaveAs...
 end;
 
 procedure TFormScriptDebugger.ActionFileSaveAsFileUpdate(Sender: TObject);
@@ -6289,37 +4045,27 @@ end;
 procedure TFormScriptDebugger.ActionFileSaveExecute(Sender: TObject);
 begin
   if HasEditorPage then
-    SavePage(CurrentEditorPage);
+    SavePage(ActiveEditor);
 end;
 
 procedure TFormScriptDebugger.ActionFileSaveUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := HasEditorPage and CurrentEditor.Modified;
+  TAction(Sender).Enabled := (ActiveEditor <> nil) and (ActiveEditor.Modified);
 end;
 
 procedure TFormScriptDebugger.ActionGotoDeclarationExecute(Sender: TObject);
 begin
-  CurrentEditorPage.FindDeclaration(CurrentEditor.CaretXY, suDeclaration);
+  ActiveEditor.FindDeclaration(ActiveEditor.CaretPos, suDeclaration);
 end;
 
 procedure TFormScriptDebugger.ActionGenericUpdateHasEditor(Sender: TObject);
 begin
-  TAction(Sender).Enabled := HasEditorPage;
+  TAction(Sender).Enabled := (ActiveEditor <> nil);
 end;
 
 procedure TFormScriptDebugger.ActionGotoImplementationExecute(Sender: TObject);
 begin
-  CurrentEditorPage.FindDeclaration(CurrentEditor.CaretXY, suImplementation);
-end;
-
-procedure TFormScriptDebugger.ActionGotoHomePositionExecute(Sender: TObject);
-begin
-  GotoHomePosition;
-end;
-
-procedure TFormScriptDebugger.ActionGotoHomePositionUpdate(Sender: TObject);
-begin
-  TAction(Sender).Enabled := CanGotoHomePosition;
+  ActiveEditor.FindDeclaration(ActiveEditor.CaretPos, suImplementation);
 end;
 
 procedure TFormScriptDebugger.ActionOpenFileExecute(Sender: TObject);
@@ -6327,12 +4073,12 @@ var
   Filename: TFileName;
   i: Integer;
 begin
-  if (CurrentEditorPage <> nil) then
+  if (ActiveEditor <> nil) then
   begin
-    if (CurrentEditorPage.ScriptProvider <> nil) then
-      Filename := CurrentEditorPage.ScriptProvider.Folder
+    if (ActiveEditor.ScriptProvider <> nil) then
+      Filename := ActiveEditor.ScriptProvider.Folder
     else
-      Filename := TPath.GetDirectoryName(CurrentEditorPage.Filename);
+      Filename := TPath.GetDirectoryName(ActiveEditor.Filename);
 
     if (Filename = '') and (MainUnit <> nil) and (MainUnit.ScriptProvider <> nil) then
       Filename := MainUnit.ScriptProvider.Folder;
@@ -6353,7 +4099,7 @@ begin
   begin
     Filename := OpenFileDialog.Files[i];
     if (Filename <> '') and (not FileIsOpenInEditor(Filename)) then
-      EditorPageAddNew(Filename, True);
+      CreateEditor(Filename, True);
   end;
 end;
 
@@ -6381,8 +4127,6 @@ begin
   Compile(False);
   if not IsCompiled then
     Exit;
-
-  ShowExecutableLines;
 
   AddStatusMessage(RStrRunning);
 
@@ -6644,8 +4388,6 @@ begin
   if not IsCompiled then
     Exit;
 
-  ShowExecutableLines;
-
   AddStatusMessage(RStrRunning);
 
   Exec := FProgram.CreateNewExecution;
@@ -6749,15 +4491,14 @@ end;
 procedure TFormScriptDebugger.ActionRefactorIdentifierRenameExecute(Sender: TObject);
 var
   ScriptProgram: IdwsProgram;
-  CursorPos: TBufferCoord;
+  CursorPos: TBufferPos;
   Symbol: TSymbol;
   SymbolPositionList: TSymbolPositionList;
   NewName: string;
   CurrentFilename: string;
   SymbolPosition: TSymbolPosition;
   s: string;
-  i: integer;
-  EditPage: IScriptDebugEditPage;
+  EditPage: IScriptEditor;
   List: TList<TSymbolPosition>;
   ScriptPos: TScriptPos;
   DeclarationFound: boolean;
@@ -6767,10 +4508,10 @@ begin
   if (ScriptProgram = nil) then
     Exit;
 
-  CursorPos := CurrentEditorPage.Editor.CaretXY;
-  CursorPos := CurrentEditorPage.Editor.WordStartEx(CursorPos);
+  CursorPos := ActiveEditor.CaretPos;
+  CursorPos := ActiveEditor.WordStart(CursorPos);
 
-  Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(CursorPos.Char, CursorPos.Line, CurrentEditorPage.InternalUnitName);
+  Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(CursorPos.Column, CursorPos.Line, ActiveEditor.InternalUnitName);
   if (Symbol = nil) then
     exit;
 
@@ -6819,7 +4560,7 @@ begin
         end;
       end));
 
-    CurrentScriptProvider := CurrentEditorPage.ScriptProvider;
+    CurrentScriptProvider := ActiveEditor.ScriptProvider;
 
     CurrentFilename := '';
     EditPage := nil;
@@ -6832,10 +4573,10 @@ begin
       begin
         CurrentFilename := s;
 
-        i := NameToEditorPageIndex(CurrentFilename);
-        if (i = -1) then
+        EditPage := EditorByName(CurrentFilename);
+        if (EditPage = nil) then
         begin
-          EditPage := EditorPageAddNew(SymbolPosition.ScriptPos.SourceName, True, True, CurrentScriptProvider);
+          EditPage := CreateEditor(SymbolPosition.ScriptPos.SourceName, True, True, CurrentScriptProvider);
           if (EditPage = nil) then
             continue;
 
@@ -6844,22 +4585,21 @@ begin
             EditPage.Script := SymbolPosition.ScriptPos.SourceCode;
             EditPage.IsReadOnly := True;
           end;
-        end else
-          EditPage := EditorPage(i);
+        end;
       end;
 
       if (EditPage = nil) then
         exit;
 
-      s := TEditorPage(EditPage).Editor.Lines[SymbolPosition.ScriptPos.Line-1];
+      s := EditPage.Lines[SymbolPosition.ScriptPos.Line-1];
 
       s := Copy(s, 1, SymbolPosition.ScriptPos.Col-1) + NewName + Copy(s, SymbolPosition.ScriptPos.Col+Length(Symbol.Name), MaxInt);
 
-      TEditorPage(EditPage).Editor.Lines[SymbolPosition.ScriptPos.Line-1] := s;
-      TEditorPage(EditPage).MarkModified(SymbolPosition.ScriptPos.Line-1);
+      EditPage.Lines[SymbolPosition.ScriptPos.Line-1] := s;
+      EditPage.MarkModified(SymbolPosition.ScriptPos.Line-1);
 
       ScriptPos := TScriptPos.Create(SymbolPosition.ScriptPos.SourceFile, SymbolPosition.ScriptPos.Line, SymbolPosition.ScriptPos.Col);
-      AddMessage(Format('Renamed symbol [%s, line: %d, column: %d]', [TEditorPage(EditPage).UnitName, SymbolPosition.ScriptPos.Line, SymbolPosition.ScriptPos.Col]), ScriptPos, mkInfo);
+      AddMessage(Format('Renamed symbol [%s, line: %d, column: %d]', [EditPage.UnitName, SymbolPosition.ScriptPos.Line, SymbolPosition.ScriptPos.Col]), ScriptPos, mkInfo);
     end;
   finally
     List.Free;
@@ -6879,10 +4619,10 @@ var
   ScriptPos: TScriptPos;
 begin
   ScriptPos := TScriptPos.Create(FCaseNormalizeScriptProgram.SourceList.MainScript.SourceFile, Line, Col);
-  AddMessage(Format('Normalized case [%s, line: %d, column: %d]: %s', [CurrentEditorPage.UnitName, Line, Col, Name]), ScriptPos, mkInfo);
-  CurrentEditorPage.MarkModified(Line-1);
+  AddMessage(Format('Normalized case [%s, line: %d, column: %d]: %s', [ActiveEditor.UnitName, Line, Col, Name]), ScriptPos, mkInfo);
+  ActiveEditor.MarkModified(Line-1);
   // This sucks. We might not be operating on the main unit so blah blah...
-  FMainUnitName := CurrentEditorPage.UnitName;
+  FMainUnitName := ActiveEditor.UnitName;
 end;
 
 procedure TFormScriptDebugger.ActionRefactorNormalizeCaseExecute(Sender: TObject);
@@ -6893,7 +4633,7 @@ begin
   try
     SourceFile := FCaseNormalizeScriptProgram.SourceList.MainScript.SourceFile;
 
-    NormalizeSymbolsCase(CurrentEditor.Lines, SourceFile, FCaseNormalizeScriptProgram.SymbolDictionary, OnCaseNormalize);
+    NormalizeSymbolsCase(ActiveEditor.Lines, SourceFile, FCaseNormalizeScriptProgram.SymbolDictionary, OnCaseNormalize);
   finally
     FCaseNormalizeScriptProgram := nil;
   end;
@@ -6904,7 +4644,7 @@ end;
 procedure TFormScriptDebugger.ActionRefactorSearchSymbolExecute(Sender: TObject);
 var
   ScriptProgram: IdwsProgram;
-  CursorPos: TBufferCoord;
+  CursorPos: TBufferPos;
   Symbol: TSymbol;
   SymbolPosList: TSymbolPositionList;
   i: integer;
@@ -6916,9 +4656,9 @@ begin
   if (ScriptProgram = nil) then
     Exit;
 
-  CursorPos := CurrentEditor.CaretXY;
-  CursorPos := CurrentEditor.WordStartEx(CursorPos);
-  Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(CursorPos.Char, CursorPos.Line, CurrentEditorPage.InternalUnitName);
+  CursorPos := ActiveEditor.CaretPos;
+  CursorPos := ActiveEditor.WordStart(CursorPos);
+  Symbol := ScriptProgram.SymbolDictionary.FindSymbolAtPosition(CursorPos.Column, CursorPos.Line, ActiveEditor.InternalUnitName);
 
   if (Symbol = nil) then
     Exit;
@@ -7103,12 +4843,12 @@ end;
 
 procedure TFormScriptDebugger.ActionSearchAgainExecute(Sender: TObject);
 begin
-  DoSearch(FSearchOptions - [ssoEntireScope], False);
+  DoSearch(FSearchOptions - [srEntireScope], False);
 end;
 
 procedure TFormScriptDebugger.ActionSearchAgainUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (FSearchText <> '') and (CurrentEditorPage <> nil);
+  TAction(Sender).Enabled := (FSearchText <> '') and (ActiveEditor <> nil);
 end;
 
 // -----------------------------------------------------------------------------
@@ -7116,10 +4856,9 @@ end;
 procedure TFormScriptDebugger.ActionSearchFindExecute(Sender: TObject);
 var
   SearchDialog: TFormScriptDebuggerSearch;
-  Editor: TSynEdit;
   p: TPoint;
 begin
-  Editor := CurrentEditor;
+  var Editor := ActiveEditor;
   SearchDialog := TFormScriptDebuggerSearch.Create(Self);
   try
     p := ClientToScreen(Point(ClientWidth, ClientHeight));
@@ -7128,13 +4867,12 @@ begin
 
     SearchDialog.Options := FSearchOptions;
     SearchDialog.History := FSearchHistory;
-    SearchDialog.RegularExpression := FSearchRegularExpression;
     SearchDialog.AutoWrap := FSearchAutoWrap;
 
-    if (Editor.SelAvail) and (Editor.BlockBegin.Line = Editor.BlockEnd.Line) then
-      SearchDialog.SearchText := Editor.SelText
+    if (Editor.HasSelection) and (Editor.BlockBegin.Line = Editor.BlockEnd.Line) then
+      SearchDialog.SearchText := Editor.SelectedText
     else
-      SearchDialog.SearchText := Editor.GetWordAtRowCol(Editor.CaretXY);
+      SearchDialog.SearchText := Editor.WordAt(Editor.CaretPos);
 
     if (not SearchDialog.Execute) then
       exit;
@@ -7142,13 +4880,7 @@ begin
     FSearchText := SearchDialog.SearchText;
     FSearchOptions := SearchDialog.Options;
     FSearchHistory := SearchDialog.History;
-    FSearchRegularExpression := SearchDialog.RegularExpression;
     FSearchAutoWrap := SearchDialog.AutoWrap;
-
-    if (FSearchRegularExpression) then
-      Editor.SearchEngine := SynEditRegexSearch
-    else
-      Editor.SearchEngine := SynEditSearch;
 
     DoSearch(FSearchOptions, True);
   finally
@@ -7158,7 +4890,7 @@ end;
 
 procedure TFormScriptDebugger.ActionSearchFindUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditorPage <> nil);
+  TAction(Sender).Enabled := (ActiveEditor <> nil);
 end;
 
 // -----------------------------------------------------------------------------
@@ -7188,27 +4920,24 @@ end;
 // -----------------------------------------------------------------------------
 
 procedure TFormScriptDebugger.ActionEditToggleReadOnlyExecute(Sender: TObject);
-var
-  Page: TEditorPage;
 begin
-  Page := CurrentEditorPage;
-  Page.IsReadOnly := not Page.IsReadOnly;
+  FActiveEditor.IsReadOnly := not FActiveEditor.IsReadOnly;
 end;
 
 procedure TFormScriptDebugger.ActionEditToggleReadOnlyUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := HasEditorPage;
-  TAction(Sender).Checked := TAction(Sender).Enabled and CurrentEditorPage.IsReadOnly;
+  TAction(Sender).Enabled := (FActiveEditor <> nil);
+  TAction(Sender).Checked := (FActiveEditor <> nil) and (FActiveEditor.IsReadOnly);
 end;
 
 procedure TFormScriptDebugger.ActionEditUndoExecute(Sender: TObject);
 begin
-  CurrentEditor.Undo;
+  FActiveEditor.Undo;
 end;
 
 procedure TFormScriptDebugger.ActionEditUndoUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditor <> nil) and (CurrentEditor.CanUndo);
+  TAction(Sender).Enabled := (FActiveEditor <> nil) and (FActiveEditor.CanUndo);
 end;
 
 // -----------------------------------------------------------------------------
@@ -7250,14 +4979,14 @@ var
   Package: IScriptPackageInternal;
   Stream: TStream;
 begin
-  if (CurrentEditor = nil) then
+  if (FActiveEditor = nil) then
     exit;
 
   ProductID := '';
   AuthorID := '';
   Package := ScriptService.CreateTemporaryPackage('', pkScript) as IScriptPackageInternal;
   try
-    Stream := TStringStream.Create(CurrentEditorPage.Script);
+    Stream := TStringStream.Create(ActiveEditor.Script);
     try
 
       if (Package.LoadFromStream(Stream)) then
@@ -7294,12 +5023,12 @@ begin
 
   s := Format(sScriptHeaderTemplate, [s1, s2]);
 
-  CurrentEditorPage.Script := s + CurrentEditorPage.Script;
+  ActiveEditor.Script := s + ActiveEditor.Script;
 end;
 
 procedure TFormScriptDebugger.ActionToolHeaderUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (CurrentEditorPage <> nil);
+  TAction(Sender).Enabled := (ActiveEditor <> nil);
 end;
 
 // -----------------------------------------------------------------------------
@@ -7323,7 +5052,7 @@ var
 {$endif FEATURE_COPY_PROTECT}
 begin
 {$ifdef FEATURE_COPY_PROTECT}
-  if (CurrentEditor = nil) then
+  if (ActiveEditor = nil) then
     exit;
 
   Password := '';
@@ -7331,7 +5060,7 @@ begin
   AuthorID := '';
   Package := ScriptService.CreateTemporaryPackage('', pkScript) as IScriptPackageInternal;
   try
-    Stream := TStringStream.Create(CurrentEditorPage.Script);
+    Stream := TStringStream.Create(ActiveEditor.Script);
     try
 
       if (Package.LoadFromStream(Stream)) then
@@ -7371,7 +5100,7 @@ begin
       else
         s2 := sScriptHeaderTemplateAuthorID;
       s := Format(sScriptHeaderTemplate, [s1, s2]);
-      CurrentEditorPage.Script := s + CurrentEditorPage.Script;
+      ActiveEditor.Script := s + ActiveEditor.Script;
       exit;
     end;
   end;
@@ -7408,7 +5137,7 @@ begin
 
   // Encrypt content
   Cipher := CreateLicenseCipher(Password, ScriptContentProtectionCipher);
-  Content := CurrentEditor.SelText;
+  Content := ActiveEditor.SeledtedText;
   Content := Cipher.Encode(Content);
 
   Content := EncodedPassword + Content;
@@ -7429,7 +5158,7 @@ begin
   end else
     s := '';
 
-  CurrentEditor.SelText :=
+  ActiveEditor.SelectedText :=
     sScriptObfuscationPatternBegin + #13#10 +
     s+
     Content + #13#10 +
@@ -7440,7 +5169,7 @@ end;
 procedure TFormScriptDebugger.ActionToolCopyProtectUpdate(Sender: TObject);
 begin
 {$ifdef FEATURE_COPY_PROTECT}
-  TAction(Sender).Enabled := (CurrentEditor <> nil) and (CurrentEditor.SelAvail);
+  TAction(Sender).Enabled := (ActiveEditor <> nil) and (ActiveEditor.HasSelection);
 {$endif FEATURE_COPY_PROTECT}
 end;
 
@@ -7587,19 +5316,6 @@ end;
 
 {$ENDREGION}
 
-
-// -----------------------------------------------------------------------------
-//
-//              TSynAutoComplete
-//
-// -----------------------------------------------------------------------------
-procedure TSynAutoComplete.SetOptions(const Value: TSynCompletionOptions);
-begin
-end;
-
-procedure TSynAutoComplete.SetShortCut(const Value: TShortCut);
-begin
-end;
 
 // -----------------------------------------------------------------------------
 //
