@@ -139,6 +139,7 @@ type
     FFilename: string;
     FCaption: string;
     FScriptProvider: IScriptProvider;
+    FImages: TCustomImageList;
 
     function  GetFilename: TFileName;
     procedure SetFileName(const Value: TFileName);
@@ -228,6 +229,7 @@ type
     function CloseQuery: boolean;
 
     property Editor: TSynEdit read FEditor;
+    property Images: TCustomImageList read FImages write FImages;
     property FileName: TFileName read GetFilename write SetFileName;
     property IsReadOnly: Boolean read GetIsReadOnly write SetIsReadOnly;
 {$ifdef DISABLED_STUFF}
@@ -310,7 +312,6 @@ type
     OpenProjectDialog: TFileOpenDialog;
     SaveProjectDialog: TFileSaveDialog;
     SaveSourceDialog: TFileSaveDialog;
-    SmallImages: TcxImageList;
     UpdateTimer: TTimer;
     ActionExit: TAction;
     dxBarManager1: TdxBarManager;
@@ -344,7 +345,6 @@ type
     MenuItemRunReset: TdxBarButton;
     MenuItemRunShowExecutionPoint: TdxBarButton;
     MenuItemRunClearAllBreakpoints: TdxBarButton;
-    ImageListMessage: TcxImageList;
     DockingManager: TdxDockingManager;
     DockPanelLocalVars: TdxDockPanel;
     DockPanelWatches: TdxDockPanel;
@@ -377,7 +377,6 @@ type
     dxBarManager1Bar10: TdxBar;
     dxBarManager1Bar11: TdxBar;
     dxBarManager1Bar12: TdxBar;
-    ImagesLarge: TcxImageList;
     dxBarManager1Bar1: TdxBar;
     dxBarLargeButton1: TdxBarLargeButton;
     ActionRunResume: TAction;
@@ -391,7 +390,6 @@ type
     ActionSearchAgain: TAction;
     dxBarButton5: TdxBarButton;
     dxBarButton6: TdxBarButton;
-    ImageListSymbols: TcxImageList;
     DockPanelBreakPoints: TdxDockPanel;
     ActionDebugEvaluate: TAction;
     ActionDebug: TAction;
@@ -915,17 +913,6 @@ const
   sScriptHelpRtlFilenameDownload = '%Documents%\%AppName%\Help\'+sScriptHelpRtlFilename;
 
 
-const
-  ImageIndexExecutableLine = 13;
-  ImageIndexForwardArrow = 16;
-  ImageIndexCurrentLineBreakpoint = 15;
-  ImageIndexBreakpoint = 12;
-  ImageIndexBreakpointDisabled = 14;
-  ImageIndex_ProjectSourceFile = 28;
-  ImageIndexFileScript = 6;
-  ImageIndexFileFolder = 71;
-  ImageIndex_IncludeFile = 29;
-
 implementation
 
 {$R *.dfm}
@@ -972,6 +959,7 @@ uses
   amEnvironment,
   amURLUtils,
 
+  amScriptDebugger.View.Data,
   amScriptDebuggerDialogSearch,
 {$ifdef FEATURE_SCRIPT_BUNDLE}
   amScriptDebuggerDialogBundleBuilder,
@@ -2155,20 +2143,22 @@ begin
     if GetBreakpointStatus(ALine) <> bpsNone then
       ImgIndex := ImageIndexCurrentLineBreakpoint
     else
-      if FForm.Debugger.State = dsDebugSuspended then
-        ImgIndex := ImageIndexForwardArrow
-      else
-        ImgIndex := ImageIndexExecutableLine
+    if FForm.Debugger.State = dsDebugSuspended then
+      ImgIndex := ImageIndexForwardArrow
+    else
+      ImgIndex := ImageIndexExecutableLine
   end
   else
     case GetBreakpointStatus(ALine) of
       bpsBreakpoint :
         if IsExecutableLine(ALine) then
           ImgIndex := ImageIndexBreakpoint
-         else
+        else
           ImgIndex := ImageIndexBreakpointDisabled;
+
       bpsBreakpointDisabled :
         ImgIndex := ImageIndexBreakpointDisabled;
+
      else
        if IsExecutableLine(ALine) then
          ImgIndex := ImageIndexExecutableLine
@@ -2176,8 +2166,8 @@ begin
          ImgIndex := -1;
     end;
 
-  if ImgIndex >= 0 then
-    FForm.SmallImages.Draw(FEditor.Canvas, X, Y, ImgIndex);
+  if (ImgIndex >= 0) and (FImages <> nil) then
+    FImages.Draw(FEditor.Canvas, X, Y, ImgIndex);
 
   case GetLineChangeState(aLine - 1) of
     csModified: FEditor.Canvas.Brush.Color := clYellow;
@@ -2779,6 +2769,9 @@ end;
 // -----------------------------------------------------------------------------
 constructor TFormScriptDebugger.Create(AOwner: TComponent);
 begin
+  // Ensure datamodule has been instantiated before form loads
+  DataModuleDebuggerViewData;
+
   inherited Create(AOwner);
 
   DisableAero := True; // Best for rs2013/rs2013 ribbon style
@@ -2802,7 +2795,7 @@ begin
 
   // Set up callback links
   for DebuggerFrame in FDebuggerFrames do
-    DebuggerFrame.Initialize(Self, SmallImages, ImageListSymbols);
+    DebuggerFrame.Initialize(Self, DataModuleDebuggerViewData.SmallImages, DataModuleDebuggerViewData.ImageListSymbols);
 
   ClearOutputWindow;
 
@@ -2899,7 +2892,7 @@ begin
 
   RibbonDebug.ActiveTab := RibbonTabEditor;
   RibbonTabDebug.Visible := False;
-  SynCodeCompletion.Images := TImageList(ImageListSymbols);
+  SynCodeCompletion.Images := TImageList(DataModuleDebuggerViewData.ImageListSymbols);
 
   for i := 0 to ComponentCount-1 do
     if (Components[i] is TdxDockPanel) and (TdxDockPanel(Components[i]).ControlCount = 0) then
@@ -5167,6 +5160,7 @@ begin
   MenuLink.PopupMenu := PopupMenuEditorTabs;
 
   EditorPage := TEditorPage.Create(Self, Page);
+  EditorPage.Images := DataModuleDebuggerViewData.SmallImages;
 //  EditorPage.FileName := MSG_MainModule;
   i := 1;
   while (True) do
@@ -5809,7 +5803,7 @@ var
 begin
   if (TabIndex = cxPCNewButtonIndex) then
   begin
-    ImageIndex := 7;
+    ImageIndex := ImageIndexFileTypeScriptNew;
     exit;
   end;
 
@@ -5817,9 +5811,9 @@ begin
   if (EditorPage <> nil) and (EditorPage.Index = TabIndex) then
   begin
     if (FMainUnit <> nil) then
-      ImageIndex := 69
+      ImageIndex := ImageIndexFileTypeScriptMain
     else
-      ImageIndex := 6;
+      ImageIndex := ImageIndexFileTypeScript;
   end else
     ImageIndex := -1;
 end;
@@ -6590,7 +6584,7 @@ begin
   DebuggerWindow := DebuggerFrame as IScriptDebuggerWindow;
   FDebuggerFrames.Add(DebuggerWindow);
 
-  DebuggerWindow.Initialize(Self, SmallImages, ImageListSymbols);
+  DebuggerWindow.Initialize(Self, DataModuleDebuggerViewData.SmallImages, DataModuleDebuggerViewData.ImageListSymbols);
 
   if (FProgram <> nil) then
     Update;
