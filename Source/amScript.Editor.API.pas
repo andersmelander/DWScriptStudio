@@ -10,7 +10,7 @@ uses
   Vcl.Menus,
   Vcl.ImgList,
   dwsSymbolDictionary,
-  amScriptProviderAPI;
+  amScript.Provider.API;
 
 type
   TScriptEditorHostNotification = (

@@ -10,7 +10,7 @@ uses
   cxLookAndFeelPainters, cxGraphics, dxSkinsCore, cxControls, cxLookAndFeels, dxStatusBar, cxClasses,
   cxButtons, cxPC,
 
-  amScriptHostAPI;
+  amScript.Host.API;
 
 // -----------------------------------------------------------------------------
 //
@@ -58,10 +58,10 @@ implementation
 {$R *.dfm}
 
 uses
-  amScriptAPI,
-  amScriptProviderAPI,
-  amScriptProvider,
-  amScriptPackageAPI;
+  amScript.API,
+  amScript.Provider.API,
+  amScript.Provider,
+  amScript.Package.API;
 
 // -----------------------------------------------------------------------------
 //

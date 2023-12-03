@@ -10,7 +10,7 @@ uses
   SynCompletionProposal, SynEditAutoComplete,
   SynEditSearch, SynEditRegexSearch,
 
-  amScriptDebuggerAPI;
+  amScript.Debugger.API;
 
 // -----------------------------------------------------------------------------
 //
@@ -100,7 +100,7 @@ uses
   dwsSymbolDictionary,
   dwsStrings,
 
-  amScriptDebugger.View.Data;
+  amScript.IDE.Data;
 
 resourcestring
   RStrNoParametersRequired = '"<no parameters required>"';
