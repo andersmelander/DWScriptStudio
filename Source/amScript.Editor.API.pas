@@ -233,8 +233,6 @@ type
   TScriptDebuggerEditorFactory = function(const AEditorHost: IScriptEditorHost; AContainerControl: TWinControl): IScriptEditor;
 
   ScriptEditorFactory = record
-  private
-  public
     class procedure RegisterFactory(Factory: TScriptDebuggerEditorFactory); static;
     class function CreateEditor(const AEditorHost: IScriptEditorHost; AContainerControl: TWinControl): IScriptEditor; static;
   end;

@@ -1071,9 +1071,9 @@ begin
     // Create debugger via Application.CreateForm if user has specified
     // that debugger will be the main form.
     if (ScriptHostApplication = nil) and (ScriptDebuggerIsApplication) and (Application.MainForm = nil) then
-      FDebugger := CreateScriptDebugger(Self, True)
+      FDebugger := ScriptDebuggerFactory.CreateDebugger(Self, True)
     else
-      FDebugger := CreateScriptDebugger(Self, False);
+      FDebugger := ScriptDebuggerFactory.CreateDebugger(Self, False);
 
     if (not Supports(FDebugger, IScriptDebuggerSetup, ScriptDebuggerSetup)) then
       raise Exception.Create('Required interface not supported by script debugger: IScriptDebuggerSetup');
@@ -1116,7 +1116,7 @@ end;
 
 function TDataModuleScriptService.CanEdit: boolean;
 begin
-  Result := (FDebugger <> nil) or (CanCreateScriptDebugger);
+  Result := (FDebugger <> nil) or (ScriptDebuggerFactory.CanCreateDebugger);
 end;
 
 function TDataModuleScriptService.Edit(const Filename: string): boolean;

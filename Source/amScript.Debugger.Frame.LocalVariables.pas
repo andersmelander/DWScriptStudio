@@ -96,18 +96,22 @@ type
     procedure ActionViewScopeUpdate(Sender: TObject);
     procedure ActionViewScopeGlobalExecute(Sender: TObject);
     procedure ActionViewScopeGlobalUpdate(Sender: TObject);
-  private
+  strict private
     FEvaluationBuilder: TInfoEvaluationBuilder;
     FVisibilities: TdwsVisibilities;
     FInspectOptions: TInspectOptions;
-  protected
+
+  strict private
     procedure UpdateInfo;
 
-  protected
+  strict protected
     // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
-    procedure Finalize; override;
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
+
+  strict protected
+    // IScriptDebuggerWindow
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification); override;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -165,14 +169,11 @@ begin
   UpdateInfo;
 end;
 
-procedure TScriptDebuggerLocalVariablesFrame.Finalize;
+procedure TScriptDebuggerLocalVariablesFrame.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
 begin
   inherited;
-end;
 
-procedure TScriptDebuggerLocalVariablesFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-  case State of
+  case Notification of
     dnDebugSuspended:
       // Debugger has paused on single-step; Update view
       UpdateInfo;
@@ -183,10 +184,6 @@ begin
       FEvaluationBuilder.Clear;
   end;
 end;
-
-// -----------------------------------------------------------------------------
-
-// -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
 

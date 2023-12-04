@@ -1,7 +1,5 @@
 unit amScript.Editor.SynEdit;
 
-{$define NEW_DESIGN}
-
 interface
 
 uses
@@ -17,14 +15,13 @@ uses
   SynEditTypes,
   dwsSymbolDictionary,
 
-  amScriptProviderAPI,
-  amScriptDebuggerAPI,
+  amScript.Provider.API,
+  amScript.Debugger.API,
   amScript.Editor.API;
 
 type
   TLineChangedState = (csOriginal, csModified, csSaved);
 
-{$ifdef NEW_DESIGN}
 // -----------------------------------------------------------------------------
 //
 // TScriptEditor
@@ -209,11 +206,8 @@ type
     property Debugger: IScriptDebugger read FDebugger;
 
     property Editor: TSynEdit read FEditor;
-{$ifdef DISABLED_STUFF}
-    property IsProjectSourcefile: Boolean read GetIsProjectSourcefile;
-{$endif DISABLED_STUFF}
   end;
-{$endif NEW_DESIGN}
+
 implementation
 
 uses
@@ -232,14 +226,12 @@ uses
   dwsDebugger,
   dwsStrings,
   amDialogs,
-  amScriptAPI,
-  amScriptProvider,
-  amScriptDebuggerSettings,
-  amScript.Editor.Data,
-  amScriptDebugger.View.Data;
-
-{$ifdef NEW_DESIGN}
-{$endif NEW_DESIGN}
+  amScript.API,
+  amScript.Provider,
+  amScript.IDE.Settings,
+  amScript.Editor.Container,
+  amScript.Editor.SynEdit.Data,
+  amScript.IDE.Data;
 
 function ConfirmDlgYesNoAbort(const AStr: string): Boolean;
 begin
@@ -282,7 +274,6 @@ begin
     Result := ChangeFileExt(Result, '');
 end;
 
-{$ifdef NEW_DESIGN}
 // -----------------------------------------------------------------------------
 //
 // TEditorPageSynEditPlugin
@@ -609,7 +600,7 @@ begin
   InitEditor;
   InitLineChangeStates;
 
-  DataModuleDebuggerEditorData.AddEditor(FEditor);
+  DataModuleEditorSynEditData.AddEditor(FEditor);
 
   FEditor.Align := alClient;
   FEditor.Visible := True;
@@ -627,7 +618,7 @@ begin
 
   FContainer := nil;
 
-  DataModuleDebuggerEditorData.RemoveEditor(FEditor);
+  DataModuleEditorSynEditData.RemoveEditor(FEditor);
 
   FExecutableLines.Free;
   FEditor.Free;
@@ -677,7 +668,7 @@ end;
 
 procedure TScriptEditor.EditorActivated;
 begin
-  FEditor.SearchEngine := DataModuleDebuggerEditorData.SynEditSearch;
+  FEditor.SearchEngine := DataModuleEditorSynEditData.SynEditSearch;
 
   if (FEditor.Visible) and (FEditor.CanFocus) and (FEditor.HandleAllocated) then
     FEditor.SetFocus;
@@ -805,13 +796,6 @@ function TScriptEditor.GetHasProvider: boolean;
 begin
   Result := (FScriptProvider <> nil);
 end;
-
-{$ifdef DISABLED_STUFF}
-function TScriptEditor.GetIsProjectSourceFile: Boolean;
-begin
-  Result := (Filename = '') or (SameText(ExtractFileExt(FileName), sDwsIdeProjectSourceFileExt));
-end;
-{$endif DISABLED_STUFF}
 
 procedure TScriptEditor.SetIsReadOnly(const Value: Boolean);
 begin
@@ -1081,9 +1065,9 @@ begin
     Include(SynSearchOptions, ssoPrompt);
 
   if (srRegEx in AOptions) then
-    FEditor.SearchEngine := DataModuleDebuggerEditorData.SynEditRegexSearch
+    FEditor.SearchEngine := DataModuleEditorSynEditData.SynEditRegexSearch
   else
-    FEditor.SearchEngine := DataModuleDebuggerEditorData.SynEditSearch;
+    FEditor.SearchEngine := DataModuleEditorSynEditData.SynEditSearch;
 
   Result := FEditor.SearchReplace(ASearchText, AReplaceText, SynSearchOptions);
 end;
@@ -1231,8 +1215,8 @@ begin
   else
     FontSize := EditorFontSize;
 
-  DataModuleDebuggerEditorData.SynParameters.Font.Size := FEditorHost.DpiScale(FontSize-1);
-  DataModuleDebuggerEditorData.SynCodeCompletion.Font.Size := FEditorHost.DpiScale(FontSize-1);
+  DataModuleEditorSynEditData.SynParameters.Font.Size := FEditorHost.DpiScale(FontSize-1);
+  DataModuleEditorSynEditData.SynCodeCompletion.Font.Size := FEditorHost.DpiScale(FontSize-1);
 end;
 
 function TScriptEditor.Save: boolean;
@@ -1694,7 +1678,7 @@ begin
       begin
         NotifyActionHandlers(seActionAutoCompletionPropose, Handled);
         if (not Handled) then
-          DataModuleDebuggerEditorData.ExecuteSynCodeCompletion(FEditor);
+          DataModuleEditorSynEditData.ExecuteSynCodeCompletion(FEditor);
       end;
 
     ecContextHelp:
@@ -1758,14 +1742,8 @@ end;
 procedure TScriptEditor._SaveIfModified(APromptOverwrite: Boolean);
 begin
   if Editor.Modified then
-{$ifdef DISABLED_STUFF}
-    if not APromptOverwrite or (IsProjectSourceFile and not FileExists(FileName)) or
-{$else DISABLED_STUFF}
-    if not APromptOverwrite or (not FileExists(FileName)) or
-{$endif DISABLED_STUFF}
-     ConfirmDlgYesNoAbort(
-      Format(RStrFileHasChanged,  [ ExtractFileName(FileName) ])) then
-        _SaveToFile(False);
+    if not APromptOverwrite or (not FileExists(FileName)) or ConfirmDlgYesNoAbort(Format(RStrFileHasChanged,  [ ExtractFileName(FileName) ])) then
+      _SaveToFile(False);
 end;
 
 // SaveAs
@@ -1808,5 +1786,21 @@ begin
   Notify(seNotifySaved);
 end;
 
-{$endif NEW_DESIGN}
+function EditorFactory(const AEditorHost: IScriptEditorHost; AContainerControl: TWinControl): IScriptEditor;
+begin
+  var Container: IScriptEditorContainer := TScriptEditorContainer.Create(AContainerControl);
+
+  Result := TScriptEditor.Create(AEditorHost, Container);
+end;
+
+procedure ScriptDebuggerInitialized(const AScriptDebugger: IScriptDebugger);
+begin
+  // This both ensures that DataModuleEditorSynEditData has been instantiated and
+  // it passes the debugger interface on to it.
+  DataModuleEditorSynEditData.SetScriptDebugger(AScriptDebugger);
+end;
+
+initialization
+  ScriptEditorFactory.RegisterFactory(EditorFactory);
+  ScriptDebuggerFactory.RegisterNotification(ScriptDebuggerInitialized);
 end.

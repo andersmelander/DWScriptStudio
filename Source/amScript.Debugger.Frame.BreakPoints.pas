@@ -20,9 +20,7 @@ uses
   dwsErrors,
   dwsSymbols,
   dwsDebugger,
-{$ifndef OLD_DWSCRIPT}
   dwsScriptSource,
-{$endif OLD_DWSCRIPT}
 
   amScript.Debugger.API;
 
@@ -34,15 +32,20 @@ type
     procedure ListViewBreakPointsDblClick(Sender: TObject);
     procedure ListViewBreakPointsChange(Sender: TObject; Item: TListItem; Change: TItemChange);
     procedure ListViewBreakPointsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-  private
+  strict private
     procedure RefreshInfo(Updates: TBreakpointUpdates);
     procedure UpdateInfo;
-  protected
     function BreakPointToScriptPos(Breakpoint: TdwsDebuggerBreakpoint; var ScriptPos: TScriptPos): boolean;
 
+  strict protected
+    // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
-    procedure Finalize; override;
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
+
+  strict protected
+    // IScriptDebuggerWindow
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification); override;
+
+  strict private
     // IScriptDebuggerBreakPointHandler
     procedure BreakPointNotification(Breakpoint: TdwsDebuggerBreakpoint; Notification: TScriptDebuggerBreakpointNotification; Updates: TBreakpointUpdates);
   public
@@ -56,13 +59,31 @@ uses
   Generics.Collections,
   Generics.Defaults,
   dwsUtils,
-{$ifndef OLD_DWSCRIPT}
   dwsInfo,
   dwsContextMap,
-{$endif OLD_DWSCRIPT}
   dwsExprs;
 
 { TScriptDebuggerBreakPointsFrame }
+
+procedure TScriptDebuggerBreakPointsFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
+begin
+  inherited Initialize(ADebugger, AImageList, AImageListSymbols);
+  ListViewBreakPoints.SmallImages := AImageList;
+  UpdateInfo;
+end;
+
+procedure TScriptDebuggerBreakPointsFrame.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+begin
+  inherited;
+
+  case Notification of
+    dnCompiled:
+      RefreshInfo([]);
+
+    dnDebugSuspended:
+      UpdateInfo; // TODO : Why?
+  end;
+end;
 
 procedure TScriptDebuggerBreakPointsFrame.BreakPointNotification(Breakpoint: TdwsDebuggerBreakpoint;
   Notification: TScriptDebuggerBreakpointNotification; Updates: TBreakpointUpdates);
@@ -104,30 +125,6 @@ begin
   ScriptPos.Col := 0;
   ScriptPos.SourceFile := SourceItem.SourceFile;
   Result := True;
-end;
-
-procedure TScriptDebuggerBreakPointsFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-  case State of
-    dnCompiled:
-      RefreshInfo([]);
-
-    dnDebugSuspended:
-      UpdateInfo; // TODO : Why?
-  end;
-end;
-
-procedure TScriptDebuggerBreakPointsFrame.Finalize;
-begin
-  inherited;
-
-end;
-
-procedure TScriptDebuggerBreakPointsFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
-begin
-  inherited Initialize(ADebugger, AImageList, AImageListSymbols);
-  ListViewBreakPoints.SmallImages := AImageList;
-  UpdateInfo;
 end;
 
 procedure TScriptDebuggerBreakPointsFrame.ListViewBreakPointsChange(Sender: TObject; Item: TListItem; Change: TItemChange);

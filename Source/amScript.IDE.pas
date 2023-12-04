@@ -35,13 +35,16 @@ interface
 {$ifdef DISABLED_STUFF}
 {$endif DISABLED_STUFF}
 uses
-  Generics.Collections,
-  Types, Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls,
-  Forms, Themes, UxTheme, Dialogs, StdCtrls, ExtCtrls, ActnList, ComCtrls,
-  StdActns, Menus, ToolWin, ActnCtrls, ImgList, System.ImageList, Diagnostics,
+  System.Generics.Collections,
+  System.Types, System.SysUtils, System.Variants, System.Classes,
+  System.ImageList, System.Diagnostics,
+  WinApi.Windows, WinApi.Messages,
+  WinApi.ActiveX, WinApi.UxTheme,
+  Vcl.Graphics, Vcl.Controls,
+  Vcl.Forms, Vcl.Themes, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ActnList, Vcl.ComCtrls,
+  Vcl.StdActns, Vcl.Menus, Vcl.ToolWin, Vcl.ActnCtrls, Vcl.ImgList,
   System.Actions, Winapi.ShlObj,
-  XMLIntf, XMLDoc,
-  ActiveX,
+  XML.XMLIntf, XML.XMLDoc,
 
   dxSkinsCore, dxSkinscxPCPainter, cxPCdxBarPopupMenu, cxGraphics, cxControls,
   cxLookAndFeels, cxLookAndFeelPainters, cxPC, dxSkinsdxBarPainter, dxBar, cxClasses, dxSkinsdxDockControlPainter,
@@ -541,7 +544,6 @@ type
   private
     // Frames
     FDebuggerFrames: TList<IScriptDebuggerWindow>;
-    procedure NotifyDebuggerFrames(State: TScriptDebuggerNotification);
   private
     // Debug stuff
     FDebugStopwatch: TStopwatch;
@@ -634,8 +636,15 @@ type
     procedure SetEnvironment(const AEnvironment: IdwsEnvironment);
     function AttachAndExecute(const AExecution: IdwsProgramExecution): boolean;
     function Execute(Modal: boolean = False): boolean;
-  protected
+  private
+    FDebuggerSubscriptions: TList<IScriptDebuggerNotification>;
+    procedure DebuggerNotify(Notification: TScriptDebuggerNotification);
+  private
     // IScriptDebugger
+    procedure DebuggerSubscribe(const Subscriber: IScriptDebuggerNotification);
+    procedure IScriptDebugger.Subscribe = DebuggerSubscribe;
+    procedure DebuggerUnsubscribe(const Subscriber: IScriptDebuggerNotification);
+    procedure IScriptDebugger.Unsubscribe = DebuggerUnsubscribe;
     function GetDebugger: TdwsDebugger;
     function GetProgram: IdwsProgram;
     procedure ViewScriptPos(const AScriptPos: TScriptPos; AMoveCurrent: boolean = False; AHiddenMainModule: Boolean = False);
@@ -731,15 +740,16 @@ implementation
 {$R *.dfm}
 
 uses
-  Consts,
-  Generics.Defaults,
-  Registry,
-  Math,
-  StrUtils,
-  HelpIntfs,
-  HtmlHelpViewer,
-  Clipbrd,
-  IniFiles,
+  System.UITypes,
+  System.Generics.Defaults,
+  System.Win.Registry,
+  System.Math,
+  System.StrUtils,
+  System.IniFiles,
+  System.HelpIntfs,
+  Vcl.HtmlHelpViewer,
+  Vcl.Consts,
+  Vcl.Clipbrd,
 
   dwsXPlatform,
   dwsSuggestions,
@@ -769,8 +779,9 @@ uses
   amURLUtils,
 
   amScript.IDE.Data,
-  amScript.Editor.Data,
   amScript.Editor.Dialog.Search, // TODO : Move this out of IDE unit
+  amScript.Editor.SynEdit.Data, // TODO : Abstract this out of IDE unit
+  amScript.Editor.SynEdit, // This registers the SynEdit-based editor
 {$ifdef FEATURE_SCRIPT_BUNDLE}
   amScript.DebuggerDialogBundleBuilder,
 {$endif FEATURE_SCRIPT_BUNDLE}
@@ -971,8 +982,6 @@ begin
   FSearchHistory := '';
   FSearchOptions := [];
 
-  DataModuleDebuggerEditorData.Initialize(Self);
-
   FDebuggerFrames := TList<IScriptDebuggerWindow>.Create;
   FEditorContainers := TDictionary<TWinControl, IScriptEditor>.Create;
   FEditors := TList<IScriptEditor>.Create;
@@ -992,52 +1001,7 @@ begin
 
   ClearOutputWindow;
 
-(*
-  // Set the script folder
-  if FOptions.ScriptFolder <> '' then // we have a supplied script folder..
-  begin
-    ScriptFolder := IncludeTrailingBackslash(FOptions.ScriptFolder);
-    if not DirectoryExists(ScriptFolder) then
-      raise Exception.CreateFmt(RStrScriptFolderNotFound, [ScriptFolder]);
-  end
-  else
-  begin
-    // Use the default folder - the desktop for demo
-    ScriptFolder := IncludeTrailingBackslash(GetDesktopPath) + 'DWS Script Files';
-    if not DirectoryExists(ScriptFolder) then
-      raise Exception.Create(RStrIdeDesktopCopy);
-  end;
-
-  // Get the previously saved Document settings from registry...
-  MakeSettingsRec;
-  LoadSettings(sProjectFileName, FIDESettingsRec);
-
-  // Try to get a Document name from the supplied Document name (which might be a *.dws or *.dwsproj)
-  // if there is one, this becomes our Document file name.
-  if FOptions.ProjectName <> '' then
-    sProjectFileName := ScriptFolder + ChangeFileExt(FOptions.ProjectName, sDwsIdeProjectFileExt {eg '.dwsproj' });
-
-  if FileExists(sProjectFileName) then
-    LoadProjectFile(sProjectFileName) // << load the dwsproj if possible
-  else
-  begin
-    S := ScriptFolder + ChangeFileExt(FOptions.ProjectName, sDwsIdeProjectSourceFileExt {eg '.dws' }); // try loading the main dws file...
-    if FileExists(S) then
-    begin
-      // Here we've got a dws (main) file, so load it and make a project file from it too..
-      FProjectFileName := ChangeFileExt(S, sDwsIdeProjectFileExt);
-      CreateEditor(S, True);
-      SaveProjectFileAs(FProjectFileName);
-    end
-    else
-       sProjectFileName := ScriptFolder + '\ExampleScript' + sDwsIdeProjectFileExt; {eg '.dwsproj'};
-
-    if FileExists(sProjectFileName) then // we've got the example files, so load them...
-      LoadProjectFile(sProjectFileName)
-    else
-      ActionFileNewProjectExecute(nil); // could not find anything, make a new blank Document
-  end;
-*)
+  DebuggerNotify(sdNotifyInitialize);
 end;
 
 procedure TFormScriptDebugger.DoCreate;
@@ -1057,12 +1021,9 @@ begin
 end;
 
 destructor TFormScriptDebugger.Destroy;
-var
-  DebuggerFrame: IScriptDebuggerWindow;
 begin
-  if (FDebuggerFrames <> nil) then
-    for DebuggerFrame in FDebuggerFrames do
-      DebuggerFrame.Finalize;
+  DebuggerNotify(sdNotifyFinalize);
+  FreeAndNil(FDebuggerSubscriptions);
 
   if (FScriptDebuggerHost <> nil) then
   begin
@@ -1189,6 +1150,20 @@ end;
 // -----------------------------------------------------------------------------
 // IScriptDebugger implementation
 // -----------------------------------------------------------------------------
+
+procedure TFormScriptDebugger.DebuggerSubscribe(const Subscriber: IScriptDebuggerNotification);
+begin
+  if (FDebuggerSubscriptions = nil) then
+    FDebuggerSubscriptions := TList<IScriptDebuggerNotification>.Create;
+  FDebuggerSubscriptions.Add(Subscriber);
+end;
+
+procedure TFormScriptDebugger.DebuggerUnsubscribe(const Subscriber: IScriptDebuggerNotification);
+begin
+  if (FDebuggerSubscriptions = nil) then
+    exit;
+  FDebuggerSubscriptions.Remove(Subscriber);
+end;
 
 function TFormScriptDebugger.GetDebugger: TdwsDebugger;
 begin
@@ -1453,7 +1428,7 @@ begin
     if (Added) then
     begin
       Watch := nil;
-      NotifyDebuggerFrames(dnUpdateWatches);
+      DebuggerNotify(dnUpdateWatches);
     end;
   finally
     Watch.Free;
@@ -1878,7 +1853,7 @@ procedure TFormScriptDebugger.FormShow(Sender: TObject);
     while I < Screen.MonitorCount do
     begin
       // Compute the intersection between screen and form
-      Windows.IntersectRect(Ri, BoundsRect, Screen.Monitors[I].BoundsRect);
+      IntersectRect(Ri, BoundsRect, Screen.Monitors[I].BoundsRect);
 
       // Check the intersection is large enough
       if (Ri.Right - Ri.Left > Margin) and (Ri.Bottom - Ri.Top > Margin) then
@@ -2087,7 +2062,7 @@ begin
 
   ActionJIT.Enabled := True;
 
-  NotifyDebuggerFrames(dnCompiling);
+  DebuggerNotify(dnCompiling);
 
   // Make the implicit "main unit" explicit.
   var Page := MainUnit;
@@ -2137,7 +2112,7 @@ begin
 
   if (IsCompiled) then
   begin
-    NotifyDebuggerFrames(dnCompiled);
+    DebuggerNotify(dnCompiled);
     NotifyEditors(ehNotifyCompiled);
   end;
 end;
@@ -2221,12 +2196,11 @@ begin
   Debugger.Breakpoints.BreakPointsChanged;
 end;
 
-procedure TFormScriptDebugger.NotifyDebuggerFrames(State: TScriptDebuggerNotification);
-var
-  DebuggerFrame: IScriptDebuggerWindow;
+procedure TFormScriptDebugger.DebuggerNotify(Notification: TScriptDebuggerNotification);
 begin
-  for DebuggerFrame in FDebuggerFrames do
-    DebuggerFrame.DebuggerStateChanged(State);
+  if (FDebuggerSubscriptions <> nil) then
+    for var Subscriber in FDebuggerSubscriptions.ToArray do
+      Subscriber.ScriptDebuggerNotification(Notification);
 end;
 
 procedure TFormScriptDebugger.NotifyEditors(Notification: TScriptEditorHostNotification);
@@ -2578,11 +2552,11 @@ begin
         begin
           RibbonDebug.ActiveTab := RibbonTabDebug;
         end;
-        NotifyDebuggerFrames(dnDebugRun);
+        DebuggerNotify(dnDebugRun);
       end;
 
     dsDebugSuspending:
-      NotifyDebuggerFrames(dnDebugSuspending);
+      DebuggerNotify(dnDebugSuspending);
 
     dsDebugSuspended:
       begin
@@ -2601,7 +2575,7 @@ begin
             AddMessage('Execution paused on breakpoint', Debugger.CurrentScriptPos, mkInfo);
           ViewScriptPos(Debugger.CurrentScriptPos, True);
         end;
-        NotifyDebuggerFrames(dnDebugSuspended);
+        DebuggerNotify(dnDebugSuspended);
         UpdateDebugWindows;
 
         // Handle modal dialog
@@ -2621,16 +2595,16 @@ begin
       end;
 
     dsDebugResuming:
-      NotifyDebuggerFrames(dnDebugResuming);
+      DebuggerNotify(dnDebugResuming);
       // Never happens. Transition from dsDebugResuming to dsDebugRun is handled internally in the debugger
 
     dsIdle,
     dsDebugDone:
       begin
         if (Debugger.State = dsIdle) then
-          NotifyDebuggerFrames(dnIdle)
+          DebuggerNotify(dnIdle)
         else
-          NotifyDebuggerFrames(dnDebugDone);
+          DebuggerNotify(dnDebugDone);
         ClearCurrentLine;
         UpdateDebugWindows;
         RibbonDebug.ActiveTab := RibbonTabEditor;
@@ -3131,8 +3105,8 @@ procedure TFormScriptDebugger.UpdateTimerTimer(Sender: TObject);
       else
       if Editor.InsertMode then
       begin
-        if DataModuleDebuggerEditorData.SynMacroRecorder.State <> msStopped then
-          StatusBar.Panels[2].Text := UpperCase(MacroRecorderStates[DataModuleDebuggerEditorData.SynMacroRecorder.State])
+        if DataModuleEditorSynEditData.SynMacroRecorder.State <> msStopped then
+          StatusBar.Panels[2].Text := UpperCase(MacroRecorderStates[DataModuleEditorSynEditData.SynMacroRecorder.State])
         else
           StatusBar.Panels[2].Text := SInsert
       end else
@@ -4306,14 +4280,19 @@ begin
   if (DebuggerFrame = nil) then
     exit;
 
-  if (not Supports(DebuggerFrame, IScriptDebuggerWindow, DebuggerWindow)) then
-    exit;
+  var DebuggerNotification: IScriptDebuggerNotification;
+  if (Supports(DebuggerFrame, IScriptDebuggerNotification, DebuggerNotification)) then
+  begin
+    DebuggerNotification.ScriptDebuggerNotification(sdNotifyFinalize);
+    DebuggerNotification := nil;
+  end;
 
-  DebuggerWindow.Finalize;
-  FDebuggerFrames.Remove(DebuggerWindow);
-  DebuggerWindow := nil;
-
-  FreeAndNil(DebuggerFrame);
+  if (Supports(DebuggerFrame, IScriptDebuggerWindow, DebuggerWindow)) then
+  begin
+    FDebuggerFrames.Remove(DebuggerWindow);
+    DebuggerWindow := nil;
+    FreeAndNil(DebuggerFrame);
+  end;
 end;
 
 procedure TFormScriptDebugger.DockPanelDebugFrameVisibleChanged(Sender: TdxCustomDockControl);
@@ -5316,7 +5295,7 @@ end;
 //              ScriptDebuggerFactory
 //
 // -----------------------------------------------------------------------------
-function ScriptDebuggerFactory(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
+function IDEFactory(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
 var
   DebuggerForm: TFormScriptDebugger;
 begin
@@ -5331,7 +5310,7 @@ begin
 end;
 
 initialization
-  RegisterScriptDebuggerFactory(ScriptDebuggerFactory);
+  ScriptDebuggerFactory.RegisterFactory(IDEFactory);
 finalization
-  RegisterScriptDebuggerFactory(nil);
+  ScriptDebuggerFactory.RegisterFactory(nil);
 end.

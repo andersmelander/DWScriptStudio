@@ -32,9 +32,6 @@ type
 
 implementation
 
-uses
-  amScript.Editor.SynEdit;
-
 constructor TScriptEditorContainer.Create(AContainer: TWinControl);
 begin
   inherited Create;
@@ -68,13 +65,4 @@ begin
   TControlCracker(FContainer).Caption := ACaption;
 end;
 
-function EditorFactory(const AEditorHost: IScriptEditorHost; AContainerControl: TWinControl): IScriptEditor;
-begin
-  var Container: IScriptEditorContainer := TScriptEditorContainer.Create(AContainerControl);
-
-  Result := TScriptEditor.Create(AEditorHost, Container);
-end;
-
-initialization
-  ScriptEditorFactory.RegisterFactory(EditorFactory);
 end.

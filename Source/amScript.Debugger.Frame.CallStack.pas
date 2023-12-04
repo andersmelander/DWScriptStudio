@@ -34,14 +34,19 @@ type
     procedure ListViewCallStackDblClick(Sender: TObject);
     procedure ListViewCallStackDeletion(Sender: TObject; Item: TListItem);
     procedure ListViewCallStackMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-  private
+  strict private
     FCallStack: TdwsExprLocationArray;
     function GetImageIndex(Current: boolean; const ScriptPos: TScriptPos): integer;
     procedure UpdateInfo;
-  protected
+
+  strict protected
+    // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
-    procedure Finalize; override;
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
+
+  strict protected
+    // IScriptDebuggerWindow
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification); override;
+
   public
   end;
 
@@ -62,6 +67,19 @@ begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
 
   UpdateInfo;
+end;
+
+procedure TScriptDebuggerCallStackFrame.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+begin
+  inherited;
+
+  case Notification of
+    dnDebugSuspended:
+      UpdateInfo;
+  else
+    SetLength(FCallStack, 0);
+    ListViewCallStack.Items.Clear;
+  end;
 end;
 
 procedure TScriptDebuggerCallStackFrame.ListViewCallStackDblClick(Sender: TObject);
@@ -114,22 +132,6 @@ begin
 
     ListViewCallStack.Selected.ImageIndex := GetImageIndex((ListViewCallStack.Selected.Index = 0), ScriptPos^);
   end;
-end;
-
-procedure TScriptDebuggerCallStackFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-  case State of
-    dnDebugSuspended:
-      UpdateInfo;
-  else
-    SetLength(FCallStack, 0);
-    ListViewCallStack.Items.Clear;
-  end;
-end;
-
-procedure TScriptDebuggerCallStackFrame.Finalize;
-begin
-  inherited;
 end;
 
 function TScriptDebuggerCallStackFrame.GetImageIndex(Current: boolean; const ScriptPos: TScriptPos): integer;

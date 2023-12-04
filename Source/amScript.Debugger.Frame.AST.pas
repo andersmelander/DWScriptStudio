@@ -16,15 +16,14 @@ uses
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, ImgList, Menus, ActnList,
   cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore,
   cxContainer, cxEdit, cxCustomData, cxStyles, cxTL, cxTextEdit, cxTLdxBarBuiltInMenu, cxInplaceContainer,
-  cxClasses, cxTLData, dxSkinsdxBarPainter, dxBar,
-  cxDataControllerConditionalFormattingRulesManagerDialog,
+  cxClasses, cxTLData, dxSkinsdxBarPainter, dxBar, cxFilter, dxScrollbarAnnotations,
 
   dwsUtils,
   dwsExprs,
   dwsSymbols,
   dwsErrors,
 
-  amScript.Debugger.API, cxFilter, dxScrollbarAnnotations;
+  amScript.Debugger.API;
 
 type
   TFrame = TScriptDebuggerFrame;
@@ -36,19 +35,21 @@ type
     StyleBackground: TcxStyle;
     TreeListASTColumn1: TcxTreeListColumn;
     procedure TreeListASTDblClick(Sender: TObject);
-  private
+  strict private
     procedure LoadNode(Node: TcxTreeListNode; Expression: TExprBase);
 
-    procedure UpdateInfo(Expression: TExprBase); overload;
-  protected
-    procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
-    procedure Finalize; override;
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
     procedure UpdateInfo; overload;
+    procedure UpdateInfo(Expression: TExprBase); overload;
+
+  strict protected
+    // IScriptDebuggerWindow
+    procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
+
+  strict protected
+    // IScriptDebuggerWindow
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification); override;
+
+  public
   end;
 
 implementation
@@ -73,6 +74,25 @@ begin
 
   if (Debugger.GetDebugger.State = dsDebugSuspended) then
     UpdateInfo(Debugger.GetDebugger.CurrentExpression);
+end;
+
+procedure TScriptDebuggerASTFrame.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+begin
+  inherited;
+
+  case Notification of
+    dnCompiling:
+      TreeListAST.Clear;
+
+    dnCompiled:
+      UpdateInfo;
+
+    dnDebugSuspended:
+      UpdateInfo(Debugger.GetDebugger.CurrentExpression);
+  else
+    TreeListAST.FocusedNode := nil;
+    TreeListAST.ClearSelection;
+  end;
 end;
 
 function ExpressionToSomethingNice(Expression: TExprBase): string;
@@ -143,38 +163,6 @@ begin
     Node.Selected := True;
     Node.MakeVisible;
   end;
-end;
-
-constructor TScriptDebuggerASTFrame.Create(AOwner: TComponent);
-begin
-  inherited;
-end;
-
-procedure TScriptDebuggerASTFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-  case State of
-    dnCompiling:
-      TreeListAST.Clear;
-
-    dnCompiled:
-      UpdateInfo;
-
-    dnDebugSuspended:
-      UpdateInfo(Debugger.GetDebugger.CurrentExpression);
-  else
-    TreeListAST.FocusedNode := nil;
-    TreeListAST.ClearSelection;
-  end;
-end;
-
-destructor TScriptDebuggerASTFrame.Destroy;
-begin
-  inherited;
-end;
-
-procedure TScriptDebuggerASTFrame.Finalize;
-begin
-  inherited;
 end;
 
 procedure TScriptDebuggerASTFrame.UpdateInfo;

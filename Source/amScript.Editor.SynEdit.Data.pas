@@ -1,4 +1,4 @@
-unit amScript.Editor.Data;
+unit amScript.Editor.SynEdit.Data;
 
 interface
 
@@ -36,7 +36,7 @@ type
 //
 // -----------------------------------------------------------------------------
 type
-  TDataModuleDebuggerEditorData = class(TDataModule)
+  TDataModuleEditorSynEditData = class(TDataModule, IScriptDebuggerNotification)
   private
     FScriptDebugger: IScriptDebugger;
   private
@@ -51,12 +51,15 @@ type
     procedure SynCodeCompletionShow(Sender: TObject);
     procedure SynParametersExecute(Kind: SynCompletionType; Sender: TObject; var CurrentInput: string; var x, y: Integer; var CanExecute: Boolean);
   private
+    // IScriptDebuggerNotification
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+  private
     class destructor Destroy;
 
   public
     constructor Create(AOwner: TComponent); override;
 
-    procedure Initialize(const AScriptDebugger: IScriptDebugger);
+    procedure SetScriptDebugger(const AScriptDebugger: IScriptDebugger);
 
     procedure AddEditor(AEditor: TCustomSynEdit);
     function RemoveEditor(AEditor: TCustomSynEdit): Boolean;
@@ -77,7 +80,7 @@ type
 //              DataModuleDebuggerEditorData
 //
 // -----------------------------------------------------------------------------
-function DataModuleDebuggerEditorData: TDataModuleDebuggerEditorData;
+function DataModuleEditorSynEditData: TDataModuleEditorSynEditData;
 
 
 // -----------------------------------------------------------------------------
@@ -121,17 +124,17 @@ end;
 
 // -----------------------------------------------------------------------------
 //
-//              DataModuleDebuggerEditorData
+//              DataModuleEditorSynEditData
 //
 // -----------------------------------------------------------------------------
 var
-  FDebuggerEditorData: TDataModuleDebuggerEditorData;
+  FEditorData: TDataModuleEditorSynEditData;
 
-function DataModuleDebuggerEditorData: TDataModuleDebuggerEditorData;
+function DataModuleEditorSynEditData: TDataModuleEditorSynEditData;
 begin
-  if (FDebuggerEditorData = nil) then
-    FDebuggerEditorData := TDataModuleDebuggerEditorData.Create(nil);
-  Result := FDebuggerEditorData;
+  if (FEditorData = nil) then
+    FEditorData := TDataModuleEditorSynEditData.Create(nil);
+  Result := FEditorData;
 end;
 
 
@@ -140,10 +143,9 @@ end;
 //              TDataModuleDebuggerEditorData
 //
 // -----------------------------------------------------------------------------
-constructor TDataModuleDebuggerEditorData.Create(AOwner: TComponent);
+constructor TDataModuleEditorSynEditData.Create(AOwner: TComponent);
 begin
   inherited;
-
 
   FSynEditSearch := TSynEditSearch.Create(Self);
 
@@ -216,22 +218,27 @@ begin
   FSynCodeCompletion.ShortCut := 0;
 end;
 
-class destructor TDataModuleDebuggerEditorData.Destroy;
+class destructor TDataModuleEditorSynEditData.Destroy;
 begin
-  FreeAndNil(FDebuggerEditorData);
+  FreeAndNil(FEditorData);
 end;
 
 // -----------------------------------------------------------------------------
 
-procedure TDataModuleDebuggerEditorData.Initialize(const AScriptDebugger: IScriptDebugger);
+procedure TDataModuleEditorSynEditData.SetScriptDebugger(const AScriptDebugger: IScriptDebugger);
 begin
+  if (FScriptDebugger <> nil) then
+    FScriptDebugger.Unsubscribe(Self);
+
   FScriptDebugger := AScriptDebugger;
 
+  if (FScriptDebugger <> nil) then
+    FScriptDebugger.Subscribe(Self);
 end;
 
 // -----------------------------------------------------------------------------
 
-procedure TDataModuleDebuggerEditorData.AddEditor(AEditor: TCustomSynEdit);
+procedure TDataModuleEditorSynEditData.AddEditor(AEditor: TCustomSynEdit);
 begin
   FSynMacroRecorder.AddEditor(AEditor);
   FSynAutoComplete.AddEditor(AEditor);
@@ -255,7 +262,7 @@ begin
   end;
 end;
 
-function TDataModuleDebuggerEditorData.RemoveEditor(AEditor: TCustomSynEdit): Boolean;
+function TDataModuleEditorSynEditData.RemoveEditor(AEditor: TCustomSynEdit): Boolean;
 begin
   FSynMacroRecorder.RemoveEditor(AEditor);
   FSynAutoComplete.RemoveEditor(AEditor);
@@ -268,14 +275,25 @@ end;
 type
   TSynCompletionProposalCracker = class(TSynCompletionProposal);
 
-procedure TDataModuleDebuggerEditorData.ExecuteSynCodeCompletion(AEditor: TCustomSynEdit);
+procedure TDataModuleEditorSynEditData.ExecuteSynCodeCompletion(AEditor: TCustomSynEdit);
 begin
   TSynCompletionProposalCracker(SynCodeCompletion).DoExecute(AEditor);
 end;
 
 // -----------------------------------------------------------------------------
 
-procedure TDataModuleDebuggerEditorData.SynCodeCompletionExecute(Kind: SynCompletionType;
+procedure TDataModuleEditorSynEditData.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+begin
+  case Notification of
+    sdNotifyFinalize:
+      begin
+        FScriptDebugger.Unsubscribe(Self);
+        FScriptDebugger := nil;
+      end;
+  end;
+end;
+
+procedure TDataModuleEditorSynEditData.SynCodeCompletionExecute(Kind: SynCompletionType;
   Sender: TObject; var CurrentInput: string; var x, y: Integer;
   var CanExecute: Boolean);
 var
@@ -367,7 +385,7 @@ begin
   CanExecute := True;
 end;
 
-procedure TDataModuleDebuggerEditorData.SynCodeCompletionShow(Sender: TObject);
+procedure TDataModuleEditorSynEditData.SynCodeCompletionShow(Sender: TObject);
 var
   CompletionProposalForm: TSynBaseCompletionProposalForm;
 begin
@@ -387,7 +405,7 @@ begin
   end;
 end;
 
-procedure TDataModuleDebuggerEditorData.SynParametersExecute(Kind: SynCompletionType;
+procedure TDataModuleEditorSynEditData.SynParametersExecute(Kind: SynCompletionType;
   Sender: TObject; var CurrentInput: string; var x, y: Integer;
   var CanExecute: Boolean);
 

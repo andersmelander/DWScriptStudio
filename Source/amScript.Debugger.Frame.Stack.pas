@@ -18,17 +18,15 @@ uses
 
   cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore,
   cxContainer, cxEdit, cxCustomData, cxStyles, cxTL, cxTextEdit, cxTLdxBarBuiltInMenu, cxInplaceContainer,
-  cxClasses, cxTLData, dxSkinsdxBarPainter, dxBar,
+  cxClasses, cxTLData, dxSkinsdxBarPainter, dxBar, cxFilter, dxScrollbarAnnotations,
 
   dwsUtils,
   dwsExprs,
   dwsSymbols,
   dwsErrors,
-{$ifndef OLD_DWSCRIPT}
   dwsInfo,
-{$endif OLD_DWSCRIPT}
 
-  amScript.Debugger.API, cxFilter, dxScrollbarAnnotations;
+  amScript.Debugger.API;
 
 type
   TFrame = TScriptDebuggerFrame;
@@ -68,9 +66,10 @@ type
     procedure TreeListStackDeletion(Sender: TcxCustomTreeList; ANode: TcxTreeListNode);
     procedure TreeListStackExpanding(Sender: TcxCustomTreeList; ANode: TcxTreeListNode; var Allow: Boolean);
     procedure TreeListStackCanFocusNode(Sender: TcxCustomTreeList; ANode: TcxTreeListNode; var Allow: Boolean);
-  private
+  strict private
     FLoading: boolean;
-  protected
+
+  strict private
     procedure LoadNode(Node: TcxTreeListNode); overload;
     procedure LoadNode(Node: TcxTreeListNode; const Info: IInfo; TypeSym: TSymbol = nil); overload;
     procedure LoadMemberNodes(Node: TcxTreeListNode; const Info: IInfo; TypeSym: TCompositeTypeSymbol);
@@ -79,12 +78,15 @@ type
 
     procedure UpdateInfo;
 
+  strict protected
+    // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
-    procedure Finalize; override;
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
+
+  strict protected
+    // IScriptDebuggerWindow
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification); override;
+
   public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
   end;
 
 implementation
@@ -93,11 +95,7 @@ implementation
 
 uses
   dwsDebugger,
-{$ifndef OLD_DWSCRIPT}
   dwsInfoClasses,
-{$else OLD_DWSCRIPT}
-  dwsInfo,
-{$endif OLD_DWSCRIPT}
   dwsCompiler,
   dwsDataContext,
   dwsSuggestions;
@@ -105,9 +103,25 @@ uses
 
 { TDwsIdeLocalVariablesFrame }
 
-procedure TScriptDebuggerStackFrame.Finalize;
+procedure TScriptDebuggerStackFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
+begin
+  inherited Initialize(ADebugger, AImageList, AImageListSymbols);
+  TreeListStack.Images := AImageListSymbols;
+
+  UpdateInfo;
+end;
+
+procedure TScriptDebuggerStackFrame.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
 begin
   inherited;
+
+  case Notification of
+    dnDebugSuspended:
+      UpdateInfo;
+
+  else
+    TreeListStack.Clear;
+  end;
 end;
 
 function TScriptDebuggerStackFrame.FindNode(const AName: string; ParentNode: TcxTreeListNode): TcxTreeListNode;
@@ -122,14 +136,6 @@ begin
       break;
     Result := Result.getNextSibling;
   end;
-end;
-
-procedure TScriptDebuggerStackFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
-begin
-  inherited Initialize(ADebugger, AImageList, AImageListSymbols);
-  TreeListStack.Images := AImageListSymbols;
-
-  UpdateInfo;
 end;
 
 procedure TScriptDebuggerStackFrame.LoadNode(Node: TcxTreeListNode);
@@ -437,27 +443,6 @@ begin
       LoadNode(ChildNode);
     ChildNode := ChildNode.getNextSibling;
   end;
-end;
-
-constructor TScriptDebuggerStackFrame.Create(AOwner: TComponent);
-begin
-  inherited;
-end;
-
-procedure TScriptDebuggerStackFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-  case State of
-    dnDebugSuspended:
-      UpdateInfo;
-
-  else
-    TreeListStack.Clear;
-  end;
-end;
-
-destructor TScriptDebuggerStackFrame.Destroy;
-begin
-  inherited;
 end;
 
 procedure TScriptDebuggerStackFrame.UpdateInfo;

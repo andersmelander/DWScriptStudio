@@ -18,6 +18,7 @@ uses
 
   cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore,
   cxContainer, cxEdit, dxSkinsdxBarPainter, dxBar, cxClasses, cxImageList,
+  dxLayoutContainer, dxLayoutLookAndFeels, dxLayoutControl,
 
   VirtualTrees,
 
@@ -26,7 +27,7 @@ uses
 
   amProgress,
 
-  amScript.Debugger.API, dxLayoutContainer, dxLayoutLookAndFeels, dxLayoutControl;
+  amScript.Debugger.API;
 
 type
   TFrame = TScriptDebuggerFrame;
@@ -64,7 +65,7 @@ type
     procedure ActionSymbolsViewDeclarationUpdate(Sender: TObject);
     procedure ActionSymbolsViewImplementationExecute(Sender: TObject);
     procedure ActionSymbolsViewImplementationUpdate(Sender: TObject);
-  private type
+  strict private type
     TSymbolTreeNodeData = record
      Symbol: TSymbol;
      Caption: string;
@@ -72,28 +73,37 @@ type
      StateIndex: integer;
     end;
     PSymbolTreeNodeData = ^TSymbolTreeNodeData;
-  private
+
+  strict private
     FTreeView: TVirtualStringTree;
     procedure TreeViewOnGetCellText(Sender: TCustomVirtualStringTree; var E: TVSTGetCellTextEventArgs);
     procedure TreeViewOnGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure TreeViewOnNodeDblClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
-  private
+
+  strict private
     FSymbols: TDictionary<TSymbol, PVirtualNode>;
     FVisibilities: TdwsVisibilities;
     FProgress: IProgress;
     function LoadSymbol(Symbol, ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities): PVirtualNode;
     procedure LoadSymbols(ATable: TSymbolTable; ParentSymbol: TSymbol; ParentNode: PVirtualNode; Visibilities: TdwsVisibilities);
-  private
+
+  strict private
     FUnitSymbols: TList<TUnitSymbol>;
     procedure CollectUnitSymbol(UnitSymbol: TUnitSymbol);
-  protected
+
+  strict private
+    procedure UpdateInfo;
+
+  strict protected
+    // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
-    procedure Finalize; override;
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
+
+  strict protected
+    // IScriptDebuggerNotification
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification); override;
+
   public
     constructor Create(AOwner: TComponent); override;
-
-    procedure UpdateInfo;
   end;
 
 function GetSymbolDescription(Sym: TSymbol): string; overload;
@@ -602,25 +612,23 @@ begin
   LayoutItemTreeView.Control := FTreeView;
 end;
 
-procedure TScriptDebuggerSymbolsFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-  case State of
-    dnCompiled:
-      UpdateInfo;
-  else
-    FTreeView.Clear;
-  end;
-end;
-
-procedure TScriptDebuggerSymbolsFrame.Finalize;
-begin
-  inherited;
-end;
-
 procedure TScriptDebuggerSymbolsFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
   FTreeView.Images := AImageListSymbols;
+end;
+
+procedure TScriptDebuggerSymbolsFrame.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+begin
+  inherited;
+
+  case Notification of
+    dnCompiled:
+      UpdateInfo;
+
+  else
+    FTreeView.Clear;
+  end;
 end;
 
 procedure TScriptDebuggerSymbolsFrame.TreeViewOnGetCellText(Sender: TCustomVirtualStringTree; var E: TVSTGetCellTextEventArgs);

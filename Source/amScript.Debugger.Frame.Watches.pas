@@ -83,20 +83,26 @@ type
     procedure ActionViewScopeUpdate(Sender: TObject);
     procedure ActionViewScopeGlobalExecute(Sender: TObject);
     procedure ActionViewScopeGlobalUpdate(Sender: TObject);
-  private
+  strict private
     FEvaluationBuilder: TInfoEvaluationBuilder;
     FVisibilities: TdwsVisibilities;
     FInspectOptions: TInspectOptions;
-  protected
-    function CurrentWatchIndex: integer;
 
+  strict private
+    function CurrentWatchIndex: integer;
+    procedure UpdateInfo;
+
+  strict protected
+    // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification); override;
+
+  strict protected
+    // IScriptDebuggerNotification
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification); override;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
-    procedure UpdateInfo;
   end;
 
 // -----------------------------------------------------------------------------
@@ -148,6 +154,19 @@ begin
   TreeListWatches.Images := AImageListSymbols;
 
   UpdateInfo;
+end;
+
+// -----------------------------------------------------------------------------
+
+procedure TScriptDebuggerWatchesFrame.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+begin
+  inherited;
+
+  case Notification of
+    dnDebugSuspended,
+    dnUpdateWatches:
+      UpdateInfo;
+  end;
 end;
 
 // -----------------------------------------------------------------------------
@@ -212,17 +231,6 @@ end;
 procedure TScriptDebuggerWatchesFrame.ActionWatchEditUpdate(Sender: TObject);
 begin
   TAction(Sender).Enabled := (TreeListWatches.FocusedNode <> nil) and (TreeListWatches.FocusedNode.Parent = nil);
-end;
-
-// -----------------------------------------------------------------------------
-
-procedure TScriptDebuggerWatchesFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-  case State of
-    dnDebugSuspended,
-    dnUpdateWatches:
-      UpdateInfo;
-  end;
 end;
 
 // -----------------------------------------------------------------------------

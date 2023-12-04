@@ -43,15 +43,20 @@ type
       AIndexType: TcxTreeListImageIndexType; var AIndex: TImageIndex);
     procedure TreeListFileSystemStructureSelectionChanged(Sender: TObject);
     procedure ListViewFilesDblClick(Sender: TObject);
-  private
+  strict private
+    procedure Finalize;
+
+  strict private
     FFolder: IScriptFileSystemFolder;
     FRootFolders: TList<IScriptFileSystemFolder>;
     function LinkNode(Node: TcxTreeListNode): IScriptFileSystemObject;
     procedure SetFolder(const Value: IScriptFileSystemFolder);
     property Folder: IScriptFileSystemFolder read FFolder write SetFolder;
-  protected
+
+  strict protected
+    // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); override;
-    procedure Finalize; override;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -116,9 +121,7 @@ end;
 
 procedure TScriptDebuggerFileSystemStructureFrame.Finalize;
 begin
-  TreeListFileSystemStructure.Visible := False;
   FRootFolders.Clear;
-  inherited;
 end;
 
 function TScriptDebuggerFileSystemStructureFrame.LinkNode(Node: TcxTreeListNode): IScriptFileSystemObject;

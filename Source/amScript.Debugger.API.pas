@@ -93,8 +93,20 @@ type
 type
   TLineNumbers = TArray<Integer>;
 
+  TScriptDebuggerNotification = (
+    sdNotifyInitialize, sdNotifyFinalize,
+    dnCompiling, dnCompiled, dnIdle, dnDebugRun, dnDebugSuspending, dnDebugSuspended, dnDebugResuming, dnDebugDone, dnUpdateWatches);
+
+  IScriptDebuggerNotification = interface
+    ['{68392E95-BF6C-44D0-B9E0-32CCF727AB36}']
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+  end;
+
   IScriptDebugger = interface
     ['{A8C3BEBB-C732-46BF-9936-5E53519AF2A2}']
+    procedure Subscribe(const Subscriber: IScriptDebuggerNotification);
+    procedure Unsubscribe(const Subscriber: IScriptDebuggerNotification);
+
     function GetDebugger: TdwsDebugger;
     function GetProgram: IdwsProgram;
     function GetCompiledScript: IdwsProgram;
@@ -119,8 +131,6 @@ type
 
     procedure AddMessageInfo(Messages: TdwsMessageList; Index: integer = -1);
   end;
-
-  TScriptDebuggerNotification = (dnCompiling, dnCompiled, dnIdle, dnDebugRun, dnDebugSuspending, dnDebugSuspended, dnDebugResuming, dnDebugDone, dnUpdateWatches);
 
 
 // -----------------------------------------------------------------------------
@@ -162,9 +172,6 @@ type
   IScriptDebuggerWindow = interface
     ['{C5E175C4-B6CE-4BCC-94D1-52986C8047FF}']
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
-    procedure Finalize;
-
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification);
   end;
 
 
@@ -175,11 +182,17 @@ type
 // -----------------------------------------------------------------------------
 type
   TScriptDebuggerFactory = function(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
+  TScriptDebuggerInitializationCallback = reference to procedure(const ScriptDebugger: IScriptDebugger);
 
-procedure RegisterScriptDebuggerFactory(Factory: TScriptDebuggerFactory);
+type
+  ScriptDebuggerFactory = record
+    class procedure RegisterFactory(Factory: TScriptDebuggerFactory); static;
+    class function CreateDebugger(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean = False): IScriptDebugger; static;
 
-function CreateScriptDebugger(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean = False): IScriptDebugger;
-function CanCreateScriptDebugger: boolean;
+    class procedure RegisterNotification(Callback: TScriptDebuggerInitializationCallback); static;
+
+    class function CanCreateDebugger: boolean; static;
+  end;
 
 
 // -----------------------------------------------------------------------------
@@ -326,16 +339,17 @@ function IsValidIdentifier( const AName : string ) : boolean;
 //
 // -----------------------------------------------------------------------------
 type
-  TScriptDebuggerFrame = class abstract(TFrame, IScriptDebuggerWindow)
+  TScriptDebuggerFrame = class abstract(TFrame, IScriptDebuggerWindow, IScriptDebuggerNotification)
   strict private
     FDebugger: IScriptDebugger;
   strict protected
     property Debugger: IScriptDebugger read FDebugger;
-  protected
+  strict protected
     // IScriptDebuggerWindow
     procedure Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList); virtual;
-    procedure Finalize; virtual;
-    procedure DebuggerStateChanged(State: TScriptDebuggerNotification); virtual;
+  strict protected
+    // IScriptDebuggerNotification
+    procedure ScriptDebuggerNotification(Notification: TScriptDebuggerNotification); virtual;
   public
   end;
 
@@ -346,7 +360,8 @@ type
 implementation
 
 uses
-  Variants,
+  System.Generics.Collections,
+  System.Variants,
   dwsCompiler,
   dwsInfo,
   dwsDataContext;
@@ -456,18 +471,21 @@ end;
 // TScriptDebuggerFrame
 //
 // -----------------------------------------------------------------------------
-procedure TScriptDebuggerFrame.DebuggerStateChanged(State: TScriptDebuggerNotification);
-begin
-end;
-
-procedure TScriptDebuggerFrame.Finalize;
-begin
-  FDebugger := nil;
-end;
-
 procedure TScriptDebuggerFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
 begin
   FDebugger := ADebugger;
+  FDebugger.SubScribe(Self);
+end;
+
+procedure TScriptDebuggerFrame.ScriptDebuggerNotification(Notification: TScriptDebuggerNotification);
+begin
+  case Notification of
+    sdNotifyFinalize:
+      begin
+        FDebugger.Unsubscribe(Self);
+        FDebugger := nil;
+      end;
+  end;
 end;
 
 // -----------------------------------------------------------------------------
@@ -477,26 +495,39 @@ end;
 // -----------------------------------------------------------------------------
 var
   FScriptDebuggerFactory: TScriptDebuggerFactory = nil;
+  FScriptDebuggerInitializationCallbacks: TList<TScriptDebuggerInitializationCallback> = nil;
 
-procedure RegisterScriptDebuggerFactory(Factory: TScriptDebuggerFactory);
+class procedure ScriptDebuggerFactory.RegisterFactory(Factory: TScriptDebuggerFactory);
 begin
   FScriptDebuggerFactory := Factory;
 end;
 
-function CanCreateScriptDebugger: boolean;
+class procedure ScriptDebuggerFactory.RegisterNotification(Callback: TScriptDebuggerInitializationCallback);
+begin
+  if (FScriptDebuggerInitializationCallbacks = nil) then
+    FScriptDebuggerInitializationCallbacks := TList<TScriptDebuggerInitializationCallback>.Create;
+  FScriptDebuggerInitializationCallbacks.Add(Callback);
+end;
+
+class function ScriptDebuggerFactory.CanCreateDebugger: boolean;
 begin
   Result := Assigned(FScriptDebuggerFactory);
 end;
 
-function CreateScriptDebugger(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
+class function ScriptDebuggerFactory.CreateDebugger(const ScriptDebuggerHost: IScriptDebuggerHost; CreateAsMainForm: boolean): IScriptDebugger;
 begin
-  if (not CanCreateScriptDebugger) then
+  if (not CanCreateDebugger) then
     raise Exception.Create('No Script Debugger Factory has been registered');
 
   Result := FScriptDebuggerFactory(ScriptDebuggerHost, CreateAsMainForm);
+
+  if (FScriptDebuggerInitializationCallbacks <> nil) then
+    for var Callback in FScriptDebuggerInitializationCallbacks do
+      Callback(Result);
 end;
 
 initialization
 finalization
-  RegisterScriptDebuggerFactory(nil);
+  ScriptDebuggerFactory.RegisterFactory(nil);
+  FScriptDebuggerInitializationCallbacks.Free;
 end.
