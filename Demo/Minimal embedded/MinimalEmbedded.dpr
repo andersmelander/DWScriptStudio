@@ -1,10 +1,10 @@
 program MinimalEmbedded;
 
 uses
-  // This causes all script RTL units be be made available
-  amScriptModuleAll,
-  // This causes the script debugger to become available
-  amScriptDebuggerMain,
+  // This causes all script RTL units to be made available
+  amScript.Module.All,
+  // This causes the script IDE/editor/debugger to become available
+  amScript.IDE,
   Vcl.Forms,
   Main in 'Main.pas' {FormMain};
 

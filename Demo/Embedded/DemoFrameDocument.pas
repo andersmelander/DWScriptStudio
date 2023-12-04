@@ -11,7 +11,7 @@ uses
   dxSkinsCore, dxBarBuiltInMenu, cxGraphics, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, cxPC, cxImageList,
 
-  amScriptHostAPI;
+  amScript.Host.API;
 
 // -----------------------------------------------------------------------------
 //
@@ -77,11 +77,11 @@ implementation
 
 uses
   IOUtils,
-  amScriptAPI,
-  amScriptProviderAPI,
-  amScriptProvider,
-  amScriptHostProvider,
-  amScriptPackageAPI;
+  amScript.API,
+  amScript.Provider.API,
+  amScript.Provider,
+  amScript.Host.Provider,
+  amScript.Package.API;
 
 // -----------------------------------------------------------------------------
 //
