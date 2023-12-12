@@ -9,20 +9,16 @@ object FormBundleBuilder: TFormBundleBuilder
   Color = clBtnFace
   Constraints.MinHeight = 450
   Constraints.MinWidth = 500
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
+  ParentFont = True
   KeyPreview = True
-  Position = poScreenCenter
+  Position = poMainFormCenter
   ShowHint = True
   OnClick = ActionMainExecute
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
-  TextHeight = 13
+  TextHeight = 15
   object Wizard: TdxWizardControl
     Left = 0
     Top = 0
@@ -204,7 +200,6 @@ object FormBundleBuilder: TFormBundleBuilder
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
-        ExplicitWidth = 0
       end
       object ButtonBundleOpen: TcxButton
         AlignWithMargins = True
@@ -360,7 +355,6 @@ object FormBundleBuilder: TFormBundleBuilder
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
-        ExplicitWidth = 0
       end
     end
     object WizardControlPageManifest: TdxWizardControlPage
@@ -372,15 +366,15 @@ object FormBundleBuilder: TFormBundleBuilder
         Left = 0
         Top = 0
         Width = 637
-        Height = 271
+        Height = 261
         Align = alClient
         ParentBackground = True
         TabOrder = 0
-        LayoutLookAndFeel = dxLayoutSkinLookAndFeel1
+        LayoutLookAndFeel = DataModuleDebuggerViewData.LayoutLookAndFeelNoOffsetNoDisabled
         ExplicitHeight = 267
         object EditPlugInID: TcxButtonEdit
-          Left = 74
-          Top = 38
+          Left = 83
+          Top = 37
           Hint = 'The add-in ID is a value that uniquely identifies the add-in.'
           ParentFont = False
           Properties.Buttons = <
@@ -409,18 +403,18 @@ object FormBundleBuilder: TFormBundleBuilder
           Width = 200
         end
         object EditPlugInURL: TcxTextEdit
-          Left = 74
-          Top = 163
+          Left = 83
+          Top = 168
           Hint = 'URL of a web page associated with the add-in'
           Properties.OnChange = EditChange
           Style.HotTrack = False
           TabOrder = 3
           TextHint = '(optional)'
-          Width = 551
+          Width = 540
         end
         object EditPlugInVersion: TcxTextEdit
-          Left = 74
-          Top = 190
+          Left = 83
+          Top = 198
           Hint = 
             'The add-in version. The value is currently for display purposes ' +
             'only.'
@@ -492,7 +486,7 @@ object FormBundleBuilder: TFormBundleBuilder
           Width = 200
         end
         object EditPlugInName: TcxTextEdit
-          Left = 74
+          Left = 83
           Top = 66
           Hint = 
             'The name of the add-in for display purposes. The value does not ' +
@@ -502,7 +496,7 @@ object FormBundleBuilder: TFormBundleBuilder
           Style.HotTrack = False
           TabOrder = 1
           TextHint = '(recommended)'
-          Width = 551
+          Width = 540
         end
         object EditAuthorName: TcxTextEdit
           Left = 10000
@@ -519,14 +513,14 @@ object FormBundleBuilder: TFormBundleBuilder
           Width = 538
         end
         object MemoPlugInDescription: TcxMemo
-          Left = 74
-          Top = 93
+          Left = 83
+          Top = 96
           Properties.ScrollBars = ssVertical
           Properties.OnChange = EditChange
           Style.HotTrack = False
           TabOrder = 2
           Height = 52
-          Width = 551
+          Width = 540
         end
         object CheckBoxOptionsBase64: TcxCheckBox
           Left = 10000
@@ -574,7 +568,7 @@ object FormBundleBuilder: TFormBundleBuilder
           Parent = LayoutGroupManifestAddIn
           CaptionOptions.Text = 'URL:'
           Control = EditPlugInURL
-          ControlOptions.OriginalHeight = 21
+          ControlOptions.OriginalHeight = 23
           ControlOptions.OriginalWidth = 372
           ControlOptions.ShowBorder = False
           Index = 4
@@ -584,7 +578,7 @@ object FormBundleBuilder: TFormBundleBuilder
           CaptionOptions.Text = 'Version:'
           Control = EditPlugInVersion
           ControlOptions.AlignHorz = ahLeft
-          ControlOptions.OriginalHeight = 21
+          ControlOptions.OriginalHeight = 23
           ControlOptions.OriginalWidth = 121
           ControlOptions.ShowBorder = False
           Index = 5
@@ -611,7 +605,7 @@ object FormBundleBuilder: TFormBundleBuilder
           Parent = LayoutGroupManifestLicense
           CaptionOptions.Text = 'Author URL:'
           Control = EditAuthorURL
-          ControlOptions.OriginalHeight = 21
+          ControlOptions.OriginalHeight = 23
           ControlOptions.OriginalWidth = 121
           ControlOptions.ShowBorder = False
           Index = 3
@@ -640,7 +634,7 @@ object FormBundleBuilder: TFormBundleBuilder
           Parent = LayoutGroupManifestAddIn
           CaptionOptions.Text = 'Name:'
           Control = EditPlugInName
-          ControlOptions.OriginalHeight = 21
+          ControlOptions.OriginalHeight = 23
           ControlOptions.OriginalWidth = 389
           ControlOptions.ShowBorder = False
           Index = 1
@@ -649,7 +643,7 @@ object FormBundleBuilder: TFormBundleBuilder
           Parent = LayoutGroupManifestLicense
           CaptionOptions.Text = 'Author name:'
           Control = EditAuthorName
-          ControlOptions.OriginalHeight = 21
+          ControlOptions.OriginalHeight = 23
           ControlOptions.OriginalWidth = 121
           ControlOptions.ShowBorder = False
           Index = 2
@@ -718,7 +712,7 @@ object FormBundleBuilder: TFormBundleBuilder
           Parent = LayoutGroupOptions
           CaptionOptions.Visible = False
           Control = CheckBoxOptionsBase64
-          ControlOptions.OriginalHeight = 21
+          ControlOptions.OriginalHeight = 20
           ControlOptions.OriginalWidth = 88
           ControlOptions.ShowBorder = False
           Index = 0
@@ -737,7 +731,7 @@ object FormBundleBuilder: TFormBundleBuilder
         Left = 0
         Top = 0
         Width = 637
-        Height = 243
+        Height = 223
         Align = alClient
         Checkboxes = True
         Columns = <
@@ -766,13 +760,14 @@ object FormBundleBuilder: TFormBundleBuilder
         OnCustomDraw = ListViewFilesCustomDraw
         OnDblClick = ListViewFilesDblClick
         OnKeyDown = ListViewFilesKeyDown
+        ExplicitHeight = 243
       end
       object PanelEncryptWarning: TPanel
         AlignWithMargins = True
         Left = 0
-        Top = 237
+        Top = 227
         Width = 637
-        Height = 16
+        Height = 30
         Margins.Left = 0
         Margins.Top = 4
         Margins.Right = 0
@@ -784,9 +779,7 @@ object FormBundleBuilder: TFormBundleBuilder
         ShowCaption = False
         TabOrder = 1
         Visible = False
-        ExplicitTop = -30
-        ExplicitWidth = 0
-        ExplicitHeight = 26
+        ExplicitTop = 237
         object ImageEncryptWarning: TImage
           Left = 0
           Top = 0
@@ -834,8 +827,6 @@ object FormBundleBuilder: TFormBundleBuilder
           Properties.ShowAccelChar = False
           Properties.WordWrap = True
           Transparent = True
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           Width = 615
         end
       end
@@ -869,7 +860,6 @@ object FormBundleBuilder: TFormBundleBuilder
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
-        ExplicitWidth = 0
       end
       object ButtonProjectSave: TcxButton
         AlignWithMargins = True
@@ -893,7 +883,6 @@ object FormBundleBuilder: TFormBundleBuilder
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
-        ExplicitWidth = 0
       end
       object cxButton1: TcxButton
         AlignWithMargins = True
@@ -917,7 +906,6 @@ object FormBundleBuilder: TFormBundleBuilder
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
-        ExplicitWidth = 0
       end
     end
   end
@@ -928,17 +916,6 @@ object FormBundleBuilder: TFormBundleBuilder
     OptimizedMove = True
     Left = 364
     Top = 16
-  end
-  object dxLayoutLookAndFeelList1: TdxLayoutLookAndFeelList
-    Left = 420
-    Top = 20
-    object dxLayoutSkinLookAndFeel1: TdxLayoutSkinLookAndFeel
-      GroupOptions.CaptionOptions.TextDisabledColor = clWindowText
-      ItemOptions.CaptionOptions.TextDisabledColor = clWindowText
-      Offsets.RootItemsAreaOffsetHorz = 0
-      Offsets.RootItemsAreaOffsetVert = 0
-      PixelsPerInch = 96
-    end
   end
   object ActionList1: TActionList
     Left = 28
@@ -1018,18 +995,18 @@ object FormBundleBuilder: TFormBundleBuilder
   end
   object OpenDialogProject: TOpenDialog
     Filter = 
-      'Sigma bundle project (*.sigmabundleproj)|*.sigmabundleproj|All f' +
-      'iles (*.*)|*.*'
+      'Script bundle project (*.scriptbundleproj)|*.scriptbundleproj|Al' +
+      'l files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Title = 'Open bundle project'
     Left = 184
     Top = 388
   end
   object SaveDialogProject: TSaveDialog
-    DefaultExt = '.sigmabundleproj'
+    DefaultExt = '.scriptbundleproj'
     Filter = 
-      'Sigma bundle project (*.sigmabundleproj)|*.sigmabundleproj|All f' +
-      'iles (*.*)|*.*'
+      'Script bundle project (*.scriptbundleproj)|*.scriptbundleproj|Al' +
+      'l files (*.*)|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Title = 'Save bundle project'
     Left = 184
@@ -1043,10 +1020,10 @@ object FormBundleBuilder: TFormBundleBuilder
     Top = 388
   end
   object SaveDialogBundle: TSaveDialog
-    DefaultExt = '.sigmabundle'
+    DefaultExt = '.scriptbundle'
     Filter = 
-      'Sigma add-in bundle (*.sigmabundle)|*.sigmabundle|All files (*.*' +
-      ')|*.*'
+      'Script add-in bundle (*.scriptbundle)|*.scriptbundle|All files (' +
+      '*.*)|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Title = 'Save add-in bundle'
     Left = 260

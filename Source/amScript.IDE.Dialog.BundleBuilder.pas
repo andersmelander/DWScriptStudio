@@ -63,8 +63,6 @@ type
     EditAuthorURL: TcxButtonEdit;
     dxLayoutSeparatorItem1: TdxLayoutSeparatorItem;
     dxLayoutSeparatorItem2: TdxLayoutSeparatorItem;
-    dxLayoutLookAndFeelList1: TdxLayoutLookAndFeelList;
-    dxLayoutSkinLookAndFeel1: TdxLayoutSkinLookAndFeel;
     ActionList1: TActionList;
     ActionGenerateID: TAction;
     dxLayoutItem4: TdxLayoutItem;
@@ -194,32 +192,12 @@ uses
   amScript.API,
   amScript.Package.API,
   amScript.Bundle.API,
-  amScript.IDE.Settings;
+  amScript.IDE.Settings,
+  amScript.IDE.Data;
 
 type
   TdxWizardControlCracker = class(TdxCustomWizardControl);
   TdxWizardButtonCracker = class(TdxWizardControlCustomButton);
-
-
-// TODO : ImageService needs to be implemented
-const
-  ImageIndexHintWarning = 0;
-  ImageIndexHintDone = 1;
-  ImageIndexHintDeny = 2;
-
-type
-  TImageKind = (ikMessage);
-
-  IImageService = interface
-    procedure GetBitmap(Bitmap: TBitmap; Kind: TImageKind; ImageIndex: integer); overload;
-    procedure GetBitmap(Bitmap: TdxCustomSmartImage; Kind: TImageKind; ImageIndex: integer); overload;
-    function GetImages(Kind: TImageKind): TCustomImageList;
-  end;
-
-function ImageService: IImageService;
-begin
-  Result := nil;
-end;
 
 function CreateGUID: string;
 var
@@ -660,11 +638,12 @@ begin
     ZipFile := TZipFile.Create;
     try
       ZipFile.UTF8Support := True;
-      ZipFile.Comment := sScriptBundleComment;
       ZipFile.Open(OutStream, zmWrite);
+      ZipFile.Comment := sScriptBundleComment;
 
 
       XMLDoc := TXMLDocument.Create(nil);
+      XMLDoc.Active := True;
 
       RootNode := SaveManifest(XMLDoc, sScriptBundleManifestTag);
       SaveSignature(RootNode);

@@ -7674,8 +7674,15 @@ object DataModuleDebuggerViewData: TDataModuleDebuggerViewData
   end
   object LayoutLookAndFeelList: TdxLayoutLookAndFeelList
     Left = 228
-    Top = 156
+    Top = 164
     object LayoutLookAndFeel: TdxLayoutSkinLookAndFeel
+      PixelsPerInch = 96
+    end
+    object LayoutLookAndFeelNoOffsetNoDisabled: TdxLayoutSkinLookAndFeel
+      GroupOptions.CaptionOptions.TextDisabledColor = clWindowText
+      ItemOptions.CaptionOptions.TextDisabledColor = clWindowText
+      Offsets.RootItemsAreaOffsetHorz = 0
+      Offsets.RootItemsAreaOffsetVert = 0
       PixelsPerInch = 96
     end
   end
