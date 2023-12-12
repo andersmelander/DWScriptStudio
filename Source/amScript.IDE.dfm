@@ -809,6 +809,7 @@ object FormScriptDebugger: TFormScriptDebugger
       SecondaryShortCuts.Strings = (
         'Ctrl+Q+R')
       ShortCut = 16466
+      Visible = False
     end
     object ActionEditUndo: TAction
       Category = 'Edit'

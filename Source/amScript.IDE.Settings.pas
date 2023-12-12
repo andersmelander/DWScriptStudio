@@ -236,6 +236,7 @@ type
     FToolsBundleBuilder: boolean;
     FToolsCopyProtection: boolean;
     FToolsInsertHeader: boolean;
+    FIDELayout: boolean;
   protected
   public
   published
@@ -247,6 +248,7 @@ type
     property ViewDataStack: boolean read FViewDataStack write FViewDataStack default True;
     property ViewAST: boolean read FViewAST write FViewAST default True;
 
+    property IDELayout: boolean read FIDELayout write FIDELayout default True;
     property OnlineHelp: boolean read FOnlineHelp write FOnlineHelp default True;
     property PackageInstaller: boolean read FPackageInstaller write FPackageInstaller default False;
 

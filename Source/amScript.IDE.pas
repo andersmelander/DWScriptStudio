@@ -556,7 +556,7 @@ type
   private
     // Layout
     FLayoutName: string; // Currently selected layout
-    FLauoutLoading: boolean;
+    FLayoutLoading: boolean;
     procedure LoadLayouts;
     procedure SaveLayout;
   private
@@ -1152,6 +1152,7 @@ begin
   ApplyFeature(ScriptSettings.Features.ToolsCopyProtection, ActionToolCopyProtect);
   ApplyFeature(ScriptSettings.Features.ToolsInsertHeader, ActionToolHeader);
   RibbonDebugTabTools.Visible := ScriptSettings.Features.ToolsMenu;
+  BarManagerBarLayout.Visible := ScriptSettings.Features.IDELayout;
 
   LoadLayouts;
   LoadRecentFiles;
@@ -1792,6 +1793,9 @@ var
   LayoutNames: TStringList;
   i: integer;
 begin
+  if (not ScriptSettings.Features.IDELayout) then
+    exit;
+
   LayoutNames := TStringList.Create;
   try
     LayoutNames.CaseSensitive := False;
@@ -1810,6 +1814,9 @@ end;
 
 procedure TFormScriptDebugger.SaveLayout;
 begin
+  if (not ScriptSettings.Features.IDELayout) then
+    exit;
+
   if (FLayoutName = '') then
     FLayoutName := sScriptDebuggerLayoutNameDefault;
 
@@ -1818,12 +1825,15 @@ end;
 
 procedure TFormScriptDebugger.DockingManagerLayoutChanged(Sender: TdxCustomDockControl);
 begin
-  if (not FLauoutLoading) then
+  if (not FLayoutLoading) then
     BarComboLayout.ItemIndex := -1;
 end;
 
 procedure TFormScriptDebugger.BarComboLayoutChange(Sender: TObject);
 begin
+  if (not ScriptSettings.Features.IDELayout) then
+    exit;
+
   if (BarComboLayout.Text = FLayoutName) then
     exit;
 
@@ -1831,11 +1841,11 @@ begin
   begin
     FLayoutName := BarComboLayout.Text;
 
-    FLauoutLoading := True;
+    FLayoutLoading := True;
     try
       DockingManager.LoadLayoutFromRegistry(ScriptSettings.Layout.KeyPath+FLayoutName);
     finally
-      FLauoutLoading := False;
+      FLayoutLoading := False;
     end;
   end else
     FLayoutName := '';
@@ -2673,7 +2683,8 @@ begin
 //        ActionLayoutDefaultDebug.Visible := False;
 //        ActionLayoutDefaultEdit.Visible := True;
         // Switch to edit layout
-        BarComboLayout.Text := ScriptSettings.Layout.EditLayout;
+        if (ScriptSettings.Features.IDELayout) then
+          BarComboLayout.Text := ScriptSettings.Layout.EditLayout;
       end
   end;
 
@@ -4205,7 +4216,8 @@ begin
   Debugger.AttachDebug(Exec);
   try
     // Switch to debug layout
-    BarComboLayout.Text := ScriptSettings.Layout.DebugLayout;
+    if (ScriptSettings.Features.IDELayout) then
+      BarComboLayout.Text := ScriptSettings.Layout.DebugLayout;
 
     Exec.Debugger := Debugger;
     FIntializationFinalizationMode := True;
@@ -4396,7 +4408,7 @@ var
   DebuggerFrame: TControl;
   DebuggerWindow: IScriptDebuggerWindow;
 begin
-  if (not FLauoutLoading) then
+  if (not FLayoutLoading) then
     BarComboLayout.ItemIndex := -1;
 
   if (not Sender.Visible) then
@@ -4433,7 +4445,7 @@ end;
 
 procedure TFormScriptDebugger.DockPanelDebugOtherVisibleChanged(Sender: TdxCustomDockControl);
 begin
-  if (not FLauoutLoading) then
+  if (not FLayoutLoading) then
     BarComboLayout.ItemIndex := -1;
 end;
 
@@ -4489,7 +4501,8 @@ begin
 
   try
     // Switch to debug layout
-    BarComboLayout.Text := ScriptSettings.Layout.DebugLayout;
+    if (ScriptSettings.Features.IDELayout) then
+      BarComboLayout.Text := ScriptSettings.Layout.DebugLayout;
     try
 
       Stopwatch := TStopwatch.Create;
@@ -4522,7 +4535,8 @@ begin
 
     finally
       // Switch to edit layout
-      BarComboLayout.Text := ScriptSettings.Layout.EditLayout;
+      if (ScriptSettings.Features.IDELayout) then
+        BarComboLayout.Text := ScriptSettings.Layout.EditLayout;
     end;
   finally
 
