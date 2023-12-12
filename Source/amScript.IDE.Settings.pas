@@ -84,12 +84,18 @@ type
 
   TScriptDebuggerFormMainSettings = class(TCustomFormSettings)
   private
+    FDisplayMainMenu: boolean;
+    FDisplayMainMenuToggle: boolean;
   protected
   public
   published
     property Width;
     property Height;
     property Maximized;
+    // DisplayMainMenu: If True a main menu is displayed instead of the ribbon. Otherwise the ribbon is displayed.
+    property DisplayMainMenu: boolean read FDisplayMainMenu write FDisplayMainMenu default False;
+    // DisplayMainMenuToggle: If True a button/menu-item is displayed that allows the user to toggle between menu/ribbon.
+    property DisplayMainMenuToggle: boolean read FDisplayMainMenuToggle write FDisplayMainMenuToggle default True;
   end;
 
   TScriptDebuggerFormsSettings = class(TConfigurationSection)

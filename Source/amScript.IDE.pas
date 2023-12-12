@@ -348,6 +348,19 @@ type
     ButtonToolDocumentBuild: TdxBarButton;
     ActionJIT: TAction;
     dxBarButton7: TdxBarButton;
+    BarManagerBarMainMenu: TdxBar;
+    BarSubMenuItemFile: TdxBarSubItem;
+    BarSubMenuItemEdit: TdxBarSubItem;
+    BarSubMenuItemRefactoring: TdxBarSubItem;
+    BarSubMenuItemView: TdxBarSubItem;
+    BarSubMenuItemSearch: TdxBarSubItem;
+    BarSubMenuItemRun: TdxBarSubItem;
+    BarSubMenuItemDebug: TdxBarSubItem;
+    BarSubMenuItemLayout: TdxBarSubItem;
+    BarButtonViewRibbon: TdxBarButton;
+    ActionViewRibbon: TAction;
+    ActionViewMainMenu: TAction;
+    BarButtonViewMainMenu: TdxBarButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -492,6 +505,11 @@ type
     procedure ActionViewFileExplorerUpdate(Sender: TObject);
     procedure ButtonToolDocumentBuildClick(Sender: TObject);
     procedure ActionDummyExecute(Sender: TObject);
+    procedure BarButtonRibbonClick(Sender: TObject);
+    procedure ActionViewRibbonExecute(Sender: TObject);
+    procedure ActionViewRibbonUpdate(Sender: TObject);
+    procedure ActionViewMainMenuExecute(Sender: TObject);
+    procedure ActionViewMainMenuUpdate(Sender: TObject);
   private
     FScript: TDelphiWebScript;
     FCompileContext: IScriptContext;
@@ -977,7 +995,7 @@ begin
 
   inherited Create(AOwner);
 
-  DisableAero := True; // Best for rs2013/rs2013 ribbon style
+  DisableAero := True; // Enables skinning of caption bar
 
   FSearchHistory := '';
   FSearchOptions := [];
@@ -1100,6 +1118,12 @@ begin
       TdxDockPanel(Components[i]).Visible := False;
 
   ScriptSettings.ReadConfig;
+
+  RibbonDebug.Visible := not ScriptSettings.Forms.Main.DisplayMainMenu;
+  BarManagerBarMainMenu.Visible := ScriptSettings.Forms.Main.DisplayMainMenu;
+  ActionViewMainMenu.Visible := ScriptSettings.Forms.Main.DisplayMainMenuToggle;
+  ActionViewRibbon.Visible := ScriptSettings.Forms.Main.DisplayMainMenuToggle;
+
   LoadLayouts;
   LoadRecentFiles;
 
@@ -1724,6 +1748,12 @@ begin
   finally
     List.Free;
   end;
+end;
+
+procedure TFormScriptDebugger.BarButtonRibbonClick(Sender: TObject);
+begin
+  RibbonDebug.Visible := TdxBarButton(Sender).Down;
+  BarManagerBarMainMenu.Visible := not RibbonDebug.Visible;
 end;
 
 // -----------------------------------------------------------------------------
@@ -3475,6 +3505,19 @@ begin
   TAction(Sender).Checked := DockPanelLocalVars.Visible;
 end;
 
+procedure TFormScriptDebugger.ActionViewMainMenuExecute(Sender: TObject);
+begin
+  ScriptSettings.Forms.Main.DisplayMainMenu := TAction(Sender).Checked;
+
+  RibbonDebug.Visible := not ScriptSettings.Forms.Main.DisplayMainMenu;
+  BarManagerBarMainMenu.Visible := ScriptSettings.Forms.Main.DisplayMainMenu;
+end;
+
+procedure TFormScriptDebugger.ActionViewMainMenuUpdate(Sender: TObject);
+begin
+  TAction(Sender).Checked := ScriptSettings.Forms.Main.DisplayMainMenu;
+end;
+
 procedure TFormScriptDebugger.ActionViewMessagesExecute(Sender: TObject);
 begin
   DockPanelMessages.Visible := TAction(Sender).Checked;
@@ -3498,6 +3541,19 @@ end;
 procedure TFormScriptDebugger.ActionViewProjectSourceUpdate(Sender: TObject);
 begin
   TAction(Sender).Enabled := False;//(ProjectFileName <> '');
+end;
+
+procedure TFormScriptDebugger.ActionViewRibbonExecute(Sender: TObject);
+begin
+  ScriptSettings.Forms.Main.DisplayMainMenu := not TAction(Sender).Checked;
+
+  RibbonDebug.Visible := not ScriptSettings.Forms.Main.DisplayMainMenu;
+  BarManagerBarMainMenu.Visible := ScriptSettings.Forms.Main.DisplayMainMenu;
+end;
+
+procedure TFormScriptDebugger.ActionViewRibbonUpdate(Sender: TObject);
+begin
+  TAction(Sender).Checked := not ScriptSettings.Forms.Main.DisplayMainMenu;
 end;
 
 function TFormScriptDebugger.CreateEditor(const AName: string; FileMustExist: boolean; const CurrentScriptProvider: IScriptProvider): Boolean;

@@ -20,24 +20,24 @@ object FormScriptDebugger: TFormScriptDebugger
   TextHeight = 15
   object DockSiteMain: TdxDockSite
     Left = 0
-    Top = 154
+    Top = 175
     Width = 1117
-    Height = 584
+    Height = 563
     AllowDockClients = [dtClient, dtLeft, dtRight, dtBottom]
     Align = alClient
-    ExplicitTop = 124
-    ExplicitHeight = 614
+    ExplicitTop = 142
+    ExplicitHeight = 596
     DockingType = 5
     OriginalWidth = 1117
-    OriginalHeight = 584
+    OriginalHeight = 563
     object dxLayoutDockSite5: TdxLayoutDockSite
       Left = 225
       Top = 0
       Width = 892
-      Height = 584
+      Height = 563
       ParentShowHint = False
       ShowHint = False
-      ExplicitHeight = 614
+      ExplicitHeight = 596
       DockingType = 0
       OriginalWidth = 300
       OriginalHeight = 200
@@ -45,7 +45,7 @@ object FormScriptDebugger: TFormScriptDebugger
         Left = 0
         Top = 0
         Width = 667
-        Height = 584
+        Height = 563
         ParentShowHint = False
         ShowHint = False
         DockingType = 0
@@ -55,10 +55,10 @@ object FormScriptDebugger: TFormScriptDebugger
           Left = 0
           Top = 0
           Width = 667
-          Height = 444
+          Height = 423
           ParentShowHint = False
           ShowHint = False
-          ExplicitHeight = 474
+          ExplicitHeight = 456
           DockingType = 0
           OriginalWidth = 300
           OriginalHeight = 200
@@ -66,7 +66,7 @@ object FormScriptDebugger: TFormScriptDebugger
             Left = 169
             Top = 0
             Width = 498
-            Height = 444
+            Height = 423
             ParentShowHint = False
             ShowHint = False
             DockingType = 0
@@ -76,10 +76,10 @@ object FormScriptDebugger: TFormScriptDebugger
               Left = 0
               Top = 0
               Width = 228
-              Height = 444
+              Height = 423
               ParentShowHint = False
               ShowHint = False
-              ExplicitHeight = 474
+              ExplicitHeight = 456
               DockingType = 0
               OriginalWidth = 300
               OriginalHeight = 200
@@ -87,7 +87,7 @@ object FormScriptDebugger: TFormScriptDebugger
                 Left = 0
                 Top = 0
                 Width = 228
-                Height = 444
+                Height = 423
                 ParentShowHint = False
                 ShowHint = False
                 DockingType = 0
@@ -98,7 +98,7 @@ object FormScriptDebugger: TFormScriptDebugger
                 Left = 0
                 Top = 0
                 Width = 228
-                Height = 444
+                Height = 423
                 AllowDockClients = []
                 AllowFloating = False
                 AutoHide = False
@@ -113,7 +113,7 @@ object FormScriptDebugger: TFormScriptDebugger
                   Left = 0
                   Top = 0
                   Width = 222
-                  Height = 418
+                  Height = 397
                   Align = alClient
                   PopupMenu = PopupMenuEditorTabs
                   TabOrder = 0
@@ -130,14 +130,14 @@ object FormScriptDebugger: TFormScriptDebugger
                   OnGetImageIndex = PageControlEditorGetImageIndex
                   OnMouseDown = PageControlEditorMouseDown
                   OnNewTabButtonClick = PageControlEditorNewTabButtonClick
-                  ExplicitHeight = 448
-                  ClientRectBottom = 418
+                  ExplicitHeight = 430
+                  ClientRectBottom = 397
                   ClientRectRight = 222
                   ClientRectTop = 0
                 end
                 object StatusBar: TdxStatusBar
                   Left = 0
-                  Top = 418
+                  Top = 397
                   Width = 222
                   Height = 20
                   Panels = <
@@ -160,7 +160,7 @@ object FormScriptDebugger: TFormScriptDebugger
                   PaintStyle = stpsUseLookAndFeel
                   SizeGrip = False
                   ParentFont = True
-                  ExplicitTop = 448
+                  ExplicitTop = 430
                 end
               end
             end
@@ -168,7 +168,7 @@ object FormScriptDebugger: TFormScriptDebugger
               Left = 228
               Top = 0
               Width = 270
-              Height = 444
+              Height = 423
               ParentShowHint = False
               ShowHint = False
               ActiveChildIndex = -1
@@ -176,7 +176,7 @@ object FormScriptDebugger: TFormScriptDebugger
               AutoHide = False
               CaptionButtons = [cbMaximize, cbHide]
               CustomCaptionButtons.Buttons = <>
-              ExplicitHeight = 474
+              ExplicitHeight = 456
               DockingType = 3
               OriginalWidth = 270
               OriginalHeight = 176
@@ -184,7 +184,7 @@ object FormScriptDebugger: TFormScriptDebugger
                 Left = 0
                 Top = 0
                 Width = 270
-                Height = 143
+                Height = 136
                 HelpKeyword = 'TScriptDebuggerCallStackFrame'
                 OnVisibleChanged = DockPanelDebugFrameVisibleChanged
                 AllowFloating = True
@@ -201,9 +201,9 @@ object FormScriptDebugger: TFormScriptDebugger
               end
               object DockPanelLocalVars: TdxDockPanel
                 Left = 0
-                Top = 143
+                Top = 136
                 Width = 270
-                Height = 187
+                Height = 178
                 HelpKeyword = 'TScriptDebuggerLocalVariablesFrame'
                 OnVisibleChanged = DockPanelDebugFrameVisibleChanged
                 AllowFloating = True
@@ -220,9 +220,9 @@ object FormScriptDebugger: TFormScriptDebugger
               end
               object DockPanelWatches: TdxDockPanel
                 Left = 0
-                Top = 330
+                Top = 314
                 Width = 270
-                Height = 114
+                Height = 109
                 HelpKeyword = 'TScriptDebuggerWatchesFrame'
                 OnVisibleChanged = DockPanelDebugFrameVisibleChanged
                 AllowFloating = True
@@ -243,7 +243,7 @@ object FormScriptDebugger: TFormScriptDebugger
             Left = 0
             Top = 0
             Width = 169
-            Height = 444
+            Height = 423
             HelpKeyword = 'TScriptDebuggerSymbolsFrame'
             OnVisibleChanged = DockPanelDebugFrameVisibleChanged
             AllowFloating = True
@@ -261,7 +261,7 @@ object FormScriptDebugger: TFormScriptDebugger
         end
         object TabContainerDockSiteBottom: TdxTabContainerDockSite
           Left = 0
-          Top = 444
+          Top = 423
           Width = 667
           Height = 140
           ParentShowHint = False
@@ -271,6 +271,7 @@ object FormScriptDebugger: TFormScriptDebugger
           AutoHide = False
           CustomCaptionButtons.Buttons = <>
           TabsProperties.CustomButtons.Buttons = <>
+          ExplicitTop = 456
           DockingType = 4
           OriginalWidth = 185
           OriginalHeight = 140
@@ -287,7 +288,6 @@ object FormScriptDebugger: TFormScriptDebugger
             CustomCaptionButtons.Buttons = <>
             ImageIndex = 56
             TabsProperties.CustomButtons.Buttons = <>
-            ExplicitHeight = 80
             DockingType = 0
             OriginalWidth = 892
             OriginalHeight = 140
@@ -313,7 +313,6 @@ object FormScriptDebugger: TFormScriptDebugger
               OnDblClick = ListViewMessagesDblClick
               OnDeletion = ListViewMessagesDeletion
               OnKeyDown = ListViewMessagesKeyDown
-              ExplicitHeight = 80
             end
           end
           object DockPanelOutput: TdxDockPanel
@@ -329,7 +328,6 @@ object FormScriptDebugger: TFormScriptDebugger
             CustomCaptionButtons.Buttons = <>
             ImageIndex = 57
             TabsProperties.CustomButtons.Buttons = <>
-            ExplicitHeight = 80
             DockingType = 0
             OriginalWidth = 892
             OriginalHeight = 140
@@ -346,7 +344,6 @@ object FormScriptDebugger: TFormScriptDebugger
               ParentCtl3D = False
               ReadOnly = True
               TabOrder = 0
-              ExplicitHeight = 80
             end
           end
           object DockPanelBreakPoints: TdxDockPanel
@@ -365,7 +362,6 @@ object FormScriptDebugger: TFormScriptDebugger
             ImageIndex = 55
             TabsProperties.CustomButtons.Buttons = <>
             OnClose = DockPanelDebugFrameClose
-            ExplicitHeight = 80
             DockingType = 0
             OriginalWidth = 892
             OriginalHeight = 140
@@ -376,7 +372,7 @@ object FormScriptDebugger: TFormScriptDebugger
         Left = 667
         Top = 0
         Width = 225
-        Height = 584
+        Height = 563
         ParentShowHint = False
         ShowHint = False
         ActiveChildIndex = 0
@@ -391,7 +387,7 @@ object FormScriptDebugger: TFormScriptDebugger
           Left = 0
           Top = 0
           Width = 219
-          Height = 518
+          Height = 497
           HelpKeyword = 'TScriptDebuggerStackFrame'
           OnVisibleChanged = DockPanelDebugFrameVisibleChanged
           AllowFloating = True
@@ -402,7 +398,7 @@ object FormScriptDebugger: TFormScriptDebugger
           ImageIndex = 60
           TabsProperties.CustomButtons.Buttons = <>
           OnClose = DockPanelDebugFrameClose
-          ExplicitHeight = 554
+          ExplicitHeight = 530
           DockingType = 0
           OriginalWidth = 225
           OriginalHeight = 140
@@ -411,7 +407,7 @@ object FormScriptDebugger: TFormScriptDebugger
           Left = 0
           Top = 0
           Width = 219
-          Height = 518
+          Height = 497
           HelpKeyword = 'TScriptDebuggerASTFrame'
           OnVisibleChanged = DockPanelDebugFrameVisibleChanged
           AllowFloating = True
@@ -422,7 +418,7 @@ object FormScriptDebugger: TFormScriptDebugger
           ImageIndex = 59
           TabsProperties.CustomButtons.Buttons = <>
           OnClose = DockPanelDebugFrameClose
-          ExplicitHeight = 554
+          ExplicitHeight = 530
           DockingType = 0
           OriginalWidth = 225
           OriginalHeight = 209
@@ -433,7 +429,7 @@ object FormScriptDebugger: TFormScriptDebugger
       Left = 0
       Top = 0
       Width = 225
-      Height = 560
+      Height = 563
       HelpType = htKeyword
       HelpKeyword = 'TScriptDebuggerFileSystemStructureFrame'
       Visible = False
@@ -444,6 +440,7 @@ object FormScriptDebugger: TFormScriptDebugger
       CustomCaptionButtons.Buttons = <>
       TabsProperties.CustomButtons.Buttons = <>
       OnClose = DockPanelDebugFrameClose
+      ExplicitHeight = 596
       DockingType = 1
       OriginalWidth = 225
       OriginalHeight = 320
@@ -460,7 +457,6 @@ object FormScriptDebugger: TFormScriptDebugger
     BarManager = BarManager
     Style = rs2016
     ColorSchemeName = 'TheBezier'
-    EnableTabAero = False
     QuickAccessToolbar.Toolbar = BarManagerBarQuickAccess
     SupportNonClientDrawing = True
     Contexts = <
@@ -483,6 +479,7 @@ object FormScriptDebugger: TFormScriptDebugger
       Index = 0
     end
     object RibbonTabEditor: TdxRibbonTab
+      Active = True
       Caption = 'Editor'
       Groups = <
         item
@@ -518,7 +515,6 @@ object FormScriptDebugger: TFormScriptDebugger
       Index = 1
     end
     object RibbonTabDebug: TdxRibbonTab
-      Active = True
       Caption = 'Debug'
       Groups = <
         item
@@ -1103,6 +1099,24 @@ object FormScriptDebugger: TFormScriptDebugger
       Hint = 'Enable JIT native compilation'
       OnExecute = ActionDummyExecute
     end
+    object ActionViewRibbon: TAction
+      Category = 'View'
+      AutoCheck = True
+      Caption = 'Display ribbon'
+      Hint = 'Display the ribbon instead of the menu'
+      ImageIndex = 74
+      OnExecute = ActionViewRibbonExecute
+      OnUpdate = ActionViewRibbonUpdate
+    end
+    object ActionViewMainMenu: TAction
+      Category = 'View'
+      AutoCheck = True
+      Caption = 'Display main menu'
+      Hint = 'Display the menu instead of the ribbon'
+      ImageIndex = 73
+      OnExecute = ActionViewMainMenuExecute
+      OnUpdate = ActionViewMainMenuUpdate
+    end
   end
   object OpenFileDialog: TFileOpenDialog
     FavoriteLinks = <>
@@ -1327,10 +1341,15 @@ object FormScriptDebugger: TFormScriptDebugger
     Left = 444
     Top = 260
     PixelsPerInch = 96
+    DockControlHeights = (
+      0
+      0
+      21
+      0)
     object dxBarManager1Bar4: TdxBar
       Caption = 'Custom 1'
       CaptionButtons = <>
-      DockedLeft = 108
+      DockedLeft = 106
       DockedTop = 0
       FloatLeft = 1065
       FloatTop = 8
@@ -1350,7 +1369,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object dxBarManager1Bar5: TdxBar
       Caption = 'Custom 2'
       CaptionButtons = <>
-      DockedLeft = 198
+      DockedLeft = 194
       DockedTop = 0
       FloatLeft = 1065
       FloatTop = 8
@@ -1378,7 +1397,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object dxBarManager1Bar6: TdxBar
       Caption = 'Custom 3'
       CaptionButtons = <>
-      DockedLeft = 403
+      DockedLeft = 395
       DockedTop = 0
       FloatLeft = 1065
       FloatTop = 8
@@ -1408,7 +1427,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object dxBarManager1Bar7: TdxBar
       Caption = 'Custom 4'
       CaptionButtons = <>
-      DockedLeft = 598
+      DockedLeft = 588
       DockedTop = 0
       FloatLeft = 1065
       FloatTop = 8
@@ -1436,7 +1455,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object dxBarManager1Bar8: TdxBar
       Caption = 'Custom 5'
       CaptionButtons = <>
-      DockedLeft = 689
+      DockedLeft = 677
       DockedTop = 0
       FloatLeft = 1065
       FloatTop = 8
@@ -1676,7 +1695,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object dxBarManager1Bar2: TdxBar
       Caption = 'Custom 11'
       CaptionButtons = <>
-      DockedLeft = 282
+      DockedLeft = 276
       DockedTop = 0
       FloatLeft = 1151
       FloatTop = 8
@@ -1724,7 +1743,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object dxBarManager1Bar13: TdxBar
       Caption = 'Custom 13'
       CaptionButtons = <>
-      DockedLeft = 116
+      DockedLeft = 114
       DockedTop = 0
       FloatLeft = 1151
       FloatTop = 8
@@ -1772,6 +1791,10 @@ object FormScriptDebugger: TFormScriptDebugger
         item
           Visible = True
           ItemName = 'MenuItemFileSave'
+        end
+        item
+          Visible = True
+          ItemName = 'BarButtonViewMainMenu'
         end>
       OneOnRow = True
       Row = 0
@@ -1780,6 +1803,9 @@ object FormScriptDebugger: TFormScriptDebugger
       WholeRow = False
     end
     object BarManagerBarLayout: TdxBar
+      AllowClose = False
+      AllowCustomizing = False
+      AllowQuickCustomizing = False
       Caption = 'Layout'
       CaptionButtons = <>
       DockedLeft = 0
@@ -1809,6 +1835,60 @@ object FormScriptDebugger: TFormScriptDebugger
         end>
       OneOnRow = True
       Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object BarManagerBarMainMenu: TdxBar
+      AllowClose = False
+      AllowCustomizing = False
+      AllowQuickCustomizing = False
+      BorderStyle = bbsNone
+      Caption = 'Main'
+      CaptionButtons = <>
+      DockedDockingStyle = dsTop
+      DockedLeft = 0
+      DockedTop = 0
+      DockingStyle = dsTop
+      FloatLeft = 1145
+      FloatTop = 2
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      IsMainMenu = True
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'BarSubMenuItemFile'
+        end
+        item
+          Visible = True
+          ItemName = 'BarSubMenuItemEdit'
+        end
+        item
+          Visible = True
+          ItemName = 'BarSubMenuItemSearch'
+        end
+        item
+          Visible = True
+          ItemName = 'BarSubMenuItemView'
+        end
+        item
+          Visible = True
+          ItemName = 'BarSubMenuItemRefactoring'
+        end
+        item
+          Visible = True
+          ItemName = 'BarSubMenuItemRun'
+        end
+        item
+          Visible = True
+          ItemName = 'BarSubMenuItemDebug'
+        end>
+      MultiLine = True
+      OneOnRow = True
+      Row = 0
+      ShowMark = False
+      SizeGrip = False
       UseOwnFont = False
       Visible = True
       WholeRow = False
@@ -2066,6 +2146,271 @@ object FormScriptDebugger: TFormScriptDebugger
       Action = ActionJIT
       Category = 0
       ButtonStyle = bsChecked
+    end
+    object BarSubMenuItemFile: TdxBarSubItem
+      Caption = '&File'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'MenuItemFileOpen'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemFileNewUnit'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'MenuItemFileSave'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarSubItem1'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'MenuItemFileClose'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemFileCloseAll'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'MenuItemFileExit'
+        end>
+    end
+    object BarSubMenuItemEdit: TdxBarSubItem
+      Caption = '&Edit'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'MenuItemEditCopy'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemEditCut'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarLargeButton1'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemEditDelete'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemEditSelectAll'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemEditUndo'
+        end>
+    end
+    object BarSubMenuItemRefactoring: TdxBarSubItem
+      Caption = 'Ref&actoring'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'ButtonRefactorRename'
+        end
+        item
+          Visible = True
+          ItemName = 'ButtonRefactorNormalizeCase'
+        end
+        item
+          Visible = True
+          ItemName = 'ButtonRefactorUsage'
+        end>
+    end
+    object BarSubMenuItemView: TdxBarSubItem
+      Caption = '&View'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'BarSubMenuItemLayout'
+        end
+        item
+          Visible = True
+          ItemName = 'BarSubItemDebugPanes'
+        end
+        item
+          ViewLevels = [ivlSmallIconWithText, ivlSmallIcon, ivlControlOnly]
+          Visible = True
+          ItemName = 'BarSubItemGoto'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemViewProjectSource'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'BarButtonViewRibbon'
+        end>
+    end
+    object BarSubMenuItemSearch: TdxBarSubItem
+      Caption = '&Search'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'MenuItemSearchFind'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemSearchReplace'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton5'
+        end>
+    end
+    object BarSubMenuItemRun: TdxBarSubItem
+      Caption = '&Run'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBarLargeButton3'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'MenuItemRunStart'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton6'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton12'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'dxBarButton25'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton26'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'dxBarButton7'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton10'
+        end>
+    end
+    object BarSubMenuItemDebug: TdxBarSubItem
+      Caption = '&Debug'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBarLargeButton2'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton1'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemRunReset'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton26'
+        end
+        item
+          BeginGroup = True
+          Distributed = False
+          Visible = True
+          ItemName = 'dxBarButton8'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'MenuItemRunStepOver'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemRunTraceInto'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton4'
+        end
+        item
+          BeginGroup = True
+          Distributed = False
+          Visible = True
+          ItemName = 'MenuItemRunShowExecutionPoint'
+        end
+        item
+          Distributed = False
+          Visible = True
+          ItemName = 'BarButtonLiveObjects'
+        end
+        item
+          Visible = True
+          ItemName = 'MenuItemRunClearAllBreakpoints'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton22'
+        end>
+    end
+    object BarSubMenuItemLayout: TdxBarSubItem
+      Caption = 'Layout'
+      Category = 0
+      Visible = ivAlways
+      ItemLinks = <
+        item
+          UserDefine = [udWidth]
+          UserWidth = 156
+          Visible = True
+          ItemName = 'BarComboLayout'
+        end
+        item
+          Visible = True
+          ItemName = 'BarButtonLayoutDefaultEdit'
+        end
+        item
+          Visible = True
+          ItemName = 'BarButtonLayoutDefaultDebug'
+        end
+        item
+          Visible = True
+          ItemName = 'BarButtonLayoutSave'
+        end>
+    end
+    object BarButtonViewRibbon: TdxBarButton
+      Action = ActionViewRibbon
+      Category = 0
+      ButtonStyle = bsChecked
+    end
+    object BarButtonViewMainMenu: TdxBarButton
+      Action = ActionViewMainMenu
+      Category = 0
     end
     object MenuItemFileNew: TdxBarSubItem
       Caption = 'New ...'
