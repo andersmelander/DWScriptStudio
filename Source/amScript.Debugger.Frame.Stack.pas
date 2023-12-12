@@ -98,7 +98,8 @@ uses
   dwsInfoClasses,
   dwsCompiler,
   dwsDataContext,
-  dwsSuggestions;
+  dwsSuggestions,
+  amScript.IDE.Settings;
 
 
 { TDwsIdeLocalVariablesFrame }
@@ -106,7 +107,9 @@ uses
 procedure TScriptDebuggerStackFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
+
   TreeListStack.Images := AImageListSymbols;
+  ActionItemWatch.Visible := ScriptSettings.Features.ViewWatches;
 
   UpdateInfo;
 end;

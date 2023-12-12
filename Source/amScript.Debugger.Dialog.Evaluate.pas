@@ -25,27 +25,31 @@ uses
   dwsScriptSource,
 {$endif OLD_DWSCRIPT}
 
-  amScript.Debugger.API;
+  amScript.Debugger.API, dxLayoutControlAdapters;
 
 type
   TFormDebugEvaluate = class(TForm)
-    Panel1: TPanel;
-    dxLayoutControl1Group_Root: TdxLayoutGroup;
-    dxLayoutControl1: TdxLayoutControl;
+    LayoutControlGroup_Root: TdxLayoutGroup;
+    LayoutControl: TdxLayoutControl;
     EditExpression: TcxTextEdit;
-    dxLayoutControl1Item1: TdxLayoutItem;
+    LayoutItemExpression: TdxLayoutItem;
     MemoValue: TcxMemo;
-    dxLayoutControl1Item2: TdxLayoutItem;
+    LayoutItemResult: TdxLayoutItem;
     EditNewValue: TcxTextEdit;
-    dxLayoutControl1Item3: TdxLayoutItem;
+    LayoutItemNewValue: TdxLayoutItem;
     ActionList1: TActionList;
     cxImageList1: TcxImageList;
     ActionEvaluate: TAction;
     ActionModify: TAction;
     ActionWatch: TAction;
+    LayoutItemEvaluate: TdxLayoutItem;
     cxButton1: TcxButton;
+    LayoutItemModify: TdxLayoutItem;
     cxButton2: TcxButton;
+    LayoutItemWatch: TdxLayoutItem;
     cxButton3: TcxButton;
+    dxLayoutGroup1: TdxLayoutGroup;
+    dxLayoutSeparatorItem1: TdxLayoutSeparatorItem;
     procedure EditExpressionKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure EditNewValueKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -81,7 +85,9 @@ uses
 {$ifndef OLD_DWSCRIPT}
   dwsInfoClasses,
 {$endif OLD_DWSCRIPT}
-  dwsSymbols;
+  dwsSymbols,
+  amScript.IDE.Data,
+  amScript.IDE.Settings;
 
 { TFormDebugEvaluate }
 
@@ -231,6 +237,8 @@ end;
 procedure TFormDebugEvaluate.Initialize(const AIDE: IScriptDebugger);
 begin
   FIDE := AIDE;
+  ActionWatch.Visible := ScriptSettings.Features.ViewWatches;
+  LayoutItemWatch.Visible := ScriptSettings.Features.ViewWatches;
 end;
 
 end.

@@ -92,6 +92,7 @@ type
     property Width;
     property Height;
     property Maximized;
+
     // DisplayMainMenu: If True a main menu is displayed instead of the ribbon. Otherwise the ribbon is displayed.
     property DisplayMainMenu: boolean read FDisplayMainMenu write FDisplayMainMenu default False;
     // DisplayMainMenuToggle: If True a button/menu-item is displayed that allows the user to toggle between menu/ribbon.
@@ -219,6 +220,43 @@ type
     property FontSize: integer read FFontSize write FFontSize;
   end;
 
+  TScriptDebuggerFeaturesSettings = class(TConfigurationSection)
+  private
+    FViewSymbols: boolean;
+    FViewFileExplorer: boolean;
+    FViewCallStack: boolean;
+    FViewLocalVariables: boolean;
+    FViewAST: boolean;
+    FViewDataStack: boolean;
+    FViewWatches: boolean;
+    FPackageInstaller: boolean;
+    FOnlineHelp: boolean;
+    FToolsMenu: boolean;
+    FToolsDocumentationBuilder: boolean;
+    FToolsBundleBuilder: boolean;
+    FToolsCopyProtection: boolean;
+    FToolsInsertHeader: boolean;
+  protected
+  public
+  published
+    property ViewFileExplorer: boolean read FViewFileExplorer write FViewFileExplorer default True;
+    property ViewSymbols: boolean read FViewSymbols write FViewSymbols default True;
+    property ViewCallStack: boolean read FViewCallStack write FViewCallStack default True;
+    property ViewLocalVariables: boolean read FViewLocalVariables write FViewLocalVariables default True;
+    property ViewWatches: boolean read FViewWatches write FViewWatches default True;
+    property ViewDataStack: boolean read FViewDataStack write FViewDataStack default True;
+    property ViewAST: boolean read FViewAST write FViewAST default True;
+
+    property OnlineHelp: boolean read FOnlineHelp write FOnlineHelp default True;
+    property PackageInstaller: boolean read FPackageInstaller write FPackageInstaller default False;
+
+    property ToolsMenu: boolean read FToolsMenu write FToolsMenu default True;
+    property ToolsDocumentationBuilder: boolean read FToolsDocumentationBuilder write FToolsDocumentationBuilder default True;
+    property ToolsBundleBuilder: boolean read FToolsBundleBuilder write FToolsBundleBuilder default False;
+    property ToolsCopyProtection: boolean read FToolsCopyProtection write FToolsCopyProtection default False;
+    property ToolsInsertHeader: boolean read FToolsInsertHeader write FToolsInsertHeader default True;
+  end;
+
 type
   TScriptDebuggerSettings = class(TConfiguration)
   strict private
@@ -229,6 +267,7 @@ type
     FLayout: TScriptDebuggerLayoutSettings;
     FDialogs: TScriptDebuggerDialogSettings;
     FEditor: TScriptDebuggerEditorSettings;
+    FFeatures: TScriptDebuggerFeaturesSettings;
   protected
   public
     constructor Create(Root: HKEY; const APath: string; AAccess: LongWord = KEY_ALL_ACCESS); override;
@@ -242,6 +281,7 @@ type
     property Layout: TScriptDebuggerLayoutSettings read FLayout;
     property Dialogs: TScriptDebuggerDialogSettings read FDialogs;
     property Editor: TScriptDebuggerEditorSettings read FEditor;
+    property Features: TScriptDebuggerFeaturesSettings read FFeatures;
   end;
 
 function ScriptSettings: TScriptDebuggerSettings;
@@ -579,6 +619,7 @@ begin
   FLayout := TScriptDebuggerLayoutSettings.Create(Self);
   FDialogs := TScriptDebuggerDialogSettings.Create;
   FEditor := TScriptDebuggerEditorSettings.Create(Self);
+  FFeatures := TScriptDebuggerFeaturesSettings.Create(Self);
 end;
 
 destructor TScriptDebuggerSettings.Destroy;
@@ -589,6 +630,7 @@ begin
   FLayout.Free;
   FDialogs.Free;
   FEditor.Free;
+  FFeatures.Free;
 
   inherited;
 end;

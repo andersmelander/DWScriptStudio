@@ -21,47 +21,66 @@ object FormDebugEvaluate: TFormDebugEvaluate
   Position = poOwnerFormCenter
   OnKeyPress = FormKeyPress
   TextHeight = 13
-  object Panel1: TPanel
+  object LayoutControl: TdxLayoutControl
     Left = 0
     Top = 0
     Width = 398
-    Height = 51
-    Align = alTop
-    BevelEdges = [beBottom]
-    BevelKind = bkFlat
-    BevelOuter = bvNone
-    FullRepaint = False
-    Padding.Left = 4
-    Padding.Top = 4
-    Padding.Right = 4
-    Padding.Bottom = 4
-    ShowCaption = False
+    Height = 166
+    Align = alClient
     TabOrder = 0
+    LayoutLookAndFeel = DataModuleDebuggerViewData.LayoutLookAndFeel
+    ExplicitTop = 51
+    ExplicitHeight = 115
+    object EditExpression: TcxTextEdit
+      Left = 71
+      Top = 69
+      Properties.OnChange = EditExpressionPropertiesChange
+      Style.HotTrack = False
+      TabOrder = 3
+      OnKeyDown = EditExpressionKeyDown
+      Width = 317
+    end
+    object MemoValue: TcxMemo
+      Left = 71
+      Top = 96
+      Properties.ReadOnly = True
+      Style.HotTrack = False
+      TabOrder = 4
+      Height = 33
+      Width = 317
+    end
+    object EditNewValue: TcxTextEdit
+      Left = 71
+      Top = 135
+      Enabled = False
+      Style.HotTrack = False
+      TabOrder = 5
+      OnKeyDown = EditNewValueKeyDown
+      Width = 317
+    end
     object cxButton1: TcxButton
-      Left = 4
-      Top = 4
+      Left = 10
+      Top = 10
       Width = 75
       Height = 41
-      Align = alLeft
       Action = ActionEvaluate
       LookAndFeel.NativeStyle = False
       OptionsImage.Layout = blGlyphTop
       TabOrder = 0
     end
     object cxButton2: TcxButton
-      Left = 79
-      Top = 4
+      Left = 91
+      Top = 10
       Width = 75
       Height = 41
-      Align = alLeft
       Action = ActionModify
       LookAndFeel.NativeStyle = False
       OptionsImage.Layout = blGlyphTop
       TabOrder = 1
     end
     object cxButton3: TcxButton
-      Left = 154
-      Top = 4
+      Left = 172
+      Top = 10
       Width = 75
       Height = 41
       Align = alLeft
@@ -70,65 +89,24 @@ object FormDebugEvaluate: TFormDebugEvaluate
       OptionsImage.Layout = blGlyphTop
       TabOrder = 2
     end
-  end
-  object dxLayoutControl1: TdxLayoutControl
-    Left = 0
-    Top = 51
-    Width = 398
-    Height = 115
-    Align = alClient
-    TabOrder = 1
-    object EditExpression: TcxTextEdit
-      Left = 71
-      Top = 10
-      Properties.OnChange = EditExpressionPropertiesChange
-      Style.BorderColor = clWindowFrame
-      Style.BorderStyle = ebs3D
-      Style.HotTrack = False
-      TabOrder = 0
-      OnKeyDown = EditExpressionKeyDown
-      Width = 317
-    end
-    object MemoValue: TcxMemo
-      Left = 71
-      Top = 37
-      Properties.ReadOnly = True
-      Style.BorderColor = clWindowFrame
-      Style.BorderStyle = ebs3D
-      Style.HotTrack = False
-      TabOrder = 1
-      Height = 41
-      Width = 317
-    end
-    object EditNewValue: TcxTextEdit
-      Left = 71
-      Top = 84
-      Enabled = False
-      Style.BorderColor = clWindowFrame
-      Style.BorderStyle = ebs3D
-      Style.HotTrack = False
-      TabOrder = 2
-      OnKeyDown = EditNewValueKeyDown
-      Width = 317
-    end
-    object dxLayoutControl1Group_Root: TdxLayoutGroup
+    object LayoutControlGroup_Root: TdxLayoutGroup
       AlignHorz = ahParentManaged
       AlignVert = avClient
       Hidden = True
       ShowBorder = False
       Index = -1
     end
-    object dxLayoutControl1Item1: TdxLayoutItem
-      Parent = dxLayoutControl1Group_Root
+    object LayoutItemExpression: TdxLayoutItem
+      Parent = LayoutControlGroup_Root
       CaptionOptions.Text = '&Expression:'
       Control = EditExpression
       ControlOptions.OriginalHeight = 21
       ControlOptions.OriginalWidth = 121
       ControlOptions.ShowBorder = False
-      Index = 0
+      Index = 2
     end
-    object dxLayoutControl1Item2: TdxLayoutItem
-      Parent = dxLayoutControl1Group_Root
+    object LayoutItemResult: TdxLayoutItem
+      Parent = LayoutControlGroup_Root
       AlignVert = avClient
       CaptionOptions.AlignVert = tavTop
       CaptionOptions.Text = '&Result:'
@@ -136,10 +114,10 @@ object FormDebugEvaluate: TFormDebugEvaluate
       ControlOptions.OriginalHeight = 89
       ControlOptions.OriginalWidth = 185
       ControlOptions.ShowBorder = False
-      Index = 1
+      Index = 3
     end
-    object dxLayoutControl1Item3: TdxLayoutItem
-      Parent = dxLayoutControl1Group_Root
+    object LayoutItemNewValue: TdxLayoutItem
+      Parent = LayoutControlGroup_Root
       CaptionOptions.Text = '&New value:'
       Control = EditNewValue
       ControlOptions.AlignVert = avBottom
@@ -147,7 +125,48 @@ object FormDebugEvaluate: TFormDebugEvaluate
       ControlOptions.OriginalWidth = 121
       ControlOptions.ShowBorder = False
       Enabled = False
+      Index = 4
+    end
+    object LayoutItemEvaluate: TdxLayoutItem
+      Parent = dxLayoutGroup1
+      CaptionOptions.Visible = False
+      Control = cxButton1
+      ControlOptions.OriginalHeight = 41
+      ControlOptions.OriginalWidth = 75
+      ControlOptions.ShowBorder = False
+      Index = 0
+    end
+    object LayoutItemModify: TdxLayoutItem
+      Parent = dxLayoutGroup1
+      CaptionOptions.Visible = False
+      Control = cxButton2
+      ControlOptions.OriginalHeight = 41
+      ControlOptions.OriginalWidth = 75
+      ControlOptions.ShowBorder = False
+      Index = 1
+    end
+    object LayoutItemWatch: TdxLayoutItem
+      Parent = dxLayoutGroup1
+      CaptionOptions.Visible = False
+      Control = cxButton3
+      ControlOptions.OriginalHeight = 41
+      ControlOptions.OriginalWidth = 75
+      ControlOptions.ShowBorder = False
       Index = 2
+    end
+    object dxLayoutGroup1: TdxLayoutGroup
+      Parent = LayoutControlGroup_Root
+      CaptionOptions.Text = 'New Group'
+      Hidden = True
+      ItemIndex = 2
+      LayoutDirection = ldHorizontal
+      ShowBorder = False
+      Index = 0
+    end
+    object dxLayoutSeparatorItem1: TdxLayoutSeparatorItem
+      Parent = LayoutControlGroup_Root
+      CaptionOptions.Text = 'Separator'
+      Index = 1
     end
   end
   object ActionList1: TActionList

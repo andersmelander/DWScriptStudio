@@ -132,7 +132,8 @@ uses
 {$endif OLD_DWSCRIPT}
   dwsCompiler,
   dwsDataContext,
-  dwsSuggestions;
+  dwsSuggestions,
+  amScript.IDE.Settings;
 
 
 // -----------------------------------------------------------------------------
@@ -165,6 +166,7 @@ begin
   FEvaluationBuilder.Initialize(ADebugger);
 
   TreeListVariables.Images := AImageListSymbols;
+  ActionItemWatch.Visible := ScriptSettings.Features.ViewWatches;
 
   UpdateInfo;
 end;

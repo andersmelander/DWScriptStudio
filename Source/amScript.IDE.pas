@@ -801,7 +801,7 @@ uses
   amScript.Editor.SynEdit.Data, // TODO : Abstract this out of IDE unit
   amScript.Editor.SynEdit, // This registers the SynEdit-based editor
 {$ifdef FEATURE_SCRIPT_BUNDLE}
-  amScript.DebuggerDialogBundleBuilder,
+  amScript.IDE.Dialog.BundleBuilder,
 {$endif FEATURE_SCRIPT_BUNDLE}
   amScript.DocBuilder,
   amScript.FileSystem.API,
@@ -1107,13 +1107,29 @@ end;
 // -----------------------------------------------------------------------------
 
 procedure TFormScriptDebugger.FormCreate(Sender: TObject);
-var
-  i: integer;
+
+  procedure ApplyFeature(Enabled: boolean; Action: TAction); overload;
+  begin
+    if (Enabled) then
+      exit;
+
+    Action.Visible := False;
+  end;
+
+  procedure ApplyFeature(Enabled: boolean; Action: TAction; var DockPanel: TdxDockPanel); overload;
+  begin
+    if (Enabled) then
+      exit;
+
+    ApplyFeature(Enabled, Action);
+    FreeAndNil(DockPanel);
+  end;
+
 begin
   RibbonDebug.ActiveTab := RibbonTabEditor;
   RibbonTabDebug.Visible := False;
 
-  for i := 0 to ComponentCount-1 do
+  for var i := 0 to ComponentCount-1 do
     if (Components[i] is TdxDockPanel) and (TdxDockPanel(Components[i]).ControlCount = 0) then
       TdxDockPanel(Components[i]).Visible := False;
 
@@ -1123,6 +1139,19 @@ begin
   BarManagerBarMainMenu.Visible := ScriptSettings.Forms.Main.DisplayMainMenu;
   ActionViewMainMenu.Visible := ScriptSettings.Forms.Main.DisplayMainMenuToggle;
   ActionViewRibbon.Visible := ScriptSettings.Forms.Main.DisplayMainMenuToggle;
+
+  ApplyFeature(ScriptSettings.Features.ViewFileExplorer, ActionViewFileExplorer, DockPanelFileExplorer);
+  ApplyFeature(ScriptSettings.Features.ViewSymbols, ActionViewSymbols, DockPanelSymbols);
+  ApplyFeature(ScriptSettings.Features.ViewCallStack, ActionViewCallStack, DockPanelCallStack);
+  ApplyFeature(ScriptSettings.Features.ViewLocalVariables, ActionViewLocals, DockPanelLocalVars);
+  ApplyFeature(ScriptSettings.Features.ViewWatches, ActionViewWatches, DockPanelWatches);
+  ApplyFeature(ScriptSettings.Features.ViewDataStack, ActionViewStack, DockPanelStack);
+  ApplyFeature(ScriptSettings.Features.ViewAST, ActionViewAST, DockPanelAST);
+  ApplyFeature(ScriptSettings.Features.ToolsDocumentationBuilder, ActionToolDocBuild);
+  ApplyFeature(ScriptSettings.Features.ToolsBundleBuilder, ActionToolBundle);
+  ApplyFeature(ScriptSettings.Features.ToolsCopyProtection, ActionToolCopyProtect);
+  ApplyFeature(ScriptSettings.Features.ToolsInsertHeader, ActionToolHeader);
+  RibbonDebugTabTools.Visible := ScriptSettings.Features.ToolsMenu;
 
   LoadLayouts;
   LoadRecentFiles;
@@ -2907,9 +2936,11 @@ function TFormScriptDebugger.EditorActionHandler(const AEditor: IScriptEditor; A
       begin
         FHasCheckedHelpVersion := True;
   {$ifdef FEATURE_PACKAGE_INSTALLER}
-        NeedDownload := PackageInstallerService.AutoUpdateCheck(sPackageIDAppScriptHelpRtl, DownloadURL, [], 'script RTL help file');
+        if (ScriptSettings.Features.PackageInstaller) then
+          NeedDownload := PackageInstallerService.AutoUpdateCheck(sPackageIDAppScriptHelpRtl, DownloadURL, [], 'script RTL help file')
+        else
   {$else FEATURE_PACKAGE_INSTALLER}
-        NeedDownload := HelpFileNotFound;
+          NeedDownload := HelpFileNotFound;
   {$endif FEATURE_PACKAGE_INSTALLER}
       end;
 
@@ -2920,9 +2951,11 @@ function TFormScriptDebugger.EditorActionHandler(const AEditor: IScriptEditor; A
 
         // Determine if download is a package or a help file
   {$ifdef FEATURE_PACKAGE_INSTALLER}
-        DownloadIsPackage := (AnsiSameText(URLExtractFileExt(DownloadURL), sPackageInstallerFileType));
+        if (ScriptSettings.Features.PackageInstaller) then
+          DownloadIsPackage := (AnsiSameText(URLExtractFileExt(DownloadURL), sPackageInstallerFileType))
+        else
   {$else FEATURE_PACKAGE_INSTALLER}
-        DownloadIsPackage := False;
+          DownloadIsPackage := False;
   {$endif FEATURE_PACKAGE_INSTALLER}
 
         if (DownloadIsPackage) then
@@ -2931,10 +2964,14 @@ function TFormScriptDebugger.EditorActionHandler(const AEditor: IScriptEditor; A
           HelpDownloadPackage := HelpDownloadFilename;
 
   {$ifdef FEATURE_PACKAGE_INSTALLER}
-        PackageInstallerService.AutoUpdateExecute(DownloadURL, HelpDownloadPackage, DownloadIsPackage);
+        if (ScriptSettings.Features.PackageInstaller) then
+          PackageInstallerService.AutoUpdateExecute(DownloadURL, HelpDownloadPackage, DownloadIsPackage)
+        else
   {$else FEATURE_PACKAGE_INSTALLER}
-        ShowMessage('Auto update feature not enabled - Help will not be available');
-        Abort;
+        begin
+          ShowMessage('Auto update feature not enabled - Help will not be available');
+          Abort;
+        end;
   {$endif FEATURE_PACKAGE_INSTALLER}
 
         // Make sure we now have the help file
@@ -2996,6 +3033,7 @@ begin
 //    seActionAutoCompletionPropose:
 
     seActionContextHelp:
+      if (ScriptSettings.Features.OnlineHelp) then
       begin
         HandleContextHelp;
         Result := True;

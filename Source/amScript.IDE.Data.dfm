@@ -7672,4 +7672,11 @@ object DataModuleDebuggerViewData: TDataModuleDebuggerViewData
     Left = 228
     Top = 92
   end
+  object LayoutLookAndFeelList: TdxLayoutLookAndFeelList
+    Left = 228
+    Top = 156
+    object LayoutLookAndFeel: TdxLayoutSkinLookAndFeel
+      PixelsPerInch = 96
+    end
+  end
 end

@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.ImageList, Vcl.ImgList, Vcl.Controls,
-  cxImageList, cxGraphics, dxSkinsCore, dxCore, cxClasses, cxLookAndFeels, dxSkinsForm;
+  cxImageList, cxGraphics, dxSkinsCore, dxCore, cxClasses, cxLookAndFeels, dxSkinsForm, dxLayoutLookAndFeels;
 
 type
   TDataModuleDebuggerViewData = class(TDataModule)
@@ -14,6 +14,8 @@ type
     ImageListMessage: TcxImageList;
     SkinController: TdxSkinController;
     LookAndFeelController: TcxLookAndFeelController;
+    LayoutLookAndFeelList: TdxLayoutLookAndFeelList;
+    LayoutLookAndFeel: TdxLayoutSkinLookAndFeel;
   private
     class destructor Destroy;
   public
