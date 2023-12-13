@@ -177,8 +177,28 @@ type
   end;
 
 procedure ScriptTrace(const Msg: string; const Context: string = '');
-procedure ScriptEncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean);
-procedure ScriptDecryptStream(SourceStream, TargetStream: TStream);
+
+// -----------------------------------------------------------------------------
+//
+// ScriptEncryption
+//
+// -----------------------------------------------------------------------------
+type
+  TScriptEncryption = class abstract
+  public
+    class procedure EncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean); virtual; abstract;
+    class procedure DecryptStream(SourceStream, TargetStream: TStream); virtual; abstract;
+  end;
+
+  TScriptEncryptionClass = class of TScriptEncryption;
+
+  ScriptEncryption = record
+    class procedure RegisterScriptEncryption(ScriptEncryptionClass: TScriptEncryptionClass); static;
+
+    class procedure EncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean); static;
+    class procedure DecryptStream(SourceStream, TargetStream: TStream); static;
+  end;
+
 
 // -----------------------------------------------------------------------------
 //
@@ -193,29 +213,47 @@ type
 procedure RegisterScriptServiceFactory(Factory: TScriptServiceFactory);
 
 
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
 implementation
 
 uses
   amScript.Module; // Not directly used but we need to reference ScriptModule in order to get the ScriptServiceFactory registered.
-
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 
 procedure ScriptTrace(const Msg, Context: string);
 begin
 //
 end;
 
-procedure ScriptEncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean);
+
+// -----------------------------------------------------------------------------
+//
+// ScriptEncryption
+//
+// -----------------------------------------------------------------------------
+var
+  FScriptEncryption: TScriptEncryptionClass;
+
+class procedure ScriptEncryption.RegisterScriptEncryption(ScriptEncryptionClass: TScriptEncryptionClass);
 begin
-  TargetStream.CopyFrom(SourceStream, -1);
+  FScriptEncryption := ScriptEncryptionClass;
 end;
 
-procedure ScriptDecryptStream(SourceStream, TargetStream: TStream);
+class procedure ScriptEncryption.EncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean);
 begin
-  TargetStream.CopyFrom(SourceStream, -1);
+  Assert(FScriptEncryption <> nil);
+  FScriptEncryption.EncryptStream(SourceStream, TargetStream, ProductID, AuthorID, Password, Base64Encode);
 end;
+
+class procedure ScriptEncryption.DecryptStream(SourceStream, TargetStream: TStream);
+begin
+  Assert(FScriptEncryption <> nil);
+  FScriptEncryption.DecryptStream(SourceStream, TargetStream);
+end;
+
+
 
 // -----------------------------------------------------------------------------
 //
@@ -241,7 +279,34 @@ begin
   Result := FScriptService;
 end;
 
+// -----------------------------------------------------------------------------
+//
+// Default, do-nothing script encryptor
+//
+// -----------------------------------------------------------------------------
+type
+  TScriptEncryptionDummy = class(TScriptEncryption)
+  public
+    class procedure EncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean); override;
+    class procedure DecryptStream(SourceStream, TargetStream: TStream);  override;
+  end;
+
+class procedure TScriptEncryptionDummy.DecryptStream(SourceStream, TargetStream: TStream);
+begin
+  TargetStream.CopyFrom(SourceStream);
+end;
+
+class procedure TScriptEncryptionDummy.EncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean);
+begin
+  TargetStream.CopyFrom(SourceStream);
+end;
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
 initialization
+  ScriptEncryption.RegisterScriptEncryption(TScriptEncryptionDummy);
 finalization
   FScriptService := nil;
 end.

@@ -158,10 +158,6 @@ type
     function Execute(const AFilename: string = ''): boolean;
   end;
 
-// TODO: Script*cryptStream needs implementation
-procedure ScriptEncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean);
-procedure ScriptDecryptStream(SourceStream, TargetStream: TStream);
-
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -205,14 +201,6 @@ var
 begin
   SysUtils.CreateGUID(Guid);
   Result := GUIDToString(Guid);
-end;
-
-procedure ScriptEncryptStream(SourceStream, TargetStream: TStream; const ProductID, AuthorID, Password: string; Base64Encode: boolean);
-begin
-end;
-
-procedure ScriptDecryptStream(SourceStream, TargetStream: TStream);
-begin
 end;
 
 // -----------------------------------------------------------------------------
@@ -630,7 +618,7 @@ begin
       on E: EFCreateError do
       begin
         ShowErrorMessage('Bundle builder', 'Failed to create bundle file',
-          'An error occurred creating the bundle file.'#13#13'Please make sure that the bundle isn''t running in Sigma or otherwise locked.', E.Message);
+          'An error occurred creating the bundle file.'#13#13'Please make sure that the bundle isn''t being executed or is otherwise locked.', E.Message);
         Abort;
       end;
     end;
@@ -710,7 +698,7 @@ begin
 
             TargetStream := TMemoryStream.Create;
             try
-              ScriptEncryptStream(SourceStream, TargetStream, ProductID, AuthorID, Password, CheckBoxOptionsBase64.Checked);
+              ScriptEncryption.EncryptStream(SourceStream, TargetStream, ProductID, AuthorID, Password, CheckBoxOptionsBase64.Checked);
               TargetStream.Position := 0;
               ZipFile.Add(TargetStream, ListViewFiles.Items[i].SubItems[1]);
               ZipFile.FileComment[ZipFile.FileCount-1] := 'protected';
