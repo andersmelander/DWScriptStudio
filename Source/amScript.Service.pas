@@ -201,9 +201,6 @@ uses
   Controls, // mrCancel
   Forms,
 
-  SynTaskDialog,
-  SynCommons,
-
   dwsXPlatform,
   dwsMagicExprs,
   dwsExprList,
@@ -239,9 +236,12 @@ uses
 {$else FEATURE_LICENSING}
   amScript.LicenseService.API,
 {$endif FEATURE_LICENSING}
-  amScript.ExternalFunctionManager,
-  amScript.IDE.Settings;
+  amScript.ExternalFunctionManager;
 
+
+const
+  mrHalt = -1;
+  mrDebug = -2;
 
 // -----------------------------------------------------------------------------
 // TLicensedScript
@@ -540,14 +540,8 @@ var
   i: integer;
   ErrorCount, ErrorIndex: integer;
   TaskDialog: TTaskDialog;
-  Res: integer;
-  ResHalt, ResDebug, ResIgnore: integer;
-  s: string;
   Environment: IScriptEnvironment;
   Messages: TdwsRuntimeMessageList;
-
-const
-  ResAbort = 100;
 begin
   Result := False;
   if (Execution = nil) then
@@ -565,75 +559,91 @@ begin
 
   Environment := Execution.Environment as IScriptEnvironment;
 
-  ErrorIndex := 0;
-  for i := 0 to Messages.Count-1 do
-    if (Messages[i].IsError) then
-    begin
-      Result := True;
-      inc(ErrorIndex);
-
-      TaskDialog.Title := 'Script run time error';
-      TaskDialog.Inst := 'A Script caused an error.';
-      if (ErrorCount > 1) then
-        TaskDialog.Content := Format('Error %d of %d', [ErrorIndex, ErrorCount]) + #13#13 + Messages[i].Text
-      else
-        TaskDialog.Content := Messages[i].Text;
-      s := 'Continue';
-      if (Execution.Prog.ProgramObject.FinalExpr <> nil) then
-        s := s + '\nExecute finalizations and then terminate.';
-      Res := ResAbort;
-      ResIgnore := -1;
-      ResDebug := -1;
-      ResHalt := -1;
-
-      if (Execution.Prog.ProgramObject.FinalExpr <> nil) then
+  TaskDialog := TTaskDialog.Create(nil);
+  try
+    ErrorIndex := 0;
+    for i := 0 to Messages.Count-1 do
+      if (Messages[i].IsError) then
       begin
-        s := s + #10 + 'Halt\nStop without executing finalizations.';
-        Inc(Res);
-        ResHalt := Res;
-      end;
-      if (i < Messages.Count-1) then
-      begin
-        s := s + #10 + 'Ignore\nProceed to next error.';
-        Inc(Res);
-        ResIgnore := Res;
-      end;
-      // TODO : Check for "view source" rights
-      if (ScriptProvider = nil) or (not ScriptProvider.Protected) then
-        if (Messages[i] is TScriptMessage) and (TScriptMessage(Messages[i]).ScriptPos.Defined) then
+        Result := True;
+        inc(ErrorIndex);
+
+        TaskDialog.Caption := 'Script run time error';
+        TaskDialog.Title := 'A Script caused an error.';
+        if (ErrorCount > 1) then
+          TaskDialog.Text := Format('Error %d of %d', [ErrorIndex, ErrorCount]) + #13#13 + Messages[i].Text
+        else
+          TaskDialog.Text := Messages[i].Text;
+
+        TaskDialog.Buttons.Clear;
+
         begin
-          s := s + #10 + 'Debug\nView script source.';
-          Inc(Res);
-          ResDebug := Res;
+          var Button := TTaskDialogButtonItem(TaskDialog.Buttons.Add);
+          Button.Caption := 'Continue';
+          Button.ModalResult := mrAbort;
+          if (Execution.Prog.ProgramObject.FinalExpr <> nil) then
+            Button.CommandLinkHint := 'Execute finalizations and then terminate.';
         end;
-      TaskDialog.Buttons := s;
-      TaskDialog.Info := Messages[i].AsInfo;;
 
-      // Note: We must specify parent handle or the current active form handle will be used. In case the splash is
-      // visible its handle will be used and the dialog will be closed when the splash timer expires.
-      Res := TaskDialog.Execute([], ResAbort, [tdfUseCommandLinks, tdfAllowDialogCancellation, tdfExpandFooterArea], tiWarning, tfiBlank, 0, 0, Application.MainForm.Handle);
+        if (Execution.Prog.ProgramObject.FinalExpr <> nil) then
+        begin
+          var Button := TTaskDialogButtonItem(TaskDialog.Buttons.Add);
+          Button.Caption := 'Halt';
+          Button.ModalResult := mrHalt;
+          Button.CommandLinkHint := 'Stop without executing finalizations.';
+        end;
 
-      if (Res = ResAbort) or (Res = mrCancel) then
-        break;
+        if (i < Messages.Count-1) then
+        begin
+          var Button := TTaskDialogButtonItem(TaskDialog.Buttons.Add);
+          Button.Caption := 'Ignore';
+          Button.ModalResult := mrIgnore;
+          Button.CommandLinkHint := 'Proceed to next error.';
+        end;
 
-      if (Res = ResHalt) then
-      begin
-        HaltScript(Execution);
-        break;
+        // TODO : Check for "view source" rights
+        if (ScriptProvider = nil) or (not ScriptProvider.Protected) then
+          if (Messages[i] is TScriptMessage) and (TScriptMessage(Messages[i]).ScriptPos.Defined) then
+          begin
+            var Button := TTaskDialogButtonItem(TaskDialog.Buttons.Add);
+            Button.Caption := 'Debug';
+            Button.ModalResult := mrDebug;
+            Button.CommandLinkHint := 'View script source.';
+          end;
+
+        TaskDialog.ExpandedText := Messages[i].AsInfo;
+        TaskDialog.Flags := [tfUseCommandLinks, tfAllowDialogCancellation, tfExpandFooterArea];
+        TaskDialog.MainIcon := tdiWarning;
+
+        // Note: We must specify parent handle or the current active form handle will be used. In case the splash is
+        // visible its handle will be used and the dialog will be closed when the splash timer expires.
+        if (not TaskDialog.Execute(Application.MainForm.Handle)) then
+          break;
+
+        if (TaskDialog.ModalResult = mrAbort) or (TaskDialog.ModalResult = mrCancel) then
+          break;
+
+        if (TaskDialog.ModalResult = mrHalt) then
+        begin
+          HaltScript(Execution);
+          break;
+        end;
+
+        if (TaskDialog.ModalResult = mrIgnore) then
+          continue;
+
+        if (TaskDialog.ModalResult = mrDebug) then
+        begin
+          HaltScript(Execution);
+          if (ScriptProvider = nil) then
+            ScriptProvider := TStaticScriptProvider.Create(TScriptMessage(Messages[i]).ScriptPos.SourceFile.Name, TScriptMessage(Messages[i]).ScriptPos.SourceFile.Code);
+          ScriptService.Edit(Environment.Document, Environment.Item, ScriptProvider, Messages, i);
+          break;
+        end;
       end;
-
-      if (Res = ResIgnore) then
-        continue;
-
-      if (Res = ResDebug) then
-      begin
-        HaltScript(Execution);
-        if (ScriptProvider = nil) then
-          ScriptProvider := TStaticScriptProvider.Create(TScriptMessage(Messages[i]).ScriptPos.SourceFile.Name, TScriptMessage(Messages[i]).ScriptPos.SourceFile.Code);
-        ScriptService.Edit(Environment.Document, Environment.Item, ScriptProvider, Messages, i);
-        break;
-      end;
-    end;
+  finally
+    TaskDialog.Free;
+  end;
 end;
 
 
@@ -880,11 +890,7 @@ var
   i: integer;
   ErrorCount, ErrorIndex: integer;
   TaskDialog: TTaskDialog;
-  Res: integer;
-  ResDebug, ResIgnore: integer;
   s: string;
-const
-  ResAbort = 100;
 begin
   Result := False;
   if (FScriptProgram = nil) then
@@ -898,61 +904,78 @@ begin
   if (ErrorCount = 0) then
     exit;
 
-  ErrorIndex := 0;
-  for i := 0 to FScriptProgram.Msgs.Count-1 do
-    if (FScriptProgram.Msgs[i].IsError) then
-    begin
-      Result := True;
-      inc(ErrorIndex);
-
-      TaskDialog.Title := 'Script error';
-      TaskDialog.Inst := 'A Script failed to compile.';
-      if (ErrorCount > 1) then
-        TaskDialog.Content := Format('Error %d of %d', [ErrorIndex, ErrorCount]) + #13#13 + FScriptProgram.Msgs[i].Text
-      else
-        TaskDialog.Content := FScriptProgram.Msgs[i].Text;
-      s := 'Abort';
-      Res := ResAbort;
-      ResIgnore := -1;
-      ResDebug := -1;
-      if (i < FScriptProgram.Msgs.Count-1) then
+  TaskDialog := TTaskDialog.Create(nil);
+  try
+    ErrorIndex := 0;
+    for i := 0 to FScriptProgram.Msgs.Count-1 do
+      if (FScriptProgram.Msgs[i].IsError) then
       begin
-        s := s + #10 + 'Ignore\nProceed to next error';
-        Inc(Res);
-        ResIgnore := Res;
-      end;
-      // TODO : Check for "view source" rights
-      if (ScriptProvider = nil) or (not ScriptProvider.Protected) then
-        if (FScriptProgram.Msgs[i] is TScriptMessage) then
+        Result := True;
+        inc(ErrorIndex);
+
+        TaskDialog.Caption := 'Script error';
+        TaskDialog.Title := 'A Script failed to compile.';
+        if (ErrorCount > 1) then
+          TaskDialog.Text := Format('Error %d of %d', [ErrorIndex, ErrorCount]) + #13#13 + FScriptProgram.Msgs[i].Text
+        else
+          TaskDialog.Text := FScriptProgram.Msgs[i].Text;
+
+        TaskDialog.Buttons.Clear;
+
         begin
-          s := s + #10 + 'Debug\nView script source.';
-          Inc(Res);
-          ResDebug := Res;
+          var Button := TTaskDialogButtonItem(TaskDialog.Buttons.Add);
+          Button.Caption := 'Abort';
+          Button.ModalResult := mrAbort;
+          Button.Default := True;
         end;
-      TaskDialog.Buttons := s;
-      TaskDialog.Info := FScriptProgram.Msgs[i].AsInfo;;
 
-      // Note: We must specify parent handle or the current active form handle will be used. In case the splash is
-      // visible its handle will be used and the dialog will be closed when the splash timer expires.
-      Res := TaskDialog.Execute([], ResAbort, [tdfUseCommandLinks, tdfAllowDialogCancellation, tdfExpandFooterArea], tiWarning, tfiBlank, 0, 0, Application.MainForm.Handle);
-
-      if (Res = 100) or (Res = mrCancel) then
-        break;
-
-      if (Res = ResIgnore) then
-        continue;
-
-      if (Res = ResDebug) then
-      begin
-        if (ScriptProvider = nil) then
+        if (i < FScriptProgram.Msgs.Count-1) then
         begin
-          s := SYS_MainModule;
-          ScriptProvider := TStaticScriptProvider.Create(s, Script);
+          var Button := TTaskDialogButtonItem(TaskDialog.Buttons.Add);
+          Button.Caption := 'Ignore';
+          Button.ModalResult := mrIgnore;
+          Button.CommandLinkHint := 'Proceed to next error.';
         end;
-        ScriptService.Edit(FDocument, nil, ScriptProvider, FScriptProgram.Msgs, i);
-        break;
+
+        // TODO : Check for "view source" rights
+        if (ScriptProvider = nil) or (not ScriptProvider.Protected) then
+          if (FScriptProgram.Msgs[i] is TScriptMessage) then
+          begin
+            var Button := TTaskDialogButtonItem(TaskDialog.Buttons.Add);
+            Button.Caption := 'Debug';
+            Button.ModalResult := mrDebug;
+            Button.CommandLinkHint := 'View script source.';
+          end;
+
+        TaskDialog.ExpandedText := FScriptProgram.Msgs[i].AsInfo;;
+        TaskDialog.Flags := [tfUseCommandLinks, tfAllowDialogCancellation, tfExpandFooterArea];
+        TaskDialog.MainIcon := tdiWarning;
+
+        // Note: We must specify parent handle or the current active form handle will be used. In case the splash is
+        // visible its handle will be used and the dialog will be closed when the splash timer expires.
+        if (not TaskDialog.Execute(Application.MainForm.Handle)) then
+          break;
+
+        if (TaskDialog.ModalResult = mrAbort) or (TaskDialog.ModalResult = mrCancel) then
+          break;
+
+        if (TaskDialog.ModalResult = mrIgnore) then
+          continue;
+
+        if (TaskDialog.ModalResult = mrDebug) then
+        begin
+          if (ScriptProvider = nil) then
+          begin
+            s := SYS_MainModule;
+            ScriptProvider := TStaticScriptProvider.Create(s, Script);
+          end;
+          ScriptService.Edit(FDocument, nil, ScriptProvider, FScriptProgram.Msgs, i);
+          break;
+        end;
       end;
-    end;
+  finally
+    TaskDialog.Free;
+  end;
 end;
 
 procedure TScriptContext.Reset;

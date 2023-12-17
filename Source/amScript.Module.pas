@@ -36,7 +36,6 @@ uses
 {$endif OLD_DWSCRIPT}
 
   amScript.API,
-  amScript.Debugger.API,
   amScript.Host.API,
   amScript.Provider.API,
   amScript.Package.API;
@@ -297,9 +296,6 @@ implementation
 uses
   Variants,
   Dialogs,
-
-  SynTaskDialog,
-  SynCommons,
 
   dwsXPlatform,
 {$ifndef OLD_DWSCRIPT}

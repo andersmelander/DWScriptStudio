@@ -24,6 +24,9 @@ uses
 const
   sScriptAttachmentFilenamePrefix = '';//'\';
 
+var
+  sScriptHostConditionalDefine: string = ''; // TODO : Move to ScriptSettings
+
 // -----------------------------------------------------------------------------
 //
 //              IScriptHostAlertWindow

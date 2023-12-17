@@ -11,8 +11,6 @@
 interface
 
 uses
-  SynTaskDialog, // First so we do not override the standard task dialog
-
   Windows,
   Dialogs,
   Controls,
@@ -517,16 +515,14 @@ end;
 
 function ShowErrorMessage(const Caption, Instruction, Content: string; Info: string; DisplayVerify: boolean; const Verify: string; Buttons: TMsgDlgButtons): TModalResult;
 var
-  Task: SynTaskDialog.TTaskDialog;
+  Task: TTaskDialog;
   TaskEx: Dialogs.TTaskDialog;
   VerifyStr: string;
   Button: TMsgDlgBtn;
   ButtonsStd: TTaskDialogCommonButtons;
-  ButtonsSyn: SynTaskDialog.TCommonButtons;
 const
   MappedButtons: TMsgDlgButtons = [mbYes, mbNo, mbOK, mbCancel, mbRetry, mbClose];
   ButtonMapStd: array[TMsgDlgBtn] of TTaskDialogCommonButton = (tcbYes, tcbNo, tcbOK, tcbCancel, tcbOK, tcbRetry, tcbOK, tcbOK, tcbOK, tcbOK, tcbOK, tcbClose);
-  ButtonMapSyn: array[TMsgDlgBtn] of SynTaskDialog.TCommonButton = (cbYes, cbNo, cbOK, cbCancel, cbOK, cbRetry, cbOK, cbOK, cbOK, cbOK, cbOK, cbClose);
 begin
   Result := mrOK;
 
@@ -534,67 +530,34 @@ begin
   if (DisplayVerify) and (VerifyStr = '') then
     VerifyStr := sErrorDialogBugReport;
 
-{.$define EMULATE_NOTHEMED}
-  // Due to a bug in Dialogs.TTaskDialog.DoExecute TTaskDialog cannot be used on the otherwise supported platforms (Vista+)
-  // if themes are available but disabled (e.g. Windows Classic Theme).
-  // http://qc.embarcadero.com/wc/qcmain.aspx?d=89798
-{$if (DialogsThemesEnabledPatch)}
-  if (CheckWin32Version(6)) and (ThemeServices.ThemesAvailable) {$ifdef EMULATE_NOTHEMED}and False{$endif EMULATE_NOTHEMED} then
-{$else}
-  if (CheckWin32Version(6)) and (ThemeServices.ThemesEnabled) {$ifdef EMULATE_NOTHEMED}and False{$endif EMULATE_NOTHEMED} then
-{$ifend}
-  begin
-    ButtonsStd := [];
-    for Button in Buttons do
-      if (Button in Buttons) then
-        Include(ButtonsStd, ButtonMapStd[Button]);
-    TaskEx := Dialogs.TTaskDialog.Create(nil);
-    try
-      TaskEx.Caption := Caption;
-      TaskEx.Title := Instruction;
-      TaskEx.Text := Content;
-      TaskEx.ExpandedText := Info;
-      if (DisplayVerify) then
-        TaskEx.FooterText := VerifyStr;
-      TaskEx.MainIcon := tdiWarning;
-      TaskEx.Flags := [tfEnableHyperlinks, tfAllowDialogCancellation, tfExpandFooterArea];
-      TaskEx.CommonButtons := ButtonsStd;
-      TaskEx.OnHyperlinkClicked := TShowErrorMessage.OnErrorTaskDialogReraise;
-
-      TaskEx.Execute;
-
-      Result := TaskEx.ModalResult
-    finally
-      TaskEx.Free;
-    end;
-
-    // If user clicked the "report problem as error" link, we reraise the exception so the normal error
-    // handling can produce a bug report.
-    if (DisplayVerify) and (Result = 2) then
-      Result := mrAbort;
-  end else
-  begin
-    ButtonsSyn := [];
-    for Button in Buttons do
-      if (Button in Buttons) then
-        Include(ButtonsSyn, ButtonMapSyn[Button]);
-    Task.Title := Caption;
-    Task.Inst := Instruction;
-    Task.Content := Content;
-    Task.Info := Info;
+  ButtonsStd := [];
+  for Button in Buttons do
+    if (Button in Buttons) then
+      Include(ButtonsStd, ButtonMapStd[Button]);
+  TaskEx := Dialogs.TTaskDialog.Create(nil);
+  try
+    TaskEx.Caption := Caption;
+    TaskEx.Title := Instruction;
+    TaskEx.Text := Content;
+    TaskEx.ExpandedText := Info;
     if (DisplayVerify) then
-      // Display Verify text as a link.
-      Task.Verify := StringReplace(StringReplace(VerifyStr, '<a>', '', [rfReplaceAll]), '</a>', '', [rfReplaceAll]);
+      TaskEx.FooterText := VerifyStr;
+    TaskEx.MainIcon := tdiWarning;
+    TaskEx.Flags := [tfEnableHyperlinks, tfAllowDialogCancellation, tfExpandFooterArea];
+    TaskEx.CommonButtons := ButtonsStd;
+    TaskEx.OnHyperlinkClicked := TShowErrorMessage.OnErrorTaskDialogReraise;
 
-    if (Task.Execute(ButtonsSyn, 0, [tdfEnableHyperLinks, tdfAllowDialogCancellation, tdfExpandFooterArea]
-      {$ifdef EMULATE_NOTHEMED}, tiWarning, tfiWarning, 0, 0, Application.MainForm.Handle, False, True {$endif EMULATE_NOTHEMED}) <> mrCancel) then
-    begin
-      // If user clicked the "report problem as error" link, we reraise the exception so the normal error
-      // handling can produce a bug report.
-      if (DisplayVerify) and (Task.VerifyChecked) then
-        Result := mrAbort;
-    end;
+    TaskEx.Execute;
+
+    Result := TaskEx.ModalResult
+  finally
+    TaskEx.Free;
   end;
+
+  // If user clicked the "report problem as error" link, we reraise the exception so the normal error
+  // handling can produce a bug report.
+  if (DisplayVerify) and (Result = 2) then
+    Result := mrAbort;
 end;
 
 //------------------------------------------------------------------------------

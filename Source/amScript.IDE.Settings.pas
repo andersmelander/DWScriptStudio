@@ -26,9 +26,6 @@ uses
 var
   sScriptAPIKeyPublic: string = '';
 
-var
-  sScriptHostConditionalDefine: string = ''; // TODO : Move to ScriptSettings
-
 //------------------------------------------------------------------------------
 //
 //      Configuration Persistence
