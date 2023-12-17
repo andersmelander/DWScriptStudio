@@ -5,37 +5,12 @@ object ScriptDebuggerFileSystemStructureFrame: TScriptDebuggerFileSystemStructur
   Height = 304
   Align = alClient
   TabOrder = 0
-  object PopupEditFolder: TcxPopupEdit
+  object TreeListFileSystemStructure: TcxVirtualTreeList
     Left = 0
     Top = 0
-    Align = alTop
-    Properties.PopupControl = TreeListFileSystemStructure
-    TabOrder = 2
-    ExplicitTop = 25
     Width = 451
-  end
-  object ListViewFiles: TcxListView
-    Left = 0
-    Top = 23
-    Width = 451
-    Height = 281
+    Height = 304
     Align = alClient
-    Columns = <
-      item
-        AutoSize = True
-        Caption = 'Name'
-      end>
-    TabOrder = 1
-    ViewStyle = vsReport
-    OnDblClick = ListViewFilesDblClick
-    ExplicitTop = 48
-    ExplicitHeight = 256
-  end
-  object TreeListFileSystemStructure: TcxVirtualTreeList
-    Left = 40
-    Top = 43
-    Width = 353
-    Height = 186
     Bands = <
       item
       end>
@@ -51,11 +26,15 @@ object ScriptDebuggerFileSystemStructureFrame: TScriptDebuggerFileSystemStructur
     OptionsView.Headers = False
     ScrollbarAnnotations.CustomAnnotations = <>
     TabOrder = 0
-    Visible = False
+    OnDblClick = TreeListFileSystemStructureDblClick
     OnGetChildCount = TreeListFileSystemStructureGetChildCount
     OnGetNodeImageIndex = TreeListFileSystemStructureGetNodeImageIndex
     OnGetNodeValue = TreeListFileSystemStructureGetNodeValue
     OnSelectionChanged = TreeListFileSystemStructureSelectionChanged
+    ExplicitLeft = 40
+    ExplicitTop = 43
+    ExplicitWidth = 353
+    ExplicitHeight = 186
     object TreeListFileSystemStructureColumnName: TcxTreeListColumn
       Caption.Text = 'Name'
       Position.ColIndex = 0

@@ -77,8 +77,6 @@ type
 type
   TScriptFileSystemFile = class(TScriptFileSystemObject, IScriptFileSystemFile)
   private
-    FFilename: string;
-  private
     // ScriptFileSystemFile
     function CreateScriptProvider: IScriptProvider;
   end;
@@ -91,7 +89,8 @@ type
 implementation
 
 uses
-  IOUtils,
+  System.IOUtils,
+  System.SysUtils,
 
   amScript.Provider;
 
@@ -137,7 +136,13 @@ begin
   begin
     FHasFiles := True;
 
-    var Filenames := TDirectory.GetFiles(GetPath, '*.pas');
+    var Filenames := TDirectory.GetFiles(GetPath, '*.pas',
+      function(const Path: string; const SearchRec: TSearchRec): Boolean
+      begin
+        var Attributes := TFile.IntegerToFileAttributes(SearchRec.Attr);
+        Result := ([TFileAttribute.faHidden, TFileAttribute.faSystem] * Attributes = []);
+      end);
+
     SetLength(FFiles, Length(Filenames));
 
     for var i := 0 to High(Filenames) do
@@ -153,7 +158,13 @@ begin
   begin
     FHasFolders := True;
 
-    var Folders := TDirectory.GetDirectories(GetPath);
+    var Folders := TDirectory.GetDirectories(GetPath,
+      function(const Path: string; const SearchRec: TSearchRec): Boolean
+      begin
+        var Attributes := TFile.IntegerToFileAttributes(SearchRec.Attr);
+        Result := ([TFileAttribute.faHidden, TFileAttribute.faSystem] * Attributes = []);
+      end);
+
     SetLength(FFolders, Length(Folders));
 
     for var i := 0 to High(Folders) do

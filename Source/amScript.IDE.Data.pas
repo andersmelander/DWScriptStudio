@@ -57,6 +57,7 @@ const
   ImageIndexFileTypeScript = 6;
   ImageIndexFileTypeScriptMain = 69;
   ImageIndexFileTypeFolder = 71;
+  ImageIndexFileTypeFolderOpen = 75;
   ImageIndexFileTypeInclude = 29;
 
   // Hint

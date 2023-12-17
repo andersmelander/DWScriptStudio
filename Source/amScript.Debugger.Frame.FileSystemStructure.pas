@@ -15,14 +15,10 @@ uses
   Generics.Collections,
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, Menus, ActnList, ImgList,
+  System.UITypes,
 
-  cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxContainer, cxEdit, cxFilter,
-  cxCustomData, cxStyles, dxScrollbarAnnotations, cxTL, cxTextEdit, cxTLdxBarBuiltInMenu, cxInplaceContainer, cxTLData, cxListView,
-  cxMaskEdit, cxDropDownEdit,
-
-  dwsErrors,
-  dwsSymbols,
-  dwsScriptSource,
+  cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxFilter, cxCustomData, cxStyles,
+  dxScrollbarAnnotations, cxTL, cxTextEdit, cxTLdxBarBuiltInMenu, cxInplaceContainer, cxTLData,
 
   amScript.Debugger.API,
   amScript.FileSystemStructure.API;
@@ -31,8 +27,6 @@ type
   TFrame = TScriptDebuggerFrame;
 
   TScriptDebuggerFileSystemStructureFrame = class(TFrame)
-    PopupEditFolder: TcxPopupEdit;
-    ListViewFiles: TcxListView;
     TreeListFileSystemStructure: TcxVirtualTreeList;
     TreeListFileSystemStructureColumnName: TcxTreeListColumn;
     procedure TreeListFileSystemStructureGetChildCount(Sender: TcxCustomTreeList; AParentNode: TcxTreeListNode;
@@ -42,7 +36,7 @@ type
     procedure TreeListFileSystemStructureGetNodeImageIndex(Sender: TcxCustomTreeList; ANode: TcxTreeListNode;
       AIndexType: TcxTreeListImageIndexType; var AIndex: TImageIndex);
     procedure TreeListFileSystemStructureSelectionChanged(Sender: TObject);
-    procedure ListViewFilesDblClick(Sender: TObject);
+    procedure TreeListFileSystemStructureDblClick(Sender: TObject);
   strict private
     procedure Finalize;
 
@@ -51,7 +45,7 @@ type
     FRootFolders: TList<IScriptFileSystemFolder>;
     function LinkNode(Node: TcxTreeListNode): IScriptFileSystemObject;
     procedure SetFolder(const Value: IScriptFileSystemFolder);
-    property Folder: IScriptFileSystemFolder read FFolder write SetFolder;
+    // property Folder: IScriptFileSystemFolder read FFolder write SetFolder;
 
   strict protected
     // IScriptDebuggerWindow
@@ -67,15 +61,8 @@ implementation
 {$R *.dfm}
 
 uses
-  dwsUtils,
-  dwsExprs,
-  dwsDebugger,
-
-  amScript.FileSystemStructure;
-
-const
-  ImageIndexFileScript = 6;
-  ImageIndexFileFolder = 71;
+  amScript.FileSystemStructure,
+  amScript.IDE.Data;
 
 
 { TDwsIdeCallStackFrame }
@@ -88,6 +75,7 @@ end;
 
 destructor TScriptDebuggerFileSystemStructureFrame.Destroy;
 begin
+  Finalize;
   FRootFolders.Free;
   inherited;
 end;
@@ -95,10 +83,6 @@ end;
 procedure TScriptDebuggerFileSystemStructureFrame.Initialize(const ADebugger: IScriptDebugger; AImageList, AImageListSymbols: TCustomImageList);
 begin
   inherited Initialize(ADebugger, AImageList, AImageListSymbols);
-
-  ListViewFiles.SmallImages := AImageList;
-
-  PopupEditFolder.Properties.Images := AImageList;
 
   TreeListFileSystemStructure.Images := AImageList;
 
@@ -165,46 +149,63 @@ begin
   Node.Data := pointer(Result);
 end;
 
-procedure TScriptDebuggerFileSystemStructureFrame.ListViewFilesDblClick(Sender: TObject);
-begin
-  if (ListViewFiles.Selected = nil) or (ListViewFiles.Selected.Data = nil) then
-    exit;
-
-  var FileObject := IScriptFileSystemFile(ListViewFiles.Selected.Data);
-  var ScriptProvider := FileObject.CreateScriptProvider;
-
-  Debugger.CreateEditor(ScriptProvider);
-end;
-
 procedure TScriptDebuggerFileSystemStructureFrame.SetFolder(const Value: IScriptFileSystemFolder);
+
+  function FocusFolder(ParentNode: TcxTreeListNode): boolean;
+  begin
+    // First try all immediate child nodes
+    var Node := ParentNode.getFirstChild;
+    while (Node <> nil) do
+    begin
+      if (IScriptFileSystemFolder(Node.Data) = FFolder) then
+      begin
+        Node.MakeVisible;
+        Node.Focused := True;
+        Exit(True);
+      end;
+      Node := Node.getNextSibling;
+    end;
+
+    // Then recurse and try their children
+    Node := ParentNode.getFirstChild;
+    while (Node <> nil) do
+    begin
+      if (FocusFolder(Node)) then
+        Exit(True);
+      Node := Node.getNextSibling;
+    end;
+
+    Result := False;
+  end;
+
 begin
   if (FFolder = Value) then
     exit;
 
   FFolder := Value;
 
-  if (FFolder <> nil) then
-    PopupEditFolder.Text := FFolder.Path
-  else
-    PopupEditFolder.Text := '';
+  if (TreeListFileSystemStructure.FocusedNode <> nil) and (IScriptFileSystemFolder(TreeListFileSystemStructure.FocusedNode.Data) = FFolder) then
+    // Folder is already focused - Nothing to do
+    exit;
 
-  ListViewFiles.Items.BeginUpdate;
-  try
-    ListViewFiles.Items.Clear;
+  // Search for folder node
+  FocusFolder(TreeListFileSystemStructure.Root);
+end;
 
-    if (FFolder = nil) then
-      exit;
+procedure TScriptDebuggerFileSystemStructureFrame.TreeListFileSystemStructureDblClick(Sender: TObject);
+begin
+  if (TreeListFileSystemStructure.FocusedNode = nil) or (TreeListFileSystemStructure.FocusedNode.Data = nil) then
+    exit;
 
-    for var FileObject in FFolder.GetFiles do
-    begin
-      var Item := ListViewFiles.Items.Add;
-      Item.Caption := FileObject.Name;
-      Item.ImageIndex := ImageIndexFileScript;
-      Item.Data := pointer(FileObject);
-    end;
-  finally
-    ListViewFiles.Items.EndUpdate;
-  end;
+  var FileSystemObject := IScriptFileSystemObject(TreeListFileSystemStructure.FocusedNode.Data);
+
+  var FileSystemFile: IScriptFileSystemFile;
+  if (not Supports(FileSystemObject, IScriptFileSystemFile, FileSystemFile)) then
+    exit;
+
+  var ScriptProvider := FileSystemFile.CreateScriptProvider;
+
+  Debugger.CreateEditor(ScriptProvider);
 end;
 
 procedure TScriptDebuggerFileSystemStructureFrame.TreeListFileSystemStructureGetChildCount(Sender: TcxCustomTreeList;
@@ -226,8 +227,7 @@ begin
     var FileSystemObject := LinkNode(AParentNode);
 
     if (Supports(FileSystemObject, IScriptFileSystemFolder, ParentFolder)) then
-      ACount := Length(ParentFolder.GetFolders)
-//      ACount := Length(ParentFolder.GetFolders) + Length(ParentFolder.GetFiles)
+      ACount := Length(ParentFolder.GetFolders) + Length(ParentFolder.GetFiles)
     else
       ACount := 0;
   end;
@@ -245,10 +245,14 @@ begin
   if (FileSystemObject <> nil) then
   begin
     if (Supports(FileSystemObject, IScriptFileSystemFolder)) then
-      AIndex := ImageIndexFileFolder
-    else
+    begin
+      if (ANode.Expanded) then
+        AIndex := ImageIndexFileTypeFolderOpen
+      else
+        AIndex := ImageIndexFileTypeFolder;
+    end else
     if (Supports(FileSystemObject, IScriptFileSystemFile)) then
-      AIndex := ImageIndexFileScript;
+      AIndex := ImageIndexFileTypeScript;
   end;
 end;
 
@@ -271,18 +275,9 @@ begin
     SetFolder(IScriptFileSystemFolder(TreeListFileSystemStructure.FocusedNode.Data))
   else
     SetFolder(nil);
-
-  PopupEditFolder.DroppedDown := False;
 end;
 
-var
-  RootFileSystemFolder: IScriptFileSystemFolder;
 initialization
   RegisterClass(TScriptDebuggerFileSystemStructureFrame);
-
-  RootFileSystemFolder := TScriptFileSystemFolder.Create('\');
-  ScriptFileSystemStructure.RegisterFileSystemFolder(RootFileSystemFolder);
 finalization
-  ScriptFileSystemStructure.UnregisterFileSystemFolder(RootFileSystemFolder);
-  RootFileSystemFolder := nil;
 end.

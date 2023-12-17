@@ -26,7 +26,7 @@ interface
 
 {.$define LEAK_CHECK}
 
-{$define SHELL_EXPLORER}
+{.$define SHELL_EXPLORER}
 {.$define FEATURE_SCRIPT_BUNDLE}
 {.$define FEATURE_PACKAGE_INSTALLER}
 {.$define FEATURE_COPY_PROTECT}

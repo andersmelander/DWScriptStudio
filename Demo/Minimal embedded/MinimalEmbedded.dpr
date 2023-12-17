@@ -5,6 +5,8 @@ uses
   amScript.Module.All,
   // This causes the script IDE/editor/debugger to become available
   amScript.IDE,
+  // This provides file system access for use by the IDE file browser
+  amScript.FileSystemStructure.Default,
   Vcl.Forms,
   Main in 'Main.pas' {FormMain};
 
