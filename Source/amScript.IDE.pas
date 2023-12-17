@@ -361,6 +361,7 @@ type
     ActionViewRibbon: TAction;
     ActionViewMainMenu: TAction;
     BarButtonViewMainMenu: TdxBarButton;
+    ActionViewLayout: TAction;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -510,6 +511,8 @@ type
     procedure ActionViewRibbonUpdate(Sender: TObject);
     procedure ActionViewMainMenuExecute(Sender: TObject);
     procedure ActionViewMainMenuUpdate(Sender: TObject);
+    procedure ActionJITUpdate(Sender: TObject);
+    procedure ActionJITExecute(Sender: TObject);
   private
     FScript: TDelphiWebScript;
     FCompileContext: IScriptContext;
@@ -1147,10 +1150,13 @@ begin
   ApplyFeature(ScriptSettings.Features.ViewWatches, ActionViewWatches, DockPanelWatches);
   ApplyFeature(ScriptSettings.Features.ViewDataStack, ActionViewStack, DockPanelStack);
   ApplyFeature(ScriptSettings.Features.ViewAST, ActionViewAST, DockPanelAST);
+  ApplyFeature(ScriptSettings.Features.ViewLiveObjects, ActionDebugLiveObjects);
+  ApplyFeature(ScriptSettings.Features.DebugAllowJIT, ActionJIT);
   ApplyFeature(ScriptSettings.Features.ToolsDocumentationBuilder, ActionToolDocBuild);
   ApplyFeature(ScriptSettings.Features.ToolsBundleBuilder, ActionToolBundle);
   ApplyFeature(ScriptSettings.Features.ToolsCopyProtection, ActionToolCopyProtect);
   ApplyFeature(ScriptSettings.Features.ToolsInsertHeader, ActionToolHeader);
+  ApplyFeature(ScriptSettings.Features.IDELayout, ActionViewLayout);
   RibbonDebugTabTools.Visible := ScriptSettings.Features.ToolsMenu;
   BarManagerBarLayout.Visible := ScriptSettings.Features.IDELayout;
 
@@ -2625,7 +2631,9 @@ begin
       end;
 
     dsDebugSuspending:
-      DebuggerNotify(dnDebugSuspending);
+      begin
+        DebuggerNotify(dnDebugSuspending);
+      end;
 
     dsDebugSuspended:
       begin
@@ -2664,8 +2672,10 @@ begin
       end;
 
     dsDebugResuming:
-      DebuggerNotify(dnDebugResuming);
-      // Never happens. Transition from dsDebugResuming to dsDebugRun is handled internally in the debugger
+      begin
+        // Never happens. Transition from dsDebugResuming to dsDebugRun is handled internally in the debugger
+        DebuggerNotify(dnDebugResuming);
+      end;
 
     dsIdle,
     dsDebugDone:
@@ -3797,6 +3807,18 @@ end;
 procedure TFormScriptDebugger.ActionGotoLineNumberUpdate(Sender: TObject);
 begin
   TAction(Sender).Enabled := (ActiveEditor <> nil);
+end;
+
+procedure TFormScriptDebugger.ActionJITExecute(Sender: TObject);
+begin
+  // Require recompile if we disable the jitter
+  if (TAction(Sender).Checked) and IsCompiled then
+    FProgram := nil;
+end;
+
+procedure TFormScriptDebugger.ActionJITUpdate(Sender: TObject);
+begin
+  TAction(Sender).Enabled := (Debugger.State in [dsIdle, dsDebugDone]);
 end;
 
 procedure TFormScriptDebugger.ActionDummyExecute(Sender: TObject);

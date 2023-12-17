@@ -231,6 +231,7 @@ type
     FViewAST: boolean;
     FViewDataStack: boolean;
     FViewWatches: boolean;
+    FViewLiveObjects: boolean;
     FPackageInstaller: boolean;
     FOnlineHelp: boolean;
     FToolsMenu: boolean;
@@ -239,6 +240,7 @@ type
     FToolsCopyProtection: boolean;
     FToolsInsertHeader: boolean;
     FIDELayout: boolean;
+    FDebugAllowJIT: boolean;
   protected
   public
   published
@@ -249,6 +251,9 @@ type
     property ViewWatches: boolean read FViewWatches write FViewWatches default True;
     property ViewDataStack: boolean read FViewDataStack write FViewDataStack default True;
     property ViewAST: boolean read FViewAST write FViewAST default True;
+    property ViewLiveObjects: boolean read FViewLiveObjects write FViewLiveObjects default True;
+
+    property DebugAllowJIT: boolean read FDebugAllowJIT write FDebugAllowJIT default True;
 
     property IDELayout: boolean read FIDELayout write FIDELayout default True;
     property OnlineHelp: boolean read FOnlineHelp write FOnlineHelp default True;

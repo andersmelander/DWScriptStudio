@@ -1098,7 +1098,8 @@ object FormScriptDebugger: TFormScriptDebugger
       AutoCheck = True
       Caption = 'Enable jitter'
       Hint = 'Enable JIT native compilation'
-      OnExecute = ActionDummyExecute
+      OnExecute = ActionJITExecute
+      OnUpdate = ActionJITUpdate
     end
     object ActionViewRibbon: TAction
       Category = 'View'
@@ -1117,6 +1118,11 @@ object FormScriptDebugger: TFormScriptDebugger
       ImageIndex = 73
       OnExecute = ActionViewMainMenuExecute
       OnUpdate = ActionViewMainMenuUpdate
+    end
+    object ActionViewLayout: TAction
+      Category = 'View'
+      Caption = 'Layout'
+      OnExecute = ActionDummyExecute
     end
   end
   object OpenFileDialog: TFileOpenDialog
@@ -2381,9 +2387,8 @@ object FormScriptDebugger: TFormScriptDebugger
         end>
     end
     object BarSubMenuItemLayout: TdxBarSubItem
-      Caption = 'Layout'
+      Action = ActionViewLayout
       Category = 0
-      Visible = ivAlways
       ItemLinks = <
         item
           UserDefine = [udWidth]
@@ -2694,8 +2699,8 @@ object FormScriptDebugger: TFormScriptDebugger
     OnDrop = DropFileTarget1Drop
     Target = Owner
     OptimizedMove = True
-    Left = 264
-    Top = 160
+    Left = 320
+    Top = 292
   end
   object PopupMenuMessages: TPopupMenu
     Left = 60
