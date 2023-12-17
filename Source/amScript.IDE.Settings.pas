@@ -206,6 +206,9 @@ type
 type
   TScriptDebuggerEditorSettings = class(TConfigurationSection)
   private
+    class var
+      FDefaultHighlighterClass: string;
+  private
     FFontSize: integer;
     FHighlighterClass: string;
     FFontName: string;
@@ -214,6 +217,8 @@ type
   public
     constructor Create(AOwner: TConfigurationSection); override;
     destructor Destroy; override;
+
+    class property DefaultHighlighterClass: string read FDefaultHighlighterClass write FDefaultHighlighterClass;
   published
     property HighlighterClass: string read FHighlighterClass write FHighlighterClass;
     property FontName: string read FFontName write FFontName;
@@ -578,10 +583,7 @@ begin
     FFontName := 'Courier New';
     FFontSize := 10;
   end;
-  FHighlighterClass := TSynDWSSyn_DelphiLookalike.ClassName;
-
-  // Register class so FindClass can find it
-  RegisterClass(TSynDWSSyn_DelphiLookalike);
+  FHighlighterClass := FDefaultHighlighterClass;
 end;
 
 constructor TScriptDebuggerEditorSettings.Create(AOwner: TConfigurationSection);

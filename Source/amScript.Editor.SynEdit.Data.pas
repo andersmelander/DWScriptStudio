@@ -103,7 +103,8 @@ uses
   dwsSymbolDictionary,
   dwsStrings,
 
-  amScript.IDE.Data;
+  amScript.IDE.Data,
+  amScript.Editor.API;
 
 resourcestring
   RStrNoParametersRequired = '"<no parameters required>"';

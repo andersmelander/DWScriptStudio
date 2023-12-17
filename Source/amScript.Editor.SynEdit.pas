@@ -276,6 +276,31 @@ end;
 
 // -----------------------------------------------------------------------------
 //
+// TSynDWSSyn_DelphiLookalike
+//
+// -----------------------------------------------------------------------------
+type
+  TEditorHighlighterClass = class of TSynCustomHighlighter;
+
+type
+  TSynDWSSyn_DelphiLookalike = class(TSynDWSSyn)
+  public
+    constructor Create(AOwner: TComponent); override;
+  end;
+
+// -----------------------------------------------------------------------------
+//
+// TSynDWSSyn_DelphiLookalike
+//
+// -----------------------------------------------------------------------------
+constructor TSynDWSSyn_DelphiLookalike.Create(AOwner: TComponent);
+begin
+  inherited;
+  LoadDelphiStyle;
+end;
+
+// -----------------------------------------------------------------------------
+//
 // TEditorPageSynEditPlugin
 //
 // -----------------------------------------------------------------------------
@@ -1801,6 +1826,10 @@ begin
 end;
 
 initialization
+  TScriptDebuggerEditorSettings.DefaultHighlighterClass := TSynDWSSyn_DelphiLookalike.ClassName;
+  // Register class so FindClass can find it
+  System.Classes.RegisterClass(TSynDWSSyn_DelphiLookalike);
+
   ScriptEditorFactory.RegisterFactory(EditorFactory);
   ScriptDebuggerFactory.RegisterNotification(ScriptDebuggerInitialized);
 end.

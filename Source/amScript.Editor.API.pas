@@ -10,14 +10,61 @@ uses
   Vcl.Menus,
   Vcl.ImgList,
   dwsSymbolDictionary,
+  dwsSuggestions,
   amScript.Provider.API;
 
-type
-  TScriptEditorHostNotification = (
-    ehNotifyCompiled,
-    ehNotifyResetDebugState,
-    ehNotifyDpiChanged,
-    ehNotifyInvalidate
+// -----------------------------------------------------------------------------
+//
+// Code completion stuff
+//
+// -----------------------------------------------------------------------------
+const
+  SuggestionCategoryNames: array[TdwsSuggestionCategory] of string = (
+    'Unknown',
+    'Unit',
+    'Type',
+    'Class',
+    'Record',
+    'Interface',
+    'Delegate',
+    'Function',
+    'Procedure',
+    'Method',
+    'Constructor',
+    'Destructor',
+    'Property',
+    'Enum',
+    'Element',
+    'Parameter',
+    'Field',
+    'Variable',
+    'Const',
+    'Reserved',
+    'Special'
+    );
+
+  SuggestionCategoryShortNames: array[TdwsSuggestionCategory] of string = (
+    'unknown',
+    'unit',
+    'type',
+    'class',
+    'record',
+    'interface',
+    'delegate',
+    'function',
+    'procedure',
+    'method',
+    'constructor',
+    'destructor',
+    'property',
+    'enum',
+    'element',
+    'param',
+    'field',
+    'var',
+    'const',
+    'reserved',
+    'special'
   );
 
 // -----------------------------------------------------------------------------
@@ -76,6 +123,13 @@ type
   end;
 
   TSearchReplaceOptions = set of (srRegEx, srMatchCase, srWholeWord, srBackwards, srEntireScope, srSelectedOnly, srReplace, srReplaceAll, srPrompt);
+
+  TScriptEditorHostNotification = (
+    ehNotifyCompiled,
+    ehNotifyResetDebugState,
+    ehNotifyDpiChanged,
+    ehNotifyInvalidate
+  );
 
   IScriptEditor = interface
     ['{4CAE41F8-188A-420C-AC60-48E7699DE047}']

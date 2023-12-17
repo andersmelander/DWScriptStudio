@@ -21,16 +21,11 @@ uses
 
   dwsComp,
   dwsDebugger,
-  dwsSuggestions,
+  dwsSuggestions, // TODO : Eliminate when DebuggerSuggestionCategoryImageIndexMap is moved
   dwsErrors,
   dwsExprs,
   dwsSymbols,
-{$ifndef OLD_DWSCRIPT}
   dwsScriptSource,
-{$endif OLD_DWSCRIPT}
-
-  SynEditHighlighter,
-  SynHighlighterDWS,
 
   amScript.Provider.API,
   amScript.Editor.API;
@@ -194,81 +189,11 @@ type
     class function CanCreateDebugger: boolean; static;
   end;
 
-
-// -----------------------------------------------------------------------------
-//
-// TSynDWSSyn_DelphiLookalike
-//
-// -----------------------------------------------------------------------------
-type
-  TEditorHighlighterClass = class of TSynCustomHighlighter;
-
-type
-  // TODO : Move this out of the API unit
-  TSynDWSSyn_DelphiLookalike = class(TSynDWSSyn)
-    constructor Create(AOwner: TComponent); override;
-  end;
-
-
 const
-  SuggestionCategoryNames: array[TdwsSuggestionCategory] of string = (
-    'Unknown',
-    'Unit',
-    'Type',
-    'Class',
-    'Record',
-    'Interface',
-    'Delegate',
-    'Function',
-    'Procedure',
-    'Method',
-    'Constructor',
-    'Destructor',
-    'Property',
-    'Enum',
-    'Element',
-    'Parameter',
-{$ifndef OLD_DWSCRIPT}
-    'Field',
-{$endif OLD_DWSCRIPT}
-    'Variable',
-    'Const',
-    'Reserved',
-    'Special'
-    );
-
-  SuggestionCategoryShortNames: array[TdwsSuggestionCategory] of string = (
-    'unknown',
-    'unit',
-    'type',
-    'class',
-    'record',
-    'interface',
-    'delegate',
-    'function',
-    'procedure',
-    'method',
-    'constructor',
-    'destructor',
-    'property',
-    'enum',
-    'element',
-    'param',
-    'field',
-    'var',
-    'const',
-    'reserved',
-    'special'
-  );
-
-
   sScriptDebuggerBrandName = 'DWScriptStudio';
 
-  sDwsIdeProjectSourceFileExt   = '.dws';     // ext of the main file (like Delphi's dpr)
-  sDwsIdeProjectSourceFileExt2  = '.pas';     // ext of units
-  sDwsIdeProjectFileExt         = '.dwsproj'; // ext of the project file (like Delphi dproj)
-
-
+const
+  // TODO : Move to amScript.IDE.Data.API
   DebuggerSymbolImageIndexUnknown       = 0;
   DebuggerSymbolImageIndexUnit          = 1;
   DebuggerSymbolImageIndexType          = 2;
@@ -451,18 +376,6 @@ begin
   finally
     EndSuspendDebugger;
   end;
-end;
-
-
-// -----------------------------------------------------------------------------
-//
-// TSynDWSSyn_DelphiLookalike
-//
-// -----------------------------------------------------------------------------
-constructor TSynDWSSyn_DelphiLookalike.Create(AOwner: TComponent);
-begin
-  inherited;
-  LoadDelphiStyle;
 end;
 
 
