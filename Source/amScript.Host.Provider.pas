@@ -202,6 +202,20 @@ begin
   Create(ADocument, ScriptHostFile);
 end;
 
+constructor TDocumentScriptProvider.Create(const ADocument: IScriptHostDocument; const AScriptHostFile: IScriptHostFile);
+begin
+  FScriptHostFile := AScriptHostFile;
+  inherited Create(ADocument);
+  FName := FScriptHostFile.Name;
+end;
+
+destructor TDocumentScriptProvider.Destroy;
+begin
+  Detach;
+
+  inherited;
+end;
+
 function TDocumentScriptProvider.CreateFileSystem: IdwsFileSystem;
 begin
   Result := TScriptDocumentFileSystem.Create(Document, TPath.GetDirectoryName(Document.Filename));
@@ -255,20 +269,6 @@ end;
 function TDocumentScriptProvider.CreateNotificationSink: IScriptProviderNotificationSink;
 begin
   Result := TScriptProviderAttachmentDocumentNotificationSink.Create(Self);
-end;
-
-constructor TDocumentScriptProvider.Create(const ADocument: IScriptHostDocument; const AScriptHostFile: IScriptHostFile);
-begin
-  FScriptHostFile := AScriptHostFile;
-  inherited Create(ADocument);
-  FName := FScriptHostFile.Name;
-end;
-
-destructor TDocumentScriptProvider.Destroy;
-begin
-  Detach;
-
-  inherited;
 end;
 
 procedure TDocumentScriptProvider.Detach;

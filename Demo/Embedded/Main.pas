@@ -44,6 +44,7 @@ type
     // IScriptHostApplication
     procedure Subscribe(const Subscriber: IInterface);
     procedure Unsubscribe(const Subscriber: IInterface);
+    function GetHasDocuments: boolean;
     function GetActiveDocument: IScriptHostDocument;
     function AddAlertMessage(const ACaption, AMessage: string; AImageIndex: integer = -1; ATimeout: integer = -1): IScriptHostAlertWindow;
   public
@@ -181,6 +182,11 @@ begin
   if (PageControlDocuments.ActivePage <> nil) and (PageControlDocuments.ActivePage.ControlCount > 0) then
     if (not Supports(PageControlDocuments.ActivePage.Controls[0], IScriptHostDocument, Result)) then
       Result := nil;
+end;
+
+function TFormMain.GetHasDocuments: boolean;
+begin
+  Result := True;
 end;
 
 function TFormMain.AddAlertMessage(const ACaption, AMessage: string; AImageIndex, ATimeout: integer): IScriptHostAlertWindow;

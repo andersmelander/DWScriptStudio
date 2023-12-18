@@ -94,6 +94,7 @@ uses
 type
   TFrameDocumentFile = class(TInterfacedObject, IScriptHostFile)
   private
+    FDocument: IScriptHostDocument;
     FMemo: TMemo;
     FName: string;
     function GetFileSize: Int64;
@@ -104,11 +105,12 @@ type
 
     procedure LoadFromStream(AStream: TStream);
     procedure SaveToStream(AStream: TStream);
+    function CreateScriptProvider: IScriptProvider;
     function GetStream: TStream;
     property FileSize: Int64 read GetFileSize;
     function GetName: string;
   public
-    constructor Create(AMemo: TMemo; const AName: string);
+    constructor Create(const ADocument: IScriptHostDocument; AMemo: TMemo; const AName: string);
   end;
 
 // -----------------------------------------------------------------------------
@@ -182,7 +184,7 @@ begin
   end;
 
   // ... and create the corresponding file object
-  ScriptHostFile := TFrameDocumentFile.Create(Result, Filename);
+  ScriptHostFile := TFrameDocumentFile.Create(Self, Result, Filename);
   FFiles.Insert(TabSheet.PageIndex, ScriptHostFile);
 end;
 
@@ -227,7 +229,7 @@ begin
   // Edit button clicked
 
   // Wrap document and active page in a script provider
-  ScriptProvider := TDocumentScriptProvider.Create(Self, FFiles[PageControlAttachments.ActivePageIndex]);
+  ScriptProvider := FFiles[PageControlAttachments.ActivePageIndex].CreateScriptProvider;
 
   // Invoke editor on script
   ScriptService.Edit(Self, nil, ScriptProvider);
@@ -241,7 +243,7 @@ begin
   // Execute button clicked
 
   // Wrap document and active page in a script provider
-  ScriptProvider := TDocumentScriptProvider.Create(Self, FFiles[PageControlAttachments.ActivePageIndex]);
+  ScriptProvider := FFiles[PageControlAttachments.ActivePageIndex].CreateScriptProvider;
 
   // Invoke debugger on script
   ScriptService.Execute(ScriptProvider, Reason);
@@ -356,11 +358,17 @@ end;
 //              TFrameDocumentFile
 //
 // -----------------------------------------------------------------------------
-constructor TFrameDocumentFile.Create(AMemo: TMemo; const AName: string);
+constructor TFrameDocumentFile.Create(const ADocument: IScriptHostDocument; AMemo: TMemo; const AName: string);
 begin
   inherited Create;
+  FDocument := ADocument;
   FMemo := AMemo;
   FName := AName;
+end;
+
+function TFrameDocumentFile.CreateScriptProvider: IScriptProvider;
+begin
+  Result := TDocumentScriptProvider.Create(FDocument, Self);
 end;
 
 function TFrameDocumentFile.GetFileSize: Int64;

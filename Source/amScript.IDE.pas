@@ -136,7 +136,6 @@ type
     ActionFileOpenProject: TAction;
     ActionFileSave: TAction;
     ActionFileSaveAsFile: TAction;
-    ActionFileSaveProjectAs: TAction;
     ActionGotoLineNumber: TAction;
     ActionList: TActionList;
     ActionOpenFile: TAction;
@@ -182,7 +181,7 @@ type
     MenuItemFileOpen: TdxBarButton;
     MenuItemFileOpenProject: TdxBarButton;
     MenuItemFileSave: TdxBarButton;
-    MenuItemFileSaveAs: TdxBarButton;
+    MenuItemFileSaveAsFile: TdxBarButton;
     MenuItemFileSaveProjectAs: TdxBarButton;
     MenuItemFileCloseAll: TdxBarButton;
     MenuItemFileExit: TdxBarLargeButton;
@@ -255,9 +254,9 @@ type
     Debug1: TMenuItem;
     N2: TMenuItem;
     EvaluateModify1: TMenuItem;
-    dxBarSubItem1: TdxBarSubItem;
+    MenuItemFileSaveAsEx: TdxBarSubItem;
     ActionFileSaveAsAttachment: TAction;
-    dxBarButton3: TdxBarButton;
+    MenuItemFileSaveAsAttachment: TdxBarButton;
     dxBarButton8: TdxBarButton;
     ActionDebugBreakOnPoop: TAction;
     dxBarButton9: TdxBarButton;
@@ -362,6 +361,9 @@ type
     ActionViewMainMenu: TAction;
     BarButtonViewMainMenu: TdxBarButton;
     ActionViewLayout: TAction;
+    MenuItemFileSaveAs: TdxBarButton;
+    ActionFileSaveAs: TAction;
+    ActionFileSaveAsEx: TAction;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1159,6 +1161,9 @@ begin
   ApplyFeature(ScriptSettings.Features.IDELayout, ActionViewLayout);
   RibbonDebugTabTools.Visible := ScriptSettings.Features.ToolsMenu;
   BarManagerBarLayout.Visible := ScriptSettings.Features.IDELayout;
+
+  ActionFileSaveAsEx.Visible := (ScriptHostApplication <> nil) and (ScriptHostApplication.HasDocuments);
+  ActionFileSaveAs.Visible := (ScriptHostApplication = nil) or (not ScriptHostApplication.HasDocuments);
 
   LoadLayouts;
   LoadRecentFiles;
@@ -3630,8 +3635,6 @@ begin
     SetActiveEditor(Editor)
   else
   begin
-//    s := ChangeFileExt(AName, sDwsIdeProjectSourceFileExt2);
-//    Result := (CreateEditor(s, True) <> nil);
     if (AnsiSameText(ExtractFileExt(AName), sScriptFileType)) then
       s := AName
     else
@@ -3733,21 +3736,21 @@ function TFormScriptDebugger.ModifyFileNameToUniqueInProject(const AFileName: TF
 // until the name is unique in the name's folder. if no trailing number
 // adds '1'.
 var
-  I: Integer;
-  sD, sF, sE: string;
+  Index: Integer;
+  Path, FileName, FileType: string;
 begin
   Result := AFileName;
-  I := 0;
+  Index := 0;
   while FileIsOpenInEditor(Result) do
   begin
-    Inc(I);
-    sD := ExtractFileDir(Result) + '\';
-    sF := JustFileName(Result);
-    while (sF <> '') and CharInSet(sF[Length(sF) - 1], ['0'..'9']) do
-      Delete(sF, Length(sF) - 1, 1);
+    Inc(Index);
+    Path := ExtractFileDir(Result) + '\';
+    FileName := JustFileName(Result);
+    while (FileName <> '') and CharInSet(FileName[Length(FileName) - 1], ['0'..'9']) do
+      Delete(FileName, Length(FileName) - 1, 1);
 
-    sE := ExtractFileExt(Result);
-    Result := sD + sF + IntToStr(I) + sE;
+    FileType := ExtractFileExt(Result);
+    Result := Path + FileName + IntToStr(Index) + FileType;
   end;
 end;
 
@@ -4110,6 +4113,17 @@ begin
         Stream.Free;
       end;
 
+      if (AnsiSameText(ExtractFileExt(Name), sScriptFileType)) then
+      begin
+        ActiveEditor.Caption := '';
+        ActiveEditor.FileName := Name;
+      end else
+        ActiveEditor.Caption := Name;
+
+      var SavePos := ActiveEditor.CaretPos;
+      ActiveEditor.ScriptProvider := Attachment.CreateScriptProvider;
+      ActiveEditor.CaretPos := SavePos;
+
       ScriptHostApplication.ActiveDocument.Changed;
     except
       if (Attachment <> nil) then
@@ -4122,14 +4136,14 @@ end;
 
 procedure TFormScriptDebugger.ActionFileSaveAsAttachmentUpdate(Sender: TObject);
 begin
-  TAction(Sender).Enabled := (ScriptHostApplication <> nil) and (ScriptHostApplication.ActiveDocument <> nil) and (ScriptHostApplication.ActiveDocument.AllowEdit);
+  TAction(Sender).Enabled := (ScriptHostApplication <> nil) and (ScriptHostApplication.HasDocuments) and
+    (ScriptHostApplication.ActiveDocument <> nil) and (ScriptHostApplication.ActiveDocument.AllowEdit);
 end;
 
 procedure TFormScriptDebugger.ActionFileSaveAsFileExecute(Sender: TObject);
 begin
   if HasEditorPage then
     ActiveEditor._SaveAs;
-//    SavePage(ActiveEditor); // SaveAs...
 end;
 
 procedure TFormScriptDebugger.ActionFileSaveAsFileUpdate(Sender: TObject);

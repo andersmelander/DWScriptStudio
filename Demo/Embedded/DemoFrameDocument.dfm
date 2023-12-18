@@ -37,7 +37,6 @@ object FrameDocument: TFrameDocument
     Properties.Style = 9
     Properties.TabPosition = tpBottom
     Properties.TabSlants.Kind = skCutCorner
-    TabSlants.Kind = skCutCorner
     OnNewTabCreate = PageControlAttachmentsNewTabCreate
     ClientRectBottom = 271
     ClientRectLeft = 1

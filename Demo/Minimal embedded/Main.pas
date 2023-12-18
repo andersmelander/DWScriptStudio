@@ -39,6 +39,7 @@ type
     // IScriptHostApplication
     procedure Subscribe(const Subscriber: IInterface);
     procedure Unsubscribe(const Subscriber: IInterface);
+    function GetHasDocuments: boolean;
     function GetActiveDocument: IScriptHostDocument;
     function AddAlertMessage(const ACaption, AMessage: string; AImageIndex: integer = -1; ATimeout: integer = -1): IScriptHostAlertWindow;
   public
@@ -186,6 +187,11 @@ end;
 function TFormMain.GetActiveDocument: IScriptHostDocument;
 begin
   Result := nil; // Documents/Contexts not supported
+end;
+
+function TFormMain.GetHasDocuments: boolean;
+begin
+  Result := False; // Documents/Contexts not supported
 end;
 
 // -----------------------------------------------------------------------------

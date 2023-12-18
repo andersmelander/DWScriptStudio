@@ -40,29 +40,38 @@ object FormMain: TFormMain
     Properties.ActivePage = TabSheetDocument1
     Properties.AllowDisabledTabAccess = True
     Properties.CustomButtons.Buttons = <>
-    ClientRectBottom = 331
-    ClientRectLeft = 4
-    ClientRectRight = 631
-    ClientRectTop = 24
+    ClientRectBottom = 333
+    ClientRectLeft = 2
+    ClientRectRight = 633
+    ClientRectTop = 23
     object TabSheetDocument1: TcxTabSheet
+      AlignWithMargins = True
+      Margins.Left = 10
+      Margins.Top = 10
+      Margins.Right = 10
+      Margins.Bottom = 10
       Caption = 'Document1'
       ImageIndex = 0
+      ExplicitLeft = 2
+      ExplicitTop = 23
+      ExplicitWidth = 631
+      ExplicitHeight = 310
       inline FrameDocument1: TFrameDocument
         Left = 0
         Top = 0
-        Width = 627
-        Height = 307
+        Width = 611
+        Height = 290
         Align = alClient
         Padding.Left = 4
         Padding.Top = 4
         Padding.Right = 4
         Padding.Bottom = 4
         TabOrder = 0
-        ExplicitWidth = 627
-        ExplicitHeight = 307
+        ExplicitWidth = 631
+        ExplicitHeight = 310
         inherited PageControlAttachments: TcxPageControl
-          Width = 619
-          Height = 299
+          Width = 603
+          Height = 282
           Properties.CustomButtons.Buttons = <
             item
               HeaderImageIndex = 0
@@ -72,27 +81,27 @@ object FormMain: TFormMain
               HeaderImageIndex = 1
               Hint = 'Execute'
             end>
-          ExplicitWidth = 619
-          ExplicitHeight = 299
-          ClientRectBottom = 274
-          ClientRectRight = 618
+          ExplicitWidth = 623
+          ExplicitHeight = 302
+          ClientRectBottom = 257
+          ClientRectRight = 602
           inherited TabSheetUnit1: TcxTabSheet
-            ExplicitWidth = 617
-            ExplicitHeight = 273
+            ExplicitLeft = 1
+            ExplicitTop = 1
+            ExplicitWidth = 621
+            ExplicitHeight = 276
             inherited MemoScript: TMemo
-              Width = 617
-              Height = 273
-              ExplicitWidth = 617
-              ExplicitHeight = 273
+              Width = 601
+              Height = 256
+              ExplicitWidth = 621
+              ExplicitHeight = 276
             end
           end
           inherited TabSheetUnit2: TcxTabSheet
-            inherited Memo1: TMemo
-              Width = 617
-              Height = 273
-              ExplicitWidth = 617
-              ExplicitHeight = 273
-            end
+            ExplicitLeft = 1
+            ExplicitTop = 1
+            ExplicitWidth = 441
+            ExplicitHeight = 270
           end
         end
         inherited ImageListSmall: TcxImageList
@@ -101,24 +110,33 @@ object FormMain: TFormMain
       end
     end
     object TabSheetDocument2: TcxTabSheet
+      AlignWithMargins = True
+      Margins.Left = 10
+      Margins.Top = 10
+      Margins.Right = 10
+      Margins.Bottom = 10
       Caption = 'Document2'
       ImageIndex = 1
+      ExplicitLeft = 2
+      ExplicitTop = 23
+      ExplicitWidth = 631
+      ExplicitHeight = 310
       inline FrameDocument2: TFrameDocument
         Left = 0
         Top = 0
-        Width = 627
-        Height = 307
+        Width = 611
+        Height = 290
         Align = alClient
         Padding.Left = 4
         Padding.Top = 4
         Padding.Right = 4
         Padding.Bottom = 4
         TabOrder = 0
-        ExplicitWidth = 627
-        ExplicitHeight = 307
+        ExplicitWidth = 631
+        ExplicitHeight = 310
         inherited PageControlAttachments: TcxPageControl
-          Width = 619
-          Height = 299
+          Width = 603
+          Height = 282
           Properties.CustomButtons.Buttons = <
             item
               HeaderImageIndex = 0
@@ -128,17 +146,19 @@ object FormMain: TFormMain
               HeaderImageIndex = 1
               Hint = 'Execute'
             end>
-          ExplicitWidth = 619
-          ExplicitHeight = 299
-          ClientRectBottom = 274
-          ClientRectRight = 618
+          ExplicitWidth = 623
+          ExplicitHeight = 302
+          ClientRectBottom = 257
+          ClientRectRight = 602
           inherited TabSheetUnit1: TcxTabSheet
             Caption = 'TestExternals.pas'
-            ExplicitWidth = 617
-            ExplicitHeight = 273
+            ExplicitLeft = 1
+            ExplicitTop = 1
+            ExplicitWidth = 621
+            ExplicitHeight = 276
             inherited MemoScript: TMemo
-              Width = 617
-              Height = 273
+              Width = 601
+              Height = 256
               Lines.Strings = (
                 'unit TestExternals;'
                 ''
@@ -152,15 +172,17 @@ object FormMain: TFormMain
                 'end;'
                 ''
                 'MyMessageBox(0, '#39'Are You Not Entertained?'#39', '#39'Whoopey!'#39', 3);')
-              ExplicitWidth = 617
-              ExplicitHeight = 273
+              ExplicitWidth = 621
+              ExplicitHeight = 276
             end
           end
           inherited TabSheetUnit2: TcxTabSheet
             Caption = 'ImportExternals.pas'
+            ExplicitLeft = 1
+            ExplicitTop = 1
+            ExplicitWidth = 441
+            ExplicitHeight = 270
             inherited Memo1: TMemo
-              Width = 617
-              Height = 273
               Lines.Strings = (
                 'unit ImportExternals;'
                 ''
@@ -176,8 +198,6 @@ object FormMain: TFormMain
                   'function MyMessageBox(HWND: DWORD; const Text: string; const Cap' +
                   'tion: string; Kind: DWORD): DWORD; external '
                 '"MessageBoxW@user32.dll"; stdcall;')
-              ExplicitWidth = 617
-              ExplicitHeight = 273
             end
           end
         end

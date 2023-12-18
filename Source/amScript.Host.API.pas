@@ -19,7 +19,8 @@ interface
 
 uses
   SysUtils,
-  Classes;
+  Classes,
+  amScript.Provider.API;
 
 const
   sScriptAttachmentFilenamePrefix = '';//'\';
@@ -67,6 +68,10 @@ type
     ['{15B8D15D-9F31-4916-B2D2-2E8A40C77258}']
     procedure Subscribe(const Subscriber: IInterface);
     procedure Unsubscribe(const Subscriber: IInterface);
+
+    // HasDocuments is True if the host application supprots documents/attachments.
+    function GetHasDocuments: boolean;
+    property HasDocuments: boolean read GetHasDocuments;
 
     function GetActiveDocument: IScriptHostDocument;
     // ActiveDocument should return nil if application doesn't support documents or no document is active.
@@ -158,6 +163,9 @@ type
 
     procedure LoadFromStream(AStream: TStream);
     procedure SaveToStream(AStream: TStream);
+
+    // Wrap the attachment in a script provider
+    function CreateScriptProvider: IScriptProvider;
 
     // Return the internal stream if the object has one.
     // Return nil if it hasn't. The stream must be both readable and writable.

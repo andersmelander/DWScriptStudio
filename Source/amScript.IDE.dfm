@@ -596,6 +596,19 @@ object FormScriptDebugger: TFormScriptDebugger
       OnExecute = ActionFileSaveExecute
       OnUpdate = ActionFileSaveUpdate
     end
+    object ActionFileSaveAsEx: TAction
+      Category = 'File'
+      Caption = 'Save as...'
+      OnExecute = ActionDummyExecute
+    end
+    object ActionFileSaveAs: TAction
+      Category = 'File'
+      Caption = 'Save as...'
+      ImageIndex = 4
+      ShortCut = 24659
+      OnExecute = ActionFileSaveAsFileExecute
+      OnUpdate = ActionFileSaveAsFileUpdate
+    end
     object ActionViewProjectSource: TAction
       Category = 'View'
       Caption = 'View Project Source'
@@ -605,20 +618,17 @@ object FormScriptDebugger: TFormScriptDebugger
     object ActionFileSaveAsFile: TAction
       Category = 'File'
       Caption = 'File...'
-      ShortCut = 24659
+      ImageIndex = 4
       OnExecute = ActionFileSaveAsFileExecute
       OnUpdate = ActionFileSaveAsFileUpdate
     end
     object ActionFileSaveAsAttachment: TAction
       Category = 'File'
       Caption = 'Attachment...'
+      ImageIndex = 76
+      ShortCut = 24659
       OnExecute = ActionFileSaveAsAttachmentExecute
       OnUpdate = ActionFileSaveAsAttachmentUpdate
-    end
-    object ActionFileSaveProjectAs: TAction
-      Category = 'File'
-      Caption = 'Save Project As...'
-      ImageIndex = 4
     end
     object ActionClosePage: TAction
       Category = 'File'
@@ -1534,7 +1544,7 @@ object FormScriptDebugger: TFormScriptDebugger
         item
           ViewLevels = [ivlLargeControlOnly, ivlSmallIconWithText, ivlSmallIcon, ivlControlOnly]
           Visible = True
-          ItemName = 'dxBarSubItem1'
+          ItemName = 'MenuItemFileSaveAsEx'
         end
         item
           BeginGroup = True
@@ -1900,22 +1910,20 @@ object FormScriptDebugger: TFormScriptDebugger
       Visible = True
       WholeRow = False
     end
-    object dxBarSubItem1: TdxBarSubItem
-      Caption = 'Save as...'
+    object MenuItemFileSaveAsEx: TdxBarSubItem
+      Action = ActionFileSaveAsEx
       Category = 0
-      Visible = ivAlways
-      ImageIndex = 4
       ItemLinks = <
         item
           Visible = True
-          ItemName = 'MenuItemFileSaveAs'
+          ItemName = 'MenuItemFileSaveAsFile'
         end
         item
           Visible = True
-          ItemName = 'dxBarButton3'
+          ItemName = 'MenuItemFileSaveAsAttachment'
         end>
     end
-    object dxBarButton3: TdxBarButton
+    object MenuItemFileSaveAsAttachment: TdxBarButton
       Action = ActionFileSaveAsAttachment
       Category = 0
     end
@@ -2103,6 +2111,7 @@ object FormScriptDebugger: TFormScriptDebugger
     object ButtonRefactorUsage: TdxBarButton
       Action = ActionRefactorSearchSymbol
       Category = 0
+      ShortCut = 24661
     end
     object ButtonToolHeader: TdxBarLargeButton
       Action = ActionToolHeader
@@ -2174,7 +2183,7 @@ object FormScriptDebugger: TFormScriptDebugger
         end
         item
           Visible = True
-          ItemName = 'dxBarSubItem1'
+          ItemName = 'MenuItemFileSaveAsEx'
         end
         item
           BeginGroup = True
@@ -2418,6 +2427,10 @@ object FormScriptDebugger: TFormScriptDebugger
       Action = ActionViewMainMenu
       Category = 0
     end
+    object MenuItemFileSaveAs: TdxBarButton
+      Action = ActionFileSaveAs
+      Category = 0
+    end
     object MenuItemFileNew: TdxBarSubItem
       Caption = 'New ...'
       Category = 1
@@ -2461,13 +2474,15 @@ object FormScriptDebugger: TFormScriptDebugger
       Action = ActionFileSave
       Category = 1
     end
-    object MenuItemFileSaveAs: TdxBarButton
+    object MenuItemFileSaveAsFile: TdxBarButton
       Action = ActionFileSaveAsFile
       Category = 1
     end
     object MenuItemFileSaveProjectAs: TdxBarButton
-      Action = ActionFileSaveProjectAs
+      Caption = 'Save Project As...'
       Category = 1
+      Visible = ivAlways
+      ImageIndex = 4
     end
     object MenuItemFileClose: TdxBarButton
       Action = ActionClosePage
@@ -2765,7 +2780,11 @@ object FormScriptDebugger: TFormScriptDebugger
       end
       item
         Visible = True
-        ItemName = 'dxBarSubItem1'
+        ItemName = 'MenuItemFileSaveAsEx'
+      end
+      item
+        Visible = True
+        ItemName = 'MenuItemFileSaveAs'
       end
       item
         BeginGroup = True
