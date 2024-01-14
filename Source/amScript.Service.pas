@@ -671,7 +671,15 @@ type
     // IScriptContext
     function Compile(const ScriptProvider: IScriptProvider; Interactive: boolean; Debug: boolean): boolean;
     function BeginExecution(const ScriptProvider: IScriptProvider; const AExecutionNotification: IScriptExecutionNotification = nil): IScriptExecution;
+
+    // Reset: Clear the existing compilation context (the compiled program).
+    // Without a call to Reset, a subsequent call to Compile will perform the
+    // compilation in the context of the existing program (i.e. RecompileInContext).
     procedure Reset;
+
+    // Clear: Clear the compiler message output.
+    procedure Clear;
+
     function GetProgram: IdwsProgram;
     // IScriptContextFileSystems
     function RuntimeFileSystem: TdwsCustomFileSystem;
@@ -978,6 +986,11 @@ begin
 end;
 
 procedure TScriptContext.Reset;
+begin
+  FScriptProgram := nil;
+end;
+
+procedure TScriptContext.Clear;
 begin
   if (FScriptProgram <> nil) then
     FScriptProgram.Msgs.Clear;

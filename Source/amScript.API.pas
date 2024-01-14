@@ -125,8 +125,17 @@ type
   IScriptContext = interface
     ['{AF1D755D-4BEC-426A-9050-4302591A2AB9}']
     function Compile(const ScriptProvider: IScriptProvider; Interactive: boolean; Debug: boolean = False): boolean;
+
     function BeginExecution(const ScriptProvider: IScriptProvider; const AExecutionNotification: IScriptExecutionNotification = nil): IScriptExecution;
+
+    // Reset: Clear the existing compilation context (the compiled program).
+    // Without a call to Reset, a subsequent call to Compile will perform the
+    // compilation in the context of the existing program (i.e. RecompileInContext).
     procedure Reset;
+
+    // Clear: Clear the compiler message output.
+    procedure Clear;
+
     function GetProgram: IdwsProgram;
     property ScriptProgram: IdwsProgram read GetProgram;
   end;
