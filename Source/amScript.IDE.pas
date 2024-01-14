@@ -61,13 +61,6 @@ uses
   cxShellCommon, cxShellComboBox, cxShellListView,
 {$endif SHELL_EXPLORER}
 
-  SynEdit,
-  SynEditTypes,
-  SynEditHighlighter, SynHighlighterDWS,
-  SynEditKeyCmds, SynEditPlugins,
-  SynMacroRecorder, SynCompletionProposal,
-  SynEditSearch, SynEditRegexSearch,
-
   DragDrop, DropTarget, DragDropFile,
 
   dwsExprs, dwsComp, dwsCompiler, dwsDebugger, dwsStringResult, dwsErrors,
@@ -522,7 +515,7 @@ type
     FMainUnitName: string;
     FMainUnit: IScriptEditor;
     FSaveOnNeedUnit: TdwsOnNeedUnitEvent;
-
+    FSaveResultType: TdwsResultType;
 
     FGotoForm: TDwsIdeGotoLineNumber;
 
@@ -774,6 +767,8 @@ uses
   Vcl.Consts,
   Vcl.Clipbrd,
 
+  SynMacroRecorder,
+
   dwsXPlatform,
   dwsSuggestions,
   dwsDebugFunctions,
@@ -871,24 +866,14 @@ end;
 procedure DwsIDE_ShowModal(AScript: TDelphiWebScript; const Environment: IdwsEnvironment);
 var
   Frm: TFormScriptDebugger;
-  SaveResultType: TdwsResultType;
 begin
-  if Assigned(AScript) then
-    SaveResultType := AScript.Config.ResultType
-   else
-     SaveResultType := nil;
+  Frm := TFormScriptDebugger.Create(Application);
   try
-    Frm := TFormScriptDebugger.Create(Application);
-    try
-      Frm.Script := AScript;
-      Frm.Environment := Environment;
-      Frm.ShowModal;
-    finally
-      Frm.Free;
-    end;
+    Frm.Script := AScript;
+    Frm.Environment := Environment;
+    Frm.ShowModal;
   finally
-    if Assigned(AScript) then
-      AScript.Config.ResultType := SaveResultType;
+    Frm.Free;
   end;
 end;
 
@@ -952,26 +937,26 @@ end;
 type
   TOutputWindowStringResultType = class(TdwsStringResultType)
   strict private
-    FDwsIdeForm: TFormScriptDebugger;
+    FScriptDebuggerForm: TFormScriptDebugger;
   protected
     procedure DoAddString(Result: TdwsStringResult; var str: string); override;
     procedure DoReadLn(Result: TdwsStringResult; var str: string); override;
     procedure DoReadChar(Result: TdwsStringResult; var str: string); override;
   public
-    constructor Create(AOwner: TComponent; ADwsIdeForm: TFormScriptDebugger); reintroduce;
+    constructor Create(AOwner: TComponent; AScriptDebuggerForm: TFormScriptDebugger); reintroduce;
   end;
 
-constructor TOutputWindowStringResultType.Create(AOwner: TComponent; ADwsIdeForm: TFormScriptDebugger);
+constructor TOutputWindowStringResultType.Create(AOwner: TComponent; AScriptDebuggerForm: TFormScriptDebugger);
 begin
   inherited Create(AOwner);
-  FDwsIDEForm := ADwsIdeForm;
+  FScriptDebuggerForm := AScriptDebuggerForm;
 end;
 
 procedure TOutputWindowStringResultType.DoAddString(result: TdwsStringResult; var str: string);
 begin
   while (str[Length(str)] in [#10,#13]) do
     SetLength(str, Length(str)-1);
-  FDwsIdeForm.MemoOutputWindow.Lines.Add('STD: ' + str);
+  FScriptDebuggerForm.MemoOutputWindow.Lines.Add('STD: ' + str);
 end;
 
 procedure TOutputWindowStringResultType.DoReadChar(result: TdwsStringResult; var str: string);
@@ -1052,8 +1037,19 @@ begin
   begin
     FScriptDebuggerHost.NotifyClose(Self);
     FScriptDebuggerHost := nil;
-    if (FScript <> nil) and (Assigned(FSaveOnNeedUnit)) then
-      FScript.OnNeedUnit := FSaveOnNeedUnit;
+    if (FScript <> nil) then
+    begin
+      if (Assigned(FSaveOnNeedUnit)) then
+        FScript.OnNeedUnit := FSaveOnNeedUnit;
+
+      if (FSaveResultType <> nil) then
+      begin
+        var OldResultType := FScript.Config.ResultType;
+        FScript.Config.ResultType := FSaveResultType;
+        OldResultType.Free;
+      end;
+    end;
+
     FScript := nil;
   end;
 
@@ -3149,6 +3145,9 @@ end;
 
 procedure TFormScriptDebugger.SetScript(const Value: TDelphiWebScript);
 begin
+  if (Value = FScript) then
+    exit;
+
   FScript := Value;
 
   if (FScript = nil) then
@@ -3159,7 +3158,11 @@ begin
 
   // Script result type has been saved before calling the IDE form
   // so we can load an 'output window' connection here..
-  FScript.Config.ResultType := TOutputWindowStringResultType.Create(FScript, Self);
+  if (FSaveResultType = nil) then
+  begin
+    FSaveResultType := FScript.Config.ResultType;
+    FScript.Config.ResultType := TOutputWindowStringResultType.Create(FScript, Self);
+  end;
 
   if (not Assigned(FSaveOnNeedUnit)) then
     FSaveOnNeedUnit := FScript.OnNeedUnit;

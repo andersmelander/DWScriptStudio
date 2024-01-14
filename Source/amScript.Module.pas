@@ -22,7 +22,6 @@ uses
   dwsExprs,
   dwsCompiler,
   dwsSymbols,
-  dwsClassesLibModule,
   dwsFunctions,
   dwsFileSystem,
   dwsUtils,
