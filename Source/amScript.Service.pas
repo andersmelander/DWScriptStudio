@@ -979,7 +979,8 @@ end;
 
 procedure TScriptContext.Reset;
 begin
-  FScriptProgram.Msgs.Clear;
+  if (FScriptProgram <> nil) then
+    FScriptProgram.Msgs.Clear;
 end;
 
 function TScriptContext.Compile(const ScriptProvider: IScriptProvider; Interactive: boolean; Debug: boolean): boolean;
