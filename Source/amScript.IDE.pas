@@ -5451,7 +5451,7 @@ begin
     Application.CreateForm(TFormScriptDebugger, DebuggerForm);
     Result := IScriptDebugger(DebuggerForm);
   end else
-    Result := TFormScriptDebugger.Create(nil);
+    Result := TFormScriptDebugger.Create(Application);
 
   TFormScriptDebugger(Result).SetDebuggerHost(ScriptDebuggerHost);
 end;
