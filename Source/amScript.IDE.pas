@@ -954,7 +954,7 @@ end;
 
 procedure TOutputWindowStringResultType.DoAddString(result: TdwsStringResult; var str: string);
 begin
-  while (str[Length(str)] in [#10,#13]) do
+  while (str <> '') and (str[Length(str)] in [#10,#13]) do
     SetLength(str, Length(str)-1);
   FScriptDebuggerForm.MemoOutputWindow.Lines.Add('STD: ' + str);
 end;
